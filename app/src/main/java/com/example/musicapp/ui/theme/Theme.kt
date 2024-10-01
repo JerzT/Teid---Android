@@ -13,37 +13,40 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     background = Gray,
+    onBackground = LightGray,
     primary = Black,
     secondary = LightBlack,
     tertiary = Blue,
-    onSurface = White,
+    surface = White,
+    onSurface = White70,
 )
 
 private val LightColorScheme = lightColorScheme(
     background = Gray,
+    onBackground = LightGray,
     primary = Black,
     secondary = LightBlack,
     tertiary = Blue,
-    onSurface = White,
+    surface = White,
+    onSurface = White70,
 
     /* Other default colors to override
     primary
     secondary
     tertiary
-    background = Color(0xFFFFFBFE),
+    background ,
     surface = Color(0xFFFFFBFE),
     onPrimary = Color.White,
     onSecondary = Color.White,
+    onSurface = Color(0xFF1C1B1F),
     onTertiary = Color.White,
     onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
     */
 )
 
 @Composable
 fun MusicAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
