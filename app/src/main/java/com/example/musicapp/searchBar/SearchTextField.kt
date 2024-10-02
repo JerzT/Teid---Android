@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -21,19 +22,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.musicapp.R
 
 @Composable
-fun SearchTextField(modifier: Modifier){
+fun SearchTextField(modifier: Modifier) {
     val text: MutableState<String> = remember { mutableStateOf("") }
     val placeHolder: String = "Search..."
 
     BasicTextField(
         value = text.value,
-        onValueChange = { text.value = it},
+        onValueChange = { text.value = it },
         singleLine = true,
         modifier = modifier
             .border(
@@ -45,8 +48,12 @@ fun SearchTextField(modifier: Modifier){
             )
             .clip(RoundedCornerShape(10.dp))
             .background(MaterialTheme.colorScheme.onBackground),
-        decorationBox = {
-                innerTextField ->
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.surface),
+        textStyle = TextStyle(
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.surface
+        ),
+        decorationBox = { innerTextField ->
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
@@ -55,29 +62,23 @@ fun SearchTextField(modifier: Modifier){
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_search_24),
-                    contentDescription = "settings",
+                    contentDescription = "search",
                     tint = MaterialTheme.colorScheme.surface,
-                    modifier = Modifier
-                        .size(32.dp)
+                    modifier = Modifier.size(32.dp)
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
 
-                if (text.value.isEmpty()){
-                    Text(
-                        text = placeHolder,
-                        fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                Box{
+                    if (text.value.isEmpty()) {
+                        Text(
+                            text = placeHolder,
+                            fontSize = 20.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    innerTextField()
                 }
-                else{
-                    Text(
-                        text = text.value,
-                        fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.surface
-                    )
-                }
-
             }
         }
     )

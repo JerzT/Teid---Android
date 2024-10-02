@@ -1,4 +1,4 @@
-package com.example.musicapp.searchBar
+package com.example.musicapp.bottomBar
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SearchIcon(
+fun BottomBarButton(
     onClick: () -> (Unit),
     painter: Painter,
     contentDescription: String,
@@ -25,10 +25,11 @@ fun SearchIcon(
     elevation = null,
     shape = CircleShape,
     colors = ButtonDefaults.buttonColors(
-        containerColor = Color(0x00FFFFFF)
+        containerColor = Color(0x00FFFFFF),
+        contentColor = MaterialTheme.colorScheme.onSurface
     ),
     modifier = Modifier
-        .size(48.dp),
+        .size(52.dp),
 ){
     Icon(
         painter = painter,
