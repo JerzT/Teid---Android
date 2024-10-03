@@ -14,30 +14,31 @@ import androidx.compose.ui.unit.dp
 import com.example.musicapp.R
 import com.example.musicapp.ui.theme.MusicAppTheme
 
-@Preview(
-    widthDp = 300,
-    heightDp = 650,
-)
 @Composable
-fun SearchBar() = Row(
-    horizontalArrangement = Arrangement.End,
-    modifier = Modifier
-        .padding(10.dp, 10.dp, 10.dp, 10.dp)
-        .fillMaxWidth()
-){
-    MusicAppTheme {
-        SearchTextField(
-            modifier = Modifier
-                .weight(1f)
-                .padding(0.dp, 0.dp, 10.dp, 0.dp)
-        )
-        SearchButton(
-            onClick = { /*TODO*/ },
-            painter = painterResource(id = R.drawable.baseline_filter_alt_24),
-            contentDescription = "filter")
-        SearchButton(
-            onClick = { /*TODO*/ },
-            painter = painterResource(id = R.drawable.baseline_swap_vert_24),
-            contentDescription = "filter")
+fun SearchBar(
+    modifier: Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.End,
+        modifier = modifier
+            .padding(10.dp, 10.dp, 10.dp, 10.dp)
+            .fillMaxWidth()
+    ){
+        MusicAppTheme {
+            SearchTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(0.dp, 0.dp, 10.dp, 0.dp)
+            )
+            SearchButton(
+                onClick = { /*TODO*/ },
+                painter = painterResource(id = R.drawable.baseline_filter_alt_24),
+                contentDescription = "filter")
+            SearchButton(
+                onClick = { /*TODO*/ },
+                painter = painterResource(id = R.drawable.baseline_swap_vert_24),
+                contentDescription = "filter")
+        }
     }
+    SearchShadow()
 }

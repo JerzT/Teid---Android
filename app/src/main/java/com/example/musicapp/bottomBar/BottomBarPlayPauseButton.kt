@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.contextaware.ContextAware
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -21,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -43,10 +45,6 @@ fun BottomBarPlayPauseButton(
 ) {
     val isPlaying: MutableState<Boolean> = remember{ mutableStateOf(false) }
     val mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.dealer)
-
-    val uri: Uri = Uri.parse("content://com.android.externalstorage")
-
-    OpenFile(pickerInitialUri = uri)
 
     Button(
         onClick = {
@@ -95,17 +93,4 @@ fun onClick(
         mediaPlayer.start()
     }
     isPlaying.value = !isPlaying.value
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun OpenFile(pickerInitialUri: Uri) {
-    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
-        addCategory(Intent.CATEGORY_OPENABLE)
-
-        putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
-    }
-
-    val context = LocalContext.current as Activity
-    startActivityForResult(context, intent, 1, null)
 }

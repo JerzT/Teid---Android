@@ -7,7 +7,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.zIndex
 import com.example.musicapp.bottomBar.BottomBarCustom
+import com.example.musicapp.musicFilesUsage.GetDirectory
 import com.example.musicapp.searchBar.SearchBar
 import com.example.musicapp.searchBar.SearchShadow
 import com.example.musicapp.topAppBar.TopAppBarCustom
@@ -32,8 +34,11 @@ fun App(){
                 modifier = Modifier
                     .padding(innerPadding)
             ) {
-                SearchBar()
-                SearchShadow()
+                SearchBar(
+                    modifier = Modifier
+                        .zIndex(1f)
+                )
+                GetDirectory()
             }
         }
     }
