@@ -32,9 +32,7 @@ fun BottomBarCustom(){
                 painter = painterResource(id = R.drawable.baseline_skip_previous_24),
                 contentDescription = "Play"
             )
-            BottomBarPlayPauseButton(
-                onClick = { Unit }
-            )
+            BottomBarPlayPauseButton()
             BottomBarButton(
                 onClick = { /*TODO*/ },
                 painter = painterResource(id = R.drawable.baseline_skip_next_24),

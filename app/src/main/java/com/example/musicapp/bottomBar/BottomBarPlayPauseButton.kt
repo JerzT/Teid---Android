@@ -1,5 +1,18 @@
 package com.example.musicapp.bottomBar
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.media.MediaPlayer
+import android.net.Uri
+import android.os.Build
+import android.provider.DocumentsContract
+import android.util.Log
+import androidx.activity.contextaware.ContextAware
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -9,35 +22,90 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.startActivityForResult
 import com.example.musicapp.R
+import java.nio.file.Paths
 
+@SuppressLint("SdCardPath")
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BottomBarPlayPauseButton(
-    onClick: () -> (Unit),
+
 ) {
-    val isPlaying: Boolean = true
+    val isPlaying: MutableState<Boolean> = remember{ mutableStateOf(false) }
+    val mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.dealer)
+
+    val uri: Uri = Uri.parse("content://com.android.externalstorage")
+
+    OpenFile(pickerInitialUri = uri)
+
     Button(
-        onClick = { onClick() },
+        onClick = {
+            onClick(
+                mediaPlayer = mediaPlayer,
+                isPlaying = isPlaying,
+            )},
         contentPadding = PaddingValues(0.dp),
         elevation = null,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0x00FFFFFF),
+            containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
         modifier = Modifier
             .size(64.dp),
     ){
+        val painter: Painter
+        val contentDescription: String
+        if (isPlaying.value){
+            painter = painterResource(id = R.drawable.baseline_pause_24)
+            contentDescription = "pause"
+
+        } else{
+            painter = painterResource(id = R.drawable.baseline_play_arrow_24)
+            contentDescription = "play"
+        }
         Icon(
-            painter = painterResource(id = R.drawable.baseline_play_arrow_24),
+            painter = painter,
             tint = MaterialTheme.colorScheme.surface,
-            contentDescription = "play",
+            contentDescription = contentDescription,
             modifier = Modifier
-                .fillMaxSize(0.75F)
+                .fillMaxSize(0.85F)
         )
     }
+}
+
+fun onClick(
+    mediaPlayer: MediaPlayer,
+    isPlaying: MutableState<Boolean>,
+){
+    if (isPlaying.value){
+        mediaPlayer.pause()
+    }
+    else{
+        mediaPlayer.start()
+    }
+    isPlaying.value = !isPlaying.value
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun OpenFile(pickerInitialUri: Uri) {
+    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+        addCategory(Intent.CATEGORY_OPENABLE)
+
+        putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+    }
+
+    val context = LocalContext.current as Activity
+    startActivityForResult(context, intent, 1, null)
 }
