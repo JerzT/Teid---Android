@@ -38,7 +38,6 @@ import com.example.musicapp.R
 import java.nio.file.Paths
 
 @SuppressLint("SdCardPath")
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BottomBarPlayPauseButton(
 
