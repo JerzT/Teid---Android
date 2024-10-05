@@ -12,6 +12,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.documentfile.provider.DocumentFile
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlin.math.log
 
 @Composable
 fun GetDirectory() {
@@ -30,14 +33,21 @@ fun GetDirectory() {
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
         }
-        val list: MutableList<String> = mutableListOf()
-        findFiles(
-            uri = uri,
-            context = context,
-            list = list,
-        )
-        Log.v("test1", list.toString())
+        val listOfAlbums: MutableList<Album> = mutableListOf()
+        GlobalScope.launch {
+            findAlbums(
+                uri = uri,
+                context = context,
+                listOfAlbums = listOfAlbums,
+            ).await()
+            setUpDatabase(
+                context = context,
+                listOfAlbums = listOfAlbums
+            )
+        }
     }
+
+
 
     Button(onClick = { directoryPickerLauncher.launch(null) }) {
         Text(text = "Pick Directory")
