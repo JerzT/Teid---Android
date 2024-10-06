@@ -7,31 +7,30 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 
-fun setUpDatabase(
-    context: Context,
-    listOfAlbums: MutableList<Album>
-){
+fun setUpDatabase(context: Context): DBHelper{
     val database = DBHelper(context, null)
-    database.getName()
-    for(album in listOfAlbums){
-        Log.v("test1", album.toString())
-    }
+    database.getAlbums()
+
+    return database
 }
 
 class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
-
     // below is the method for creating a database by a sqlite query
     override fun onCreate(db: SQLiteDatabase) {
         // below is a sqlite query, where column names
         // along with their data types is given
         val query =
-            ("CREATE TABLE " + TABLE_NAME + " ("
-                + ID_COL + " INTEGER PRIMARY KEY, " +
-                NAME_COL + " TEXT," +
-                URI_COL + " TEXT" + ")")
-
+            ("CREATE TABLE " + TABLE_NAME +
+                    " (" + ID_COL + " INTEGER PRIMARY KEY, "
+                    + NAME_COL + " TEXT,"
+                    + URI_COL + " TEXT,"
+                    + COVER_COL + " TEXT,"
+                    + ARTIST_COL + " TEXT,"
+                    + YEAR_COL + " TEXT" +")")
         // we are calling sqlite
         // method for executing our query
         db.execSQL(query)
@@ -43,35 +42,63 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         onCreate(db)
     }
 
-    // This method is for adding data in our database
-    fun addName(name : String, uri : String ){
+    //testing function
+    fun openDatabase(){
+        val db = this.readableDatabase
+    }
 
-        // below we are creating
-        // a content values variable
-        val values = ContentValues()
-
-        // we are inserting our values
-        // in the form of key-value pair
-        values.put(NAME_COL, name)
-        values.put(URI_COL, uri)
-
-        // here we are creating a
-        // writable variable of
-        // our database as we want to
-        // insert value in our database
+    fun addAlbum(album: Album) {
         val db = this.writableDatabase
 
-        // all values are inserted into database
-        db.insert(TABLE_NAME, null, values)
 
-        // at last we are
-        // closing our database
-        db.close()
+        // Safeguard against null values and check them
+        val name = album.name ?: ""
+        val uri = album.uri.toString()
+        val cover = album.cover?.toString() ?: ""
+        val artist = album.artist ?: ""
+        val year = album.year ?: ""
+
+        try {
+            // Parameterized query to check if the album already exists in the database
+            val query = "SELECT * FROM $TABLE_NAME " +
+                    "WHERE $NAME_COL = ? " +
+                    "AND $URI_COL = ? " +
+                    "AND $COVER_COL = ? " +
+                    "AND $ARTIST_COL = ? " +
+                    "AND $YEAR_COL = ?"
+            val cursor = db.rawQuery(query, arrayOf(name, uri, cover, artist, year))
+
+            if (cursor.moveToFirst()) {
+                // Album already exists
+                Log.v("DBHelper", "Album already exists: $name")
+            } else {
+                // Insert album if it does not exist
+                val values = ContentValues().apply {
+                    put(NAME_COL, name)
+                    put(URI_COL, uri)
+                    put(COVER_COL, cover)
+                    put(ARTIST_COL, artist)
+                    put(YEAR_COL, year)
+                }
+
+                db.insert(TABLE_NAME, null, values)
+                Log.v("DBHelper", "Album added successfully: $name")
+            }
+
+            // Ensure the cursor is closed to avoid memory leaks
+            cursor.close()
+        } catch (e: Exception) {
+            // Catch any exceptions and log them
+            Log.e("DBHelper", "Error while adding album: ${e.message}", e)
+        } finally {
+            // Close the database connection
+            db.close()
+        }
     }
 
     // below method is to get
     // all data from our database
-    fun getName(): Cursor? {
+    fun getAlbums(): Cursor? {
 
         // here we are creating a readable
         // variable of our database
@@ -85,24 +112,22 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     }
 
     companion object{
-        // here we have defined variables for our database
-
-        // below is variable for database name
         private const val DATABASE_NAME = "APP_DATABASE"
 
-        // below is the variable for database version
         private const val DATABASE_VERSION = 1
 
-        // below is the variable for table name
         const val TABLE_NAME = "music_albums"
 
-        // below is the variable for id column
         const val ID_COL = "id"
 
-        // below is the variable for name column
         const val NAME_COL = "name"
 
-        // below is the variable for age column
         const val URI_COL = "uri"
+
+        const val COVER_COL = "cover"
+
+        const val ARTIST_COL = "artist"
+
+        const val YEAR_COL = "year"
     }
 }

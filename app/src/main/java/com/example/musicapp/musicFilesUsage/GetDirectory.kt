@@ -17,7 +17,9 @@ import kotlinx.coroutines.launch
 import kotlin.math.log
 
 @Composable
-fun GetDirectory() {
+fun GetDirectory(
+    database: DBHelper
+) {
     val context = LocalContext.current
     val selectedUri = remember { mutableStateOf<Uri?>(null) }
 
@@ -40,19 +42,16 @@ fun GetDirectory() {
                 context = context,
                 listOfAlbums = listOfAlbums,
             ).await()
-            setUpDatabase(
-                context = context,
-                listOfAlbums = listOfAlbums
-            )
+
+            for (album in listOfAlbums){
+                database.addAlbum(album)
+            }
         }
     }
-
-
 
     Button(onClick = { directoryPickerLauncher.launch(null) }) {
         Text(text = "Pick Directory")
     }
-
 
     selectedUri.value?.let {
         Text(text = "Selected directory: $it")

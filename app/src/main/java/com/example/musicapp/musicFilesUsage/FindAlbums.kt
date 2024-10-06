@@ -38,10 +38,11 @@ fun findAlbums(
                 if(file.type?.contains("audio") == true){
                     val metadata = getMetadata(file, context)
                     val album = Album(
-                        name = metadata["albumName"],
+                        name = metadata["albumName"] ?: documentFile.name,
                         uri = documentFile.uri,
                         cover = getCover(documentFile),
                         artist = metadata["artistName"],
+                        year = metadata["albumYear"],
                     )
                     listOfAlbums += album
                     return@async
@@ -51,18 +52,25 @@ fun findAlbums(
     }
 }
 
-fun getMetadata(file: DocumentFile, context: Context): Map<String, String> {
+fun getMetadata(file: DocumentFile, context: Context): Map<String?, String?> {
     val retriever = MediaMetadataRetriever()
+    return try {
+        retriever.setDataSource(context, file.uri)
 
-    retriever.setDataSource(context, file.uri)
+        val albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+        val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
+        val albumYear = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)
 
-    val albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM).toString()
-    val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST).toString()
-
-    Log.v("test1", albumName)
-    Log.v("test1", artistName)
-
-    return mapOf("albumName" to albumName, "artistName" to artistName)
+        mapOf(
+            "albumName" to albumName,
+            "artistName" to artistName,
+            "albumYear" to albumYear,
+        )
+    } catch (e: Exception) {
+        mapOf()
+    } finally {
+        retriever.release()
+    }
 }
 
 fun getCover(directory: DocumentFile): Uri?{

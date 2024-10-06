@@ -7,4 +7,5 @@ data class Album(
     val uri: Uri,
     val cover: Uri?,
     val artist: String?,
+    val year: String?
 )
