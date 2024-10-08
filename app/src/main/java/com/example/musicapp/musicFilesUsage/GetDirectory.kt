@@ -2,9 +2,11 @@ package com.example.musicapp.musicFilesUsage
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,10 +14,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.documentfile.provider.DocumentFile
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlin.math.log
 
+@RequiresApi(Build.VERSION_CODES.P)
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun GetDirectory(
     database: DBHelper
@@ -40,12 +45,8 @@ fun GetDirectory(
             findAlbums(
                 uri = uri,
                 context = context,
-                listOfAlbums = listOfAlbums,
+                database = database,
             ).await()
-
-            for (album in listOfAlbums){
-                database.addAlbum(album)
-            }
         }
     }
 

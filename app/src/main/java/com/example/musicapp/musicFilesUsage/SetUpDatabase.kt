@@ -6,9 +6,6 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import androidx.documentfile.provider.DocumentFile
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 
 fun setUpDatabase(context: Context): DBHelper{
     val database = DBHelper(context, null)
@@ -30,7 +27,8 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                     + URI_COL + " TEXT,"
                     + COVER_COL + " TEXT,"
                     + ARTIST_COL + " TEXT,"
-                    + YEAR_COL + " TEXT" +")")
+                    + YEAR_COL + " TEXT,"
+                    + CD_NUMBER_COL + " TEXT"+")")
         // we are calling sqlite
         // method for executing our query
         db.execSQL(query)
@@ -50,13 +48,13 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     fun addAlbum(album: Album) {
         val db = this.writableDatabase
 
-
         // Safeguard against null values and check them
         val name = album.name ?: ""
         val uri = album.uri.toString()
         val cover = album.cover?.toString() ?: ""
         val artist = album.artist ?: ""
         val year = album.year ?: ""
+        val cdNumber = album.cdNumber ?: 1
 
         try {
             // Parameterized query to check if the album already exists in the database
@@ -65,7 +63,8 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                     "AND $URI_COL = ? " +
                     "AND $COVER_COL = ? " +
                     "AND $ARTIST_COL = ? " +
-                    "AND $YEAR_COL = ?"
+                    "AND $YEAR_COL = ?" +
+                    "AND $CD_NUMBER_COL = ?"
             val cursor = db.rawQuery(query, arrayOf(name, uri, cover, artist, year))
 
             if (cursor.moveToFirst()) {
@@ -79,6 +78,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                     put(COVER_COL, cover)
                     put(ARTIST_COL, artist)
                     put(YEAR_COL, year)
+                    put(CD_NUMBER_COL, cdNumber)
                 }
 
                 db.insert(TABLE_NAME, null, values)
@@ -108,7 +108,6 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         // below code returns a cursor to
         // read data from the database
         return db.rawQuery("SELECT * FROM " + TABLE_NAME, null)
-
     }
 
     companion object{
@@ -129,5 +128,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         const val ARTIST_COL = "artist"
 
         const val YEAR_COL = "year"
+
+        const val CD_NUMBER_COL = "cd_number"
     }
 }
