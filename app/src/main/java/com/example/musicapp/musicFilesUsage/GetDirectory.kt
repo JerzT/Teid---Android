@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.documentfile.provider.DocumentFile
+import com.example.musicapp.settings.SettingsDataStore
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -26,6 +27,9 @@ fun GetDirectory(
     database: DBHelper
 ) {
     val context = LocalContext.current
+
+    val settings = SettingsDataStore(context)
+
     val selectedUri = remember { mutableStateOf<Uri?>(null) }
 
     // this part of code cast Director selector
@@ -40,8 +44,8 @@ fun GetDirectory(
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
         }
-        val listOfAlbums: MutableList<Album> = mutableListOf()
         GlobalScope.launch {
+            settings.saveDirectoryPath(uri.toString())
             findAlbums(
                 uri = uri,
                 context = context,

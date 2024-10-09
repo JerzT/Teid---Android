@@ -28,7 +28,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                     + COVER_COL + " TEXT,"
                     + ARTIST_COL + " TEXT,"
                     + YEAR_COL + " TEXT,"
-                    + CD_NUMBER_COL + " TEXT"+")")
+                    + CD_NUMBER_COL + " INT"+")")
         // we are calling sqlite
         // method for executing our query
         db.execSQL(query)
@@ -65,7 +65,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                     "AND $ARTIST_COL = ? " +
                     "AND $YEAR_COL = ?" +
                     "AND $CD_NUMBER_COL = ?"
-            val cursor = db.rawQuery(query, arrayOf(name, uri, cover, artist, year))
+            val cursor = db.rawQuery(query, arrayOf(name, uri, cover, artist, year, cdNumber.toString()))
 
             if (cursor.moveToFirst()) {
                 // Album already exists
@@ -93,6 +93,20 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         } finally {
             // Close the database connection
             db.close()
+        }
+    }
+
+    fun checkIfAlbumExists(){
+        val db = this.writableDatabase
+        try {
+            val query = "SELECT * FROM $TABLE_NAME"
+
+
+
+        } catch (e:Exception){
+            Log.e("DBHelper", "Error while checking albums: ${e.message}", e)
+        } finally {
+           db.close()
         }
     }
 

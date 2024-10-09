@@ -13,8 +13,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
-
-
 @RequiresApi(Build.VERSION_CODES.P)
 fun findAlbums(
     uri: Uri?,
@@ -25,6 +23,15 @@ fun findAlbums(
     if(uri == null){
         return@async
     }
+    //declare music formats
+    val supportedAudioFormats = listOf(
+        "mp3", "flac", "m4a",
+        "aac", "wav", "ogg",
+        "amr", "mid", "xmf",
+        "mxmf", "rtttl", "rtx",
+        "ota", "imy", "3gp",
+        "ts", "mkv", "mpeg")
+
     //Checking every files in given directory
     val documentFile = DocumentFile.fromTreeUri(context, uri)
 
@@ -37,8 +44,10 @@ fun findAlbums(
             }
             else{
                 //check if folder contains audio files and if true makes album
-                if(file.type?.contains("m3w8") == true) return@async
-                if(file.type?.contains("audio") == true){
+                if(file.type?.let {
+                    type -> supportedAudioFormats.any {
+                        type.contains(it, ignoreCase = true) } } == true)
+                {
                     val metadata = getMetadata(file, context)
                     val album = Album(
                         name = metadata["albumName"] ?: documentFile.name,
@@ -64,12 +73,9 @@ fun getMetadata(file: DocumentFile, context: Context): Map<String?, String?> {
 
         val albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
         val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-            ?:
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
-            ?:
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR)
-            ?:
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER)
+            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
+            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR)
+            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER)
         val albumYear = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)
         val cdNumber = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DISC_NUMBER)
             ?: "1"
@@ -87,17 +93,9 @@ fun getMetadata(file: DocumentFile, context: Context): Map<String?, String?> {
     }
 }
 
-fun getCover(directory: DocumentFile): Uri?{
-    var uri: Uri? = null
-
-    if (directory.isDirectory){
-        for(file in directory.listFiles()){
-            if (file.type?.contains("image") == true){
-                uri = file.uri
-                return uri
-            }
-        }
+fun getCover(directory: DocumentFile): Uri? {
+    val imageFile = directory.listFiles().firstOrNull { file ->
+        file.type?.contains("image", ignoreCase = true) == true
     }
-
-    return uri
+    return imageFile?.uri
 }

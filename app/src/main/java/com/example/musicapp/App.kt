@@ -2,6 +2,7 @@ package com.example.musicapp
 
 import android.annotation.SuppressLint
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -22,6 +23,7 @@ import com.example.musicapp.musicFilesUsage.GetDirectory
 import com.example.musicapp.musicFilesUsage.setUpDatabase
 import com.example.musicapp.searchBar.SearchBar
 import com.example.musicapp.searchBar.SearchShadow
+import com.example.musicapp.settings.SettingsDataStore
 import com.example.musicapp.topAppBar.TopAppBarCustom
 import com.example.musicapp.ui.theme.MusicAppTheme
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -43,12 +45,18 @@ fun App(){
 
     val context = LocalContext.current
 
+    val settings = SettingsDataStore(context)
+
     val database = setUpDatabase(context)
 
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
+            val uri = settings.directoryPathFlow.collect { directoryPath ->
+                Log.v("test1", directoryPath.toString())
+            }
+
             database.openDatabase()
         }
     }
