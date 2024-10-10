@@ -40,11 +40,6 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         onCreate(db)
     }
 
-    //testing function
-    fun openDatabase(){
-        val db = this.readableDatabase
-    }
-
     fun addAlbum(album: Album) {
         val db = this.writableDatabase
 
@@ -113,14 +108,8 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     // below method is to get
     // all data from our database
     fun getAlbums(): Cursor? {
-
-        // here we are creating a readable
-        // variable of our database
-        // as we want to read value from it
         val db = this.readableDatabase
 
-        // below code returns a cursor to
-        // read data from the database
         return db.rawQuery("SELECT * FROM " + TABLE_NAME, null)
     }
 

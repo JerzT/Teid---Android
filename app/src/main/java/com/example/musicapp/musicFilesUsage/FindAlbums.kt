@@ -18,6 +18,7 @@ fun findAlbums(
     uri: Uri?,
     context: Context,
     database: DBHelper,
+    albumsList: MutableList<Album>,
 ): Deferred<Unit> = GlobalScope.async{
     //return when uri is null
     if(uri == null){
@@ -40,7 +41,7 @@ fun findAlbums(
         for (file in files) {
             if (file.isDirectory){
                 //go inside if is a directory
-                findAlbums(file.uri, context, database).await()
+                findAlbums(file.uri, context, database, albumsList).await()
             }
             else{
                 //check if folder contains audio files and if true makes album
@@ -57,7 +58,8 @@ fun findAlbums(
                         year = metadata["albumYear"],
                         cdNumber = metadata["cdNumber"]?.toInt(),
                     )
-                    database.addAlbum(album)
+                    albumsList.add(album)
+                    //database.addAlbum(album)
                     return@async
                 }
             }

@@ -50,6 +50,7 @@ fun GetDirectory(
                 uri = uri,
                 context = context,
                 database = database,
+                albumsList = AlbumsWhichExists.list,
             ).await()
         }
     }

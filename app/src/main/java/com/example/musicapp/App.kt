@@ -1,13 +1,13 @@
 package com.example.musicapp
 
 import android.annotation.SuppressLint
-import android.database.sqlite.SQLiteDatabase
+import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -16,24 +16,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import com.example.musicapp.bottomBar.BottomBarCustom
 import com.example.musicapp.musicFilesUsage.Album
-import com.example.musicapp.musicFilesUsage.DBHelper
+import com.example.musicapp.musicFilesUsage.AlbumsWhichExists
 import com.example.musicapp.musicFilesUsage.GetDirectory
 import com.example.musicapp.musicFilesUsage.setUpDatabase
 import com.example.musicapp.searchBar.SearchBar
-import com.example.musicapp.searchBar.SearchShadow
 import com.example.musicapp.settings.SettingsDataStore
 import com.example.musicapp.topAppBar.TopAppBarCustom
 import com.example.musicapp.ui.theme.MusicAppTheme
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(DelicateCoroutinesApi::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
+@RequiresApi(Build.VERSION_CODES.P)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition",
+    "Range"
+)
 @Preview(
     showBackground = true,
     widthDp = 300,
@@ -41,7 +40,8 @@ import kotlinx.coroutines.launch
 )
 @Composable
 fun App(){
-    val isPlaying: Boolean = true
+    val isPlaying = true
+    var uri: Uri?
 
     val context = LocalContext.current
 
@@ -53,11 +53,41 @@ fun App(){
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
-            val uri = settings.directoryPathFlow.collect { directoryPath ->
-                Log.v("test1", directoryPath.toString())
-            }
+            launch {
+                //get saved albums
+                val albums = database.getAlbums()
+                if(albums != null){
+                    albums.use { albumRow ->
+                        while (albumRow.moveToNext()){
+                            val name: String? = albumRow.getString(albumRow.getColumnIndex("name"))
+                            val uri: Uri = albumRow.getString(albumRow.getColumnIndex("uri")).toUri()
+                            val cover: Uri = albumRow.getString(albumRow.getColumnIndex("cover")).toUri()
+                            val artist: String? = albumRow.getString(albumRow.getColumnIndex("artist"))
+                            val year: String? = albumRow.getString(albumRow.getColumnIndex("year"))
+                            val cdNumber: Int = albumRow.getInt(albumRow.getColumnIndex("cd_number"))
 
-            database.openDatabase()
+                            val album = Album(
+                                name = name,
+                                uri = uri,
+                                cover = cover,
+                                artist = artist,
+                                year = year,
+                                cdNumber = cdNumber,
+                            )
+                            //Log.v("test1", album.toString())
+                        }
+                    }
+                    albums.close()
+                }
+
+
+                settings.directoryPathFlow.collect { directoryPath ->
+                    uri = directoryPath?.toUri()
+                }
+            }
+            launch {
+
+            }
         }
     }
 
@@ -74,7 +104,6 @@ fun App(){
                     modifier = Modifier
                         .zIndex(1f)
                 )
-
                 GetDirectory(
                     database = database
                 )
