@@ -9,22 +9,23 @@ import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
+@OptIn(DelicateCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.P)
 fun findAlbums(
     uri: Uri?,
     context: Context,
-    database: DBHelper,
     albumsList: MutableList<Album>,
 ): Deferred<Unit> = GlobalScope.async{
-    //return when uri is null
+
     if(uri == null){
         return@async
     }
-    //declare music formats
+
     val supportedAudioFormats = listOf(
         "mp3", "flac", "m4a",
         "aac", "wav", "ogg",
@@ -41,7 +42,7 @@ fun findAlbums(
         for (file in files) {
             if (file.isDirectory){
                 //go inside if is a directory
-                findAlbums(file.uri, context, database, albumsList).await()
+                findAlbums(file.uri, context, albumsList).await()
             }
             else{
                 //check if folder contains audio files and if true makes album
@@ -59,7 +60,6 @@ fun findAlbums(
                         cdNumber = metadata["cdNumber"]?.toInt(),
                     )
                     albumsList.add(album)
-                    //database.addAlbum(album)
                     return@async
                 }
             }

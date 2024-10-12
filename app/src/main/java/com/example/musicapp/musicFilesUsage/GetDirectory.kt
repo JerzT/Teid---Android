@@ -24,7 +24,7 @@ import kotlin.math.log
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun GetDirectory(
-    database: DBHelper
+    database: DBHelper,
 ) {
     val context = LocalContext.current
 
@@ -49,9 +49,11 @@ fun GetDirectory(
             findAlbums(
                 uri = uri,
                 context = context,
-                database = database,
                 albumsList = AlbumsWhichExists.list,
             ).await()
+            for(album in AlbumsWhichExists.list){
+                database.addAlbum(album)
+            }
         }
     }
 

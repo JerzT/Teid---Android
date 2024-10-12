@@ -22,6 +22,7 @@ import com.example.musicapp.bottomBar.BottomBarCustom
 import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.musicFilesUsage.AlbumsWhichExists
 import com.example.musicapp.musicFilesUsage.GetDirectory
+import com.example.musicapp.musicFilesUsage.findAlbums
 import com.example.musicapp.musicFilesUsage.setUpDatabase
 import com.example.musicapp.searchBar.SearchBar
 import com.example.musicapp.settings.SettingsDataStore
@@ -51,19 +52,21 @@ fun App(){
 
     val coroutineScope = rememberCoroutineScope()
 
+    val albumsFromDatabase: MutableList<Album> = mutableListOf()
+
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             launch {
                 //get saved albums
-                val albums = database.getAlbums()
-                if(albums != null){
-                    albums.use { albumRow ->
+                val getAlbumResult = database.getAlbums()
+                if(getAlbumResult != null){
+                    getAlbumResult.use { albumRow ->
                         while (albumRow.moveToNext()){
-                            val name: String? = albumRow.getString(albumRow.getColumnIndex("name"))
+                            val name: String? = albumRow.getString(albumRow.getColumnIndex("name")).takeIf { it.isNotEmpty() }
                             val uri: Uri = albumRow.getString(albumRow.getColumnIndex("uri")).toUri()
-                            val cover: Uri = albumRow.getString(albumRow.getColumnIndex("cover")).toUri()
-                            val artist: String? = albumRow.getString(albumRow.getColumnIndex("artist"))
-                            val year: String? = albumRow.getString(albumRow.getColumnIndex("year"))
+                            val cover: Uri? = albumRow.getString(albumRow.getColumnIndex("cover")).takeIf { it.isNotEmpty() }?.toUri()
+                            val artist: String? = albumRow.getString(albumRow.getColumnIndex("artist")).takeIf { it.isNotEmpty() }
+                            val year: String? = albumRow.getString(albumRow.getColumnIndex("year")).takeIf { it.isNotEmpty() }
                             val cdNumber: Int = albumRow.getInt(albumRow.getColumnIndex("cd_number"))
 
                             val album = Album(
@@ -74,19 +77,30 @@ fun App(){
                                 year = year,
                                 cdNumber = cdNumber,
                             )
-                            //Log.v("test1", album.toString())
+
+                            albumsFromDatabase += album
                         }
                     }
-                    albums.close()
-                }
-
-
-                settings.directoryPathFlow.collect { directoryPath ->
-                    uri = directoryPath?.toUri()
+                    getAlbumResult.close()
+                    Log.v("test1", "albums from database added")
                 }
             }
             launch {
-
+                //get saved directory
+                settings.directoryPathFlow.collect { directoryPath ->
+                    uri = directoryPath?.toUri()
+                    Log.v("test1", "uri finded")
+                    findAlbums(
+                        uri = uri,
+                        context = context,
+                        albumsList = AlbumsWhichExists.list
+                    ).await()
+                    if(albumsFromDatabase == AlbumsWhichExists.list){
+                        Log.v("test1", "true")
+                    }else{
+                        Log.v("test1", "false")
+                    }
+                }
             }
         }
     }
@@ -105,7 +119,7 @@ fun App(){
                         .zIndex(1f)
                 )
                 GetDirectory(
-                    database = database
+                    database = database,
                 )
             }
         }
