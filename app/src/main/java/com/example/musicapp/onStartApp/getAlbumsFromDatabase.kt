@@ -5,7 +5,7 @@ import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.musicFilesUsage.DBHelper
 
 @SuppressLint("Range")
-fun GetAlbumsFromDatabase(
+fun getAlbumsFromDatabase(
     database:DBHelper,
 ): MutableList<Album> {
     //get saved albums

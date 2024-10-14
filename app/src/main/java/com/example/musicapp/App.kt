@@ -1,9 +1,7 @@
 package com.example.musicapp
 
-import GetAlbumsFromDatabase
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -17,13 +15,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import com.example.musicapp.bottomBar.BottomBarCustom
 import com.example.musicapp.musicFilesUsage.AlbumsWhichExists
-import com.example.musicapp.onStartApp.GetAlbumsFromDirectory
 import com.example.musicapp.musicFilesUsage.GetDirectory
 import com.example.musicapp.musicFilesUsage.setUpDatabase
-import com.example.musicapp.onStartApp.SynchronizeAlbums
+import com.example.musicapp.onStartApp.getAlbumsFromDirectory
+import com.example.musicapp.onStartApp.synchronizeAlbums
 import com.example.musicapp.searchBar.SearchBar
 import com.example.musicapp.topAppBar.TopAppBarCustom
 import com.example.musicapp.ui.theme.MusicAppTheme
+import getAlbumsFromDatabase
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -41,16 +40,16 @@ fun App(){
 
     val context = LocalContext.current
 
-
     val database = setUpDatabase(context)
 
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
-            val albumsFromDatabase = GetAlbumsFromDatabase(database = database,)
-            val albumsInDirectory = GetAlbumsFromDirectory(context = context)
-            SynchronizeAlbums(
+            val albumsFromDatabase = getAlbumsFromDatabase(database = database)
+            val albumsInDirectory = getAlbumsFromDirectory(context = context)
+            AlbumsWhichExists.list = albumsInDirectory
+            synchronizeAlbums(
                 albumsFromDatabase = albumsFromDatabase,
                 albumsInDirectory = albumsInDirectory,
                 database = database,

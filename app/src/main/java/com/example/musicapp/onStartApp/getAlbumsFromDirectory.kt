@@ -10,7 +10,7 @@ import com.example.musicapp.musicFilesUsage.findAlbums
 import com.example.musicapp.settings.SettingsDataStore
 
 @RequiresApi(Build.VERSION_CODES.P)
-suspend fun GetAlbumsFromDirectory(
+suspend fun getAlbumsFromDirectory(
     context: Context,
 ): MutableList<Album> {
     var uri: Uri?

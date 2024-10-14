@@ -1,11 +1,9 @@
 package com.example.musicapp.onStartApp
 
-import android.util.Log
 import com.example.musicapp.musicFilesUsage.Album
-import com.example.musicapp.musicFilesUsage.AlbumsWhichExists
 import com.example.musicapp.musicFilesUsage.DBHelper
 
-suspend fun SynchronizeAlbums(
+fun synchronizeAlbums(
     albumsFromDatabase: MutableList<Album>,
     albumsInDirectory: MutableList<Album>,
     database: DBHelper,
@@ -22,11 +20,9 @@ suspend fun SynchronizeAlbums(
         }
     }
     for (album in albumsFromDatabase){
-        Log.v("test1", "deleted")
         database.deleteAlbum(album)
     }
     for(album in albumsInDirectory){
-        AlbumsWhichExists.list += album
         database.addAlbum(album)
     }
 }
