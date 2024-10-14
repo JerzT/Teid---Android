@@ -91,17 +91,32 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         }
     }
 
-    fun checkIfAlbumExists(){
+    fun deleteAlbum(album: Album){
         val db = this.writableDatabase
+
         try {
-            val query = "SELECT * FROM $TABLE_NAME"
+            val whereClause = "$NAME_COL = ? " +
+                    "AND $URI_COL = ? " +
+                    "AND $COVER_COL = ? " +
+                    "AND $ARTIST_COL = ? " +
+                    "AND $YEAR_COL = ? " +
+                    "AND $CD_NUMBER_COL = ?"
+            val whereArgs = arrayOf(
+                album.name ?: "",
+                album.uri.toString(),
+                album.cover.toString(),
+                album.artist ?: "",
+                album.year ?: "",
+                album.cdNumber.toString()
+            )
 
-
-
-        } catch (e:Exception){
-            Log.e("DBHelper", "Error while checking albums: ${e.message}", e)
-        } finally {
-           db.close()
+            db.delete(TABLE_NAME, whereClause, whereArgs)
+        }
+        catch (e: Exception){
+            Log.e("DBHelper", "Error while deleting album: ${e.message}", e)
+        }
+        finally {
+            db.close()
         }
     }
 
