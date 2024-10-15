@@ -10,10 +10,12 @@ import androidx.annotation.RequiresApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.MutableLiveData
 import com.example.musicapp.settings.SettingsDataStore
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -25,6 +27,7 @@ import kotlin.math.log
 @Composable
 fun GetDirectory(
     database: DBHelper,
+    isUriExists: MutableState<Boolean>,
 ) {
     val context = LocalContext.current
 
@@ -43,6 +46,7 @@ fun GetDirectory(
                 it,
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
+            isUriExists.value = true
         }
         GlobalScope.launch {
             settings.saveDirectoryPath(uri.toString())
