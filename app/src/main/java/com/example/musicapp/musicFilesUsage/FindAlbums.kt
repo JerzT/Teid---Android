@@ -21,7 +21,6 @@ fun findAlbums(
     context: Context,
     albumsList: MutableList<Album>,
 ): Deferred<Unit> = GlobalScope.async{
-
     if(uri == null){
         return@async
     }

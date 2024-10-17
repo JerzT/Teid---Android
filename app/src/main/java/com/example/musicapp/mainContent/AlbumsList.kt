@@ -8,6 +8,7 @@ import com.example.musicapp.musicFilesUsage.AlbumsWhichExists
 
 @Composable
 fun AlbumsList(){
+    Log.v("test1", AlbumsWhichExists.list.toString())
     for (album in AlbumsWhichExists.list){
         Button(onClick = {
 

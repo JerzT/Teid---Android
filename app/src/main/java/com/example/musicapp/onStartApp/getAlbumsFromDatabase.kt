@@ -1,13 +1,16 @@
 import android.annotation.SuppressLint
+import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
 import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.musicFilesUsage.DBHelper
+import com.example.musicapp.musicFilesUsage.setUpDatabase
 
 @SuppressLint("Range")
 fun getAlbumsFromDatabase(
-    database:DBHelper,
+    context: Context,
 ): MutableList<Album> {
+    val database = setUpDatabase(context)
     //get saved albums
     val albumsList: MutableList<Album> = mutableListOf()
     val getAlbumResult = database.getAlbums()
