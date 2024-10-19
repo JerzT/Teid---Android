@@ -53,13 +53,15 @@ fun GetDirectory(
         }
         GlobalScope.launch {
             settings.saveDirectoryPath(uri.toString())
-            findAlbums(
-                uri = uri.value,
-                context = context,
-                albumsList = AlbumsWhichExists.list,
+            AlbumsWhichExists.list.value.let {
+                findAlbums(
+                    uri = uri.value,
+                    context = context,
+                    albumsList = it,
+                ).await()
+            }
 
-            ).await()
-            for(album in AlbumsWhichExists.list){
+            for(album in AlbumsWhichExists.list.value){
                 database.addAlbum(album)
             }
         }

@@ -29,5 +29,4 @@ fun synchronizeAlbums(
     for(album in albumsInDirectory){
         database.addAlbum(album)
     }
-    AlbumsWhichExists.list = albumsInDirectory
 }

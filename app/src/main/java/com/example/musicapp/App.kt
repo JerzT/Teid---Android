@@ -50,12 +50,12 @@ fun App(){
             uri.value = changeNotValidDirectoryPathToUri(directoryPath)
             if(uri.value!=null){
                 val albumsFromDatabase = getAlbumsFromDatabase(context = context)
-                AlbumsWhichExists.list = albumsFromDatabase
+                AlbumsWhichExists.saveToList(albumsFromDatabase)
                 val albumsInDirectory = getAlbumsFromDirectory(
                     context = context,
                     uri = uri.value,
                 )
-                AlbumsWhichExists.list = albumsInDirectory
+                AlbumsWhichExists.saveToList(albumsInDirectory)
                 synchronizeAlbums(
                     albumsFromDatabase = albumsFromDatabase,
                     albumsInDirectory = albumsInDirectory,
