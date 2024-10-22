@@ -1,9 +1,8 @@
 package com.example.musicapp.onStartApp
 
 import android.content.Context
+import android.util.Log
 import com.example.musicapp.musicFilesUsage.Album
-import com.example.musicapp.musicFilesUsage.AlbumsWhichExists
-import com.example.musicapp.musicFilesUsage.DBHelper
 import com.example.musicapp.musicFilesUsage.setUpDatabase
 
 fun synchronizeAlbums(
@@ -12,21 +11,18 @@ fun synchronizeAlbums(
     context: Context,
 ){
     val database = setUpDatabase(context)
-    for (i in albumsFromDatabase.size - 1 downTo 0) {
-        for (j in albumsInDirectory.size - 1 downTo 0) {
-            if (albumsFromDatabase[i] == albumsInDirectory[j]) {
 
-                albumsFromDatabase.removeAt(i)
-                albumsInDirectory.removeAt(j)
 
-                break
-            }
-        }
-    }
-    for (album in albumsFromDatabase){
+    val albumsFromDatabaseSet = albumsFromDatabase.toSet()
+    val albumsInDirectorySet = albumsInDirectory.toSet()
+
+    val albumsToDelete = albumsFromDatabaseSet - albumsInDirectorySet
+    val albumsToAdd = albumsInDirectorySet - albumsFromDatabaseSet
+
+    for (album in albumsToDelete){
         database.deleteAlbum(album)
     }
-    for(album in albumsInDirectory){
+    for(album in albumsToAdd){
         database.addAlbum(album)
     }
 }

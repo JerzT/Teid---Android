@@ -17,11 +17,20 @@ fun getAlbumsFromDatabase(
     if(getAlbumResult != null){
         getAlbumResult.use { albumRow ->
             while (albumRow.moveToNext()){
-                val name: String? = albumRow.getString(albumRow.getColumnIndex("name")).takeIf { it.isNotEmpty() }
+                val name: String? = if(albumRow.getString(albumRow.getColumnIndex("name")) != "")
+                    albumRow.getString(albumRow.getColumnIndex("name")) else null
+
                 val uri: Uri = albumRow.getString(albumRow.getColumnIndex("uri")).toUri()
-                val cover: Uri? = albumRow.getString(albumRow.getColumnIndex("cover")).takeIf { it.isNotEmpty() }?.toUri()
-                val artist: String? = albumRow.getString(albumRow.getColumnIndex("artist")).takeIf { it.isNotEmpty() }
-                val year: String? = albumRow.getString(albumRow.getColumnIndex("year")).takeIf { it.isNotEmpty() }
+
+                val cover: Uri? = if(albumRow.getString(albumRow.getColumnIndex("cover")) != "")
+                    albumRow.getString(albumRow.getColumnIndex("cover")).toUri() else null
+
+                val artist: String? = if(albumRow.getString(albumRow.getColumnIndex("artist")) != "")
+                    albumRow.getString(albumRow.getColumnIndex("artist")) else null
+
+                val year: String? = if(albumRow.getString(albumRow.getColumnIndex("year")) != "")
+                    albumRow.getString(albumRow.getColumnIndex("year")) else null
+
                 val cdNumber: Int = albumRow.getInt(albumRow.getColumnIndex("cd_number"))
 
                 val album = Album(

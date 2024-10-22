@@ -9,10 +9,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.zIndex
@@ -20,8 +18,8 @@ import androidx.core.net.toUri
 import com.example.musicapp.bottomBar.BottomBarCustom
 import com.example.musicapp.mainContent.AlbumsList
 import com.example.musicapp.mainContent.DirectorySelectionUi
-import com.example.musicapp.musicFilesUsage.AlbumsWhichExists
-import com.example.musicapp.musicFilesUsage.setUpDatabase
+import com.example.musicapp.musicFilesUsage.Album
+import com.example.musicapp.musicFilesUsage.albumsWhichExists
 import com.example.musicapp.onStartApp.changeNotValidDirectoryPathToUri
 import com.example.musicapp.onStartApp.getAlbumsFromDirectory
 import com.example.musicapp.onStartApp.synchronizeAlbums
@@ -43,6 +41,8 @@ fun App(){
 
     val uri = remember { mutableStateOf<Uri?>(null)}
 
+    val list = albumsWhichExists()
+
     GlobalScope.launch {
         val settings = SettingsDataStore(context)
 
@@ -50,17 +50,27 @@ fun App(){
             uri.value = changeNotValidDirectoryPathToUri(directoryPath)
             if(uri.value!=null){
                 val albumsFromDatabase = getAlbumsFromDatabase(context = context)
-                AlbumsWhichExists.saveToList(albumsFromDatabase)
+
+                list.addAll(albumsFromDatabase)
+                //Log.v("test1", "passed")
+
                 val albumsInDirectory = getAlbumsFromDirectory(
                     context = context,
                     uri = uri.value,
                 )
-                AlbumsWhichExists.saveToList(albumsInDirectory)
+
+                list.clear()
+                list.addAll(albumsInDirectory)
+
+                //Log.v("test1", "passed2")
+
                 synchronizeAlbums(
                     albumsFromDatabase = albumsFromDatabase,
                     albumsInDirectory = albumsInDirectory,
                     context = context,
                 )
+
+                //Log.v("test1", "passed3")
             }
         }
     }
@@ -80,10 +90,15 @@ fun App(){
                 )
                 //uri.value == null = false
                 if(uri.value.toString() == "null"){
-                    DirectorySelectionUi(uri = uri)
+                    DirectorySelectionUi(
+                        uri = uri,
+                        albumsList = list
+                    )
                 }
                 else{
-                    AlbumsList()
+                    AlbumsList(
+                        albumsList = list
+                    )
                 }
             }
         }

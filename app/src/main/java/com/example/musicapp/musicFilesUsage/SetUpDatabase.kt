@@ -46,7 +46,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         // Safeguard against null values and check them
         val name = album.name ?: ""
         val uri = album.uri.toString()
-        val cover = album.cover?.toString() ?: ""
+        val cover = if(album.cover != null) album.uri.toString() else ""
         val artist = album.artist ?: ""
         val year = album.year ?: ""
         val cdNumber = album.cdNumber ?: 1
@@ -104,7 +104,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
             val whereArgs = arrayOf(
                 album.name ?: "",
                 album.uri.toString(),
-                album.cover.toString(),
+                if(album.cover != null) album.cover.toString() else "",
                 album.artist ?: "",
                 album.year ?: "",
                 album.cdNumber.toString()

@@ -14,13 +14,15 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.musicFilesUsage.GetDirectory
 import com.example.musicapp.musicFilesUsage.setUpDatabase
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun DirectorySelectionUi(
-    uri: MutableState<Uri?>
+    uri: MutableState<Uri?>,
+    albumsList: MutableList<Album>
 ){
     val database = setUpDatabase(LocalContext.current)
 
@@ -33,7 +35,8 @@ fun DirectorySelectionUi(
     ){
         GetDirectory(
             database = database,
-            uri = uri
+            uri = uri,
+            albumsList = albumsList,
         )
     }
 }

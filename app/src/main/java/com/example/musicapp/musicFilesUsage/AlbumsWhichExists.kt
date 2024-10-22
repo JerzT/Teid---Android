@@ -1,13 +1,14 @@
 package com.example.musicapp.musicFilesUsage
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 
-object AlbumsWhichExists: ViewModel() {
-    val list: MutableStateFlow<MutableList<Album>> = MutableStateFlow(mutableListOf())
+@Composable
+fun albumsWhichExists(): SnapshotStateList<Album> {
+    val list = remember { mutableStateListOf<Album>()}
 
-    fun saveToList(getList: MutableList<Album>){
-        list.value.clear()
-        list.value.addAll(getList)
-    }
+    return list
 }

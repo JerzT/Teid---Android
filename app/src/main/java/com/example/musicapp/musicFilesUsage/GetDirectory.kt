@@ -22,18 +22,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.MutableLiveData
+import com.example.musicapp.onStartApp.synchronizeAlbums
 import com.example.musicapp.settings.SettingsDataStore
+import getAlbumsFromDatabase
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlin.math.log
 
 @RequiresApi(Build.VERSION_CODES.P)
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun GetDirectory(
     database: DBHelper,
     uri: MutableState<Uri?>,
+    albumsList: MutableList<Album>,
 ) {
     val context = LocalContext.current
 
@@ -53,17 +55,22 @@ fun GetDirectory(
         }
         GlobalScope.launch {
             settings.saveDirectoryPath(uri.toString())
-            AlbumsWhichExists.list.value.let {
-                findAlbums(
-                    uri = uri.value,
-                    context = context,
-                    albumsList = it,
-                ).await()
-            }
+            findAlbums(
+                uri = uri.value,
+                context = context,
+                albumsList = albumsList,
+            ).await()
 
-            for(album in AlbumsWhichExists.list.value){
+            for(album in albumsList){
                 database.addAlbum(album)
             }
+            val albumsInDatabase = getAlbumsFromDatabase(context)
+
+            synchronizeAlbums(
+                albumsFromDatabase = albumsInDatabase,
+                albumsInDirectory = albumsList,
+                context = context
+            )
         }
     }
 
