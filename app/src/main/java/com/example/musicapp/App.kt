@@ -3,23 +3,21 @@ package com.example.musicapp
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.zIndex
-import androidx.core.net.toUri
 import com.example.musicapp.bottomBar.BottomBarCustom
 import com.example.musicapp.mainContent.AlbumsList
 import com.example.musicapp.mainContent.DirectorySelectionUi
 import com.example.musicapp.musicFilesUsage.Album
-import com.example.musicapp.musicFilesUsage.albumsWhichExists
 import com.example.musicapp.onStartApp.changeNotValidDirectoryPathToUri
 import com.example.musicapp.onStartApp.getAlbumsFromDirectory
 import com.example.musicapp.onStartApp.synchronizeAlbums
@@ -41,7 +39,7 @@ fun App(){
 
     val uri = remember { mutableStateOf<Uri?>(null)}
 
-    val list = albumsWhichExists()
+    val list = remember { mutableStateListOf<Album>() }
 
     GlobalScope.launch {
         val settings = SettingsDataStore(context)
