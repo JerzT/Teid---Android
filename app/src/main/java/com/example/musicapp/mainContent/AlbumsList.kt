@@ -6,11 +6,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -20,8 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -32,22 +29,15 @@ import com.example.musicapp.musicFilesUsage.Album
 
 @Composable
 fun AlbumsList(albumsList: List<Album>) {
-    val listState = rememberLazyListState()
-
-    LazyColumn(
-        state = listState,
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp),
-        contentPadding = PaddingValues(10.dp)
+            .padding(10.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        items(albumsList) { album ->
+        for(album in albumsList){
             AlbumItem(album = album)
         }
-    }
-
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.firstVisibleItemIndex }
     }
 }
 
@@ -84,6 +74,9 @@ fun AlbumItem(album: Album) {
                 text = album.name.toString(),
                 color = MaterialTheme.colorScheme.surface,
                 fontSize = 20.sp,
+                maxLines = 1,
+                modifier = Modifier
+                    .weight(15f)
             )
             Column(
                 horizontalAlignment = Alignment.End,

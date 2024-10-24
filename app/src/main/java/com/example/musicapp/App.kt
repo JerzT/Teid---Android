@@ -4,13 +4,18 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.zIndex
@@ -26,49 +31,48 @@ import com.example.musicapp.settings.SettingsDataStore
 import com.example.musicapp.topAppBar.TopAppBarCustom
 import com.example.musicapp.ui.theme.MusicAppTheme
 import getAlbumsFromDatabase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @RequiresApi(Build.VERSION_CODES.P)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition",
-    "Range"
-)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "Range")
 @Composable
-fun App(){
+fun App() {
     val context = LocalContext.current
 
-    val uri = remember { mutableStateOf<Uri?>(null)}
+    val uri = remember { mutableStateOf<Uri?>(null) }
 
-    val list = remember { mutableStateListOf<Album>() }
+    val albumsList = remember { mutableStateListOf<Album>() }
+    val isLoading = remember { mutableStateOf(true) }
 
-    GlobalScope.launch {
+    LaunchedEffect(Unit) {
         val settings = SettingsDataStore(context)
 
         settings.directoryPathFlow.collect { directoryPath ->
             uri.value = changeNotValidDirectoryPathToUri(directoryPath)
-            if(uri.value!=null){
-                val albumsFromDatabase = getAlbumsFromDatabase(context = context)
 
-                list.addAll(albumsFromDatabase)
-                //Log.v("test1", "passed")
+            if (uri.value != null) {
+                isLoading.value = true
 
-                val albumsInDirectory = getAlbumsFromDirectory(
-                    context = context,
-                    uri = uri.value,
-                )
+                // Async data loading
+                val albumsFromDatabase = getAlbumsFromDatabase(context)
 
-                list.clear()
-                list.addAll(albumsInDirectory)
+                albumsList.addAll(albumsFromDatabase)
 
-                //Log.v("test1", "passed2")
+                isLoading.value = false
+
+                val albumsInDirectory = getAlbumsFromDirectory(context = context, uri = uri.value)
+
+                albumsList.clear()
+                albumsList.addAll(albumsInDirectory)
 
                 synchronizeAlbums(
                     albumsFromDatabase = albumsFromDatabase,
                     albumsInDirectory = albumsInDirectory,
                     context = context,
                 )
-
-                //Log.v("test1", "passed3")
             }
         }
     }
@@ -76,7 +80,7 @@ fun App(){
     MusicAppTheme {
         Scaffold(
             topBar = { TopAppBarCustom() },
-            bottomBar = { if(true) BottomBarCustom() },
+            bottomBar = { if (true) BottomBarCustom() },
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -86,17 +90,19 @@ fun App(){
                     modifier = Modifier
                         .zIndex(1f)
                 )
-                //uri.value == null = false
-                if(uri.value.toString() == "null"){
+                if (uri.value == null) {
                     DirectorySelectionUi(
                         uri = uri,
-                        albumsList = list
+                        albumsList = albumsList
                     )
-                }
-                else{
-                    AlbumsList(
-                        albumsList = list
-                    )
+                } else {
+                    if (isLoading.value) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator() // Loading spinner
+                        }
+                    } else {
+                        AlbumsList(albumsList = albumsList)
+                    }
                 }
             }
         }
