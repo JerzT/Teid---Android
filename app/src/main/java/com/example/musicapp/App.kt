@@ -3,6 +3,7 @@ package com.example.musicapp
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,10 +32,8 @@ import com.example.musicapp.settings.SettingsDataStore
 import com.example.musicapp.topAppBar.TopAppBarCustom
 import com.example.musicapp.ui.theme.MusicAppTheme
 import getAlbumsFromDatabase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "Range")
@@ -45,35 +44,31 @@ fun App() {
     val uri = remember { mutableStateOf<Uri?>(null) }
 
     val albumsList = remember { mutableStateListOf<Album>() }
-    val isLoading = remember { mutableStateOf(true) }
 
-    LaunchedEffect(Unit) {
+    GlobalScope.launch {
         val settings = SettingsDataStore(context)
 
         settings.directoryPathFlow.collect { directoryPath ->
             uri.value = changeNotValidDirectoryPathToUri(directoryPath)
+        }
+    }
 
-            if (uri.value != null) {
-                isLoading.value = true
+    LaunchedEffect(Unit) {
+        if (uri.value != null) {
+            val albumsFromDatabase = getAlbumsFromDatabase(context)
 
-                // Async data loading
-                val albumsFromDatabase = getAlbumsFromDatabase(context)
+            albumsList.addAll(albumsFromDatabase)
 
-                albumsList.addAll(albumsFromDatabase)
+            val albumsInDirectory = getAlbumsFromDirectory(context = context, uri = uri.value)
 
-                isLoading.value = false
+            albumsList.clear()
+            albumsList.addAll(albumsInDirectory)
 
-                val albumsInDirectory = getAlbumsFromDirectory(context = context, uri = uri.value)
-
-                albumsList.clear()
-                albumsList.addAll(albumsInDirectory)
-
-                synchronizeAlbums(
-                    albumsFromDatabase = albumsFromDatabase,
-                    albumsInDirectory = albumsInDirectory,
-                    context = context,
-                )
-            }
+            synchronizeAlbums(
+                albumsFromDatabase = albumsFromDatabase,
+                albumsInDirectory = albumsInDirectory,
+                context = context,
+            )
         }
     }
 
@@ -96,13 +91,7 @@ fun App() {
                         albumsList = albumsList
                     )
                 } else {
-                    if (isLoading.value) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator() // Loading spinner
-                        }
-                    } else {
-                        AlbumsList(albumsList = albumsList)
-                    }
+                    AlbumsList(albumsList = albumsList)
                 }
             }
         }

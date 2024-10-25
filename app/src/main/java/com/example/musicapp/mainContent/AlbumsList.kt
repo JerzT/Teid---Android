@@ -1,5 +1,7 @@
 package com.example.musicapp.mainContent
 
+import android.util.Log
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,8 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -18,18 +19,23 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.musicapp.R
 import com.example.musicapp.musicFilesUsage.Album
 
 @Composable
-fun AlbumsList(albumsList: List<Album>) {
+fun AlbumsList(albumsList: SnapshotStateList<Album>) {
     Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
@@ -41,6 +47,7 @@ fun AlbumsList(albumsList: List<Album>) {
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun AlbumItem(album: Album) {
     Button(
@@ -58,17 +65,23 @@ fun AlbumItem(album: Album) {
             modifier = Modifier
                 .fillMaxWidth(),
         ) {
-         /*if (album.cover != null) {
-                AsyncImage(
+            if (album.cover != null) {
+                GlideImage(
                     model = album.cover,
                     contentDescription = album.name,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .height(36.dp)
-                        .padding(end = 10.dp),
-                    contentScale = ContentScale.FillHeight,
-                    placeholder = painterResource(R.drawable.baseline_replay_24),
-                )
-            }*/
+                        .graphicsLayer {
+                            shape = RoundedCornerShape(3.dp)
+                            clip = true
+                        }
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = RoundedCornerShape(3.dp)
+                        )
+                        .size(42.dp))
+            }
 
             Text(
                 text = album.name.toString(),
@@ -77,6 +90,7 @@ fun AlbumItem(album: Album) {
                 maxLines = 1,
                 modifier = Modifier
                     .weight(15f)
+                    .padding(10.dp, 0.dp)
             )
             Column(
                 horizontalAlignment = Alignment.End,
