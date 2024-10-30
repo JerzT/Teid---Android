@@ -1,14 +1,9 @@
 package com.example.musicapp.mainContent
 
 import android.annotation.SuppressLint
-import android.content.ContentResolver
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.provider.MediaStore
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -30,10 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -45,23 +36,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.documentfile.provider.DocumentFile
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.example.musicapp.R
 import com.example.musicapp.musicFilesUsage.Album
-import com.example.musicapp.musicFilesUsage.getCover
-import com.example.musicapp.musicFilesUsage.getMetadata
-import kotlinx.coroutines.DelicateCoroutinesApi
+import com.example.musicapp.musicFilesUsage.getEmbeddedImage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private val albumCoverCache = mutableStateMapOf<String, ImageBitmap?>()
 
 @Composable
-fun AlbumsList(albumsList: SnapshotStateList<Album>) {
+fun AlbumsList(albumsList: List<Album>) {
     val context = LocalContext.current
 
     LaunchedEffect(albumsList) {
@@ -83,8 +67,8 @@ fun AlbumsList(albumsList: SnapshotStateList<Album>) {
 
 suspend fun cacheAlbumCovers(albums: List<Album>, context: Context) {
     albums.forEach { album ->
-        if (albumCoverCache[album.name] == null) {
-            albumCoverCache[album.name.toString()] = loadAlbumCover(album, context)
+        if (albumCoverCache[album.uri.toString()] == null) {
+            albumCoverCache[album.uri.toString()] = loadAlbumCover(album, context)
         }
     }
 }
@@ -109,6 +93,7 @@ suspend fun loadAlbumCover(album: Album, context: Context): ImageBitmap? {
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun AlbumItem(album: Album) {
+    val context = LocalContext.current
     Button(
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(
@@ -116,14 +101,18 @@ fun AlbumItem(album: Album) {
             contentColor = MaterialTheme.colorScheme.surface,
         ),
         contentPadding = PaddingValues(10.dp),
-        onClick = {}
+        onClick = {
+            GetSongs(
+                album = album,
+                context = context)
+        }
     ) {
         Row(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            val cachedCover = albumCoverCache[album.name]
+            val cachedCover = albumCoverCache[album.uri.toString()]
 
             if (cachedCover != null) {
                 Image(

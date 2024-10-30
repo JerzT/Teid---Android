@@ -1,4 +1,4 @@
-package com.example.musicapp.mainContent
+package com.example.musicapp.musicFilesUsage
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -6,7 +6,6 @@ import android.media.MediaMetadataRetriever
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.documentfile.provider.DocumentFile
-import com.example.musicapp.musicFilesUsage.Album
 
 suspend fun getEmbeddedImage(
     album: Album,
