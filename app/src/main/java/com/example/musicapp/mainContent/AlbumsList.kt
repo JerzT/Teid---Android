@@ -38,14 +38,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.musicapp.R
 import com.example.musicapp.musicFilesUsage.Album
+import com.example.musicapp.musicFilesUsage.Song
 import com.example.musicapp.musicFilesUsage.getEmbeddedImage
+import com.example.musicapp.musicFilesUsage.getSongs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 private val albumCoverCache = mutableStateMapOf<String, ImageBitmap?>()
 
 @Composable
-fun AlbumsList(albumsList: List<Album>) {
+fun AlbumsList(
+    albumsList: List<Album>,
+    songsList: MutableList<Song>,
+) {
     val context = LocalContext.current
 
     LaunchedEffect(albumsList) {
@@ -60,7 +65,10 @@ fun AlbumsList(albumsList: List<Album>) {
             .verticalScroll(rememberScrollState())
     ) {
         for(album in albumsList){
-            AlbumItem(album = album)
+            AlbumItem(
+                album = album,
+                songsList = songsList,
+            )
         }
     }
 }
@@ -92,7 +100,10 @@ suspend fun loadAlbumCover(album: Album, context: Context): ImageBitmap? {
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun AlbumItem(album: Album) {
+fun AlbumItem(
+    album: Album,
+    songsList: MutableList<Song>,
+) {
     val context = LocalContext.current
     Button(
         shape = RoundedCornerShape(10.dp),
@@ -102,8 +113,10 @@ fun AlbumItem(album: Album) {
         ),
         contentPadding = PaddingValues(10.dp),
         onClick = {
-            GetSongs(
+            songsList.clear()
+            getSongs(
                 album = album,
+                songsList = songsList,
                 context = context)
         }
     ) {

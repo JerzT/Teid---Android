@@ -1,13 +1,13 @@
-package com.example.musicapp.mainContent
+package com.example.musicapp.musicFilesUsage
 
 import android.content.Context
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
-import com.example.musicapp.musicFilesUsage.Album
 
-fun GetSongs(
+fun getSongs(
     album: Album,
-    context: Context
+    context: Context,
+    songsList: MutableList<Song>
 ) {
     val documentFile = DocumentFile.fromTreeUri(context, album.uri)
 
@@ -20,14 +20,20 @@ fun GetSongs(
         "ts", "mkv", "mpeg")
 
     if(documentFile != null && documentFile.isDirectory){
-        var files = documentFile.listFiles()
+        val files = documentFile.listFiles()
         for (file in files){
             if(file.type?.let {
                 type -> supportedAudioFormats.any{
                     type.contains(it, ignoreCase = true) }} == true
                 )
             {
-                Log.v("test1", file.name.toString())
+                val song = Song(
+                    uri = file.uri,
+                    title = file.name,
+                    format = file.type,
+                )
+
+                songsList.add(song)
             }
         }
     }

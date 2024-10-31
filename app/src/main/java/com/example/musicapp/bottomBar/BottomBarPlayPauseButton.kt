@@ -35,22 +35,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.startActivityForResult
 import com.example.musicapp.R
+import com.example.musicapp.musicFilesUsage.MediaPlayerApp
 import java.nio.file.Paths
 
 @SuppressLint("SdCardPath")
 @Composable
-fun BottomBarPlayPauseButton(
-
-) {
-    val isPlaying: MutableState<Boolean> = remember{ mutableStateOf(false) }
-    val mediaPlayer = MediaPlayer.create(LocalContext.current, R.raw.dealer)
+fun BottomBarPlayPauseButton() {
+    val isPlaying: MutableState<Boolean> = remember{ mutableStateOf(MediaPlayerApp.isPlaying) }
 
     Button(
         onClick = {
-            onClick(
-                mediaPlayer = mediaPlayer,
-                isPlaying = isPlaying,
-            )},
+            if (MediaPlayerApp.isPlaying){
+                MediaPlayerApp.stopMusic()
+            }
+            else{
+                MediaPlayerApp.playMusic()
+            }
+            isPlaying.value = MediaPlayerApp.isPlaying
+        },
         contentPadding = PaddingValues(0.dp),
         elevation = null,
         shape = CircleShape,
@@ -79,17 +81,4 @@ fun BottomBarPlayPauseButton(
                 .fillMaxSize(0.85F)
         )
     }
-}
-
-fun onClick(
-    mediaPlayer: MediaPlayer,
-    isPlaying: MutableState<Boolean>,
-){
-    if (isPlaying.value){
-        mediaPlayer.pause()
-    }
-    else{
-        mediaPlayer.start()
-    }
-    isPlaying.value = !isPlaying.value
 }
