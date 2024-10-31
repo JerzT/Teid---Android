@@ -29,24 +29,9 @@ fun MainContent(
         )
     }
     else{
-        val context = LocalContext.current
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-        ) {
-            for (song in songsList){
-                Button(onClick = {
-                    testPlaying(
-                        context = context,
-                        uri = song.uri,
-                    )
-                }) {
-                    Text(
-                        text = song.title ?: ""
-                    )
-                }
-            }
-        }
+        SongsList(
+            songsList = songsList
+        )
     }
 }
 

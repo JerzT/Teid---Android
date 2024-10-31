@@ -70,7 +70,7 @@ fun findAlbums(
 }
 
 @RequiresApi(Build.VERSION_CODES.P)
-fun getMetadata(file: DocumentFile, context: Context): Map<String?, String?> {
+private fun getMetadata(file: DocumentFile, context: Context): Map<String?, String?> {
     val retriever = MediaMetadataRetriever()
     return try {
         retriever.setDataSource(context, file.uri)
@@ -97,7 +97,7 @@ fun getMetadata(file: DocumentFile, context: Context): Map<String?, String?> {
     }
 }
 
-fun getCover(directory: DocumentFile): Uri? {
+private fun getCover(directory: DocumentFile): Uri? {
     val imageFile = directory.listFiles().firstOrNull { file ->
         file.type?.contains("image", ignoreCase = true) == true
     }
