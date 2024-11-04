@@ -14,7 +14,9 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.ByteArrayInputStream
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -24,6 +26,8 @@ fun findAlbums(
     context: Context,
     albumsList: MutableList<Album>,
 ): Deferred<Unit> = GlobalScope.async{
+    val database = setUpDatabase(context)
+
     if(uri == null){
         return@async
     }
@@ -41,28 +45,32 @@ fun findAlbums(
 
     if (documentFile != null && documentFile.isDirectory) {
         val files = documentFile.listFiles()
-        for (file in files) {
-            if (file.isDirectory){
-                //go inside if is a directory
-                findAlbums(file.uri, context, albumsList).await()
-            }
-            else{
-                //check if folder contains audio files and if true makes album
-                if(file.type?.let {
-                    type -> supportedAudioFormats.any {
-                        type.contains(it, ignoreCase = true) } } == true)
-                {
-                    val metadata = getMetadata(file, context)
-                    val album = Album(
-                        name = metadata["albumName"] ?: documentFile.name,
-                        uri = documentFile.uri,
-                        cover = getCover(documentFile),
-                        artist = metadata["artistName"],
-                        year = metadata["albumYear"],
-                        cdNumber = metadata["cdNumber"]?.toInt(),
-                    )
-                    albumsList.add(album)
-                    return@async
+        coroutineScope {
+            for (file in files) {
+                if (file.isDirectory){
+                    launch {
+                        findAlbums(file.uri, context, albumsList).await()
+                    }
+                }
+                else{
+                    //check if folder contains audio files and if true makes album
+                    if(file.type?.let {
+                                type -> supportedAudioFormats.any {
+                            type.contains(it, ignoreCase = true) } } == true)
+                    {
+                        val metadata = getMetadata(file, context)
+                        val album = Album(
+                            name = metadata["albumName"] ?: documentFile.name,
+                            uri = documentFile.uri,
+                            cover = getCover(documentFile),
+                            artist = metadata["artistName"],
+                            year = metadata["albumYear"],
+                            cdNumber = metadata["cdNumber"]?.toInt(),
+                        )
+                        albumsList.add(album)
+                        database.addAlbum(album)
+                        return@coroutineScope
+                    }
                 }
             }
         }

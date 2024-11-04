@@ -2,6 +2,8 @@ package com.example.musicapp.mainContent
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,6 +18,7 @@ import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.musicFilesUsage.MediaPlayerApp
 import com.example.musicapp.musicFilesUsage.Song
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun MainContent(
     albumsList: List<Album>
@@ -33,15 +36,4 @@ fun MainContent(
             songsList = songsList
         )
     }
-}
-
-fun testPlaying(
-    context: Context,
-    uri: Uri
-){
-    MediaPlayerApp.addMusicToPlay(
-        context = context,
-        uri = uri
-    )
-    MediaPlayerApp.playMusic()
 }

@@ -24,8 +24,6 @@ fun DirectorySelectionUi(
     uri: MutableState<Uri?>,
     albumsList: MutableList<Album>
 ){
-    val database = setUpDatabase(LocalContext.current)
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -34,7 +32,6 @@ fun DirectorySelectionUi(
             .fillMaxWidth()
     ){
         GetDirectory(
-            database = database,
             uri = uri,
             albumsList = albumsList,
         )

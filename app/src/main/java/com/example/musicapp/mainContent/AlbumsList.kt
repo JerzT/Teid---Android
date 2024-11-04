@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -42,10 +45,14 @@ import com.example.musicapp.musicFilesUsage.Song
 import com.example.musicapp.musicFilesUsage.getEmbeddedImage
 import com.example.musicapp.musicFilesUsage.getSongs
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private val albumCoverCache = mutableStateMapOf<String, ImageBitmap?>()
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun AlbumsList(
     albumsList: List<Album>,
@@ -53,9 +60,9 @@ fun AlbumsList(
 ) {
     val context = LocalContext.current
 
-    LaunchedEffect(albumsList) {
+/*    LaunchedEffect(albumsList) {
         cacheAlbumCovers(albumsList, context)
-    }
+    }*/
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -98,6 +105,7 @@ suspend fun loadAlbumCover(album: Album, context: Context): ImageBitmap? {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun AlbumItem(
@@ -114,10 +122,17 @@ fun AlbumItem(
         contentPadding = PaddingValues(10.dp),
         onClick = {
             songsList.clear()
-            getSongs(
-                album = album,
-                songsList = songsList,
-                context = context)
+            GlobalScope.launch {
+                coroutineScope {
+                    getSongs(
+                        album = album,
+                        songsList = songsList,
+                        context = context).await()
+                    for (song in songsList){
+                        Log.v("test1", song.toString())
+                    }
+                }
+            }
         }
     ) {
         Row(

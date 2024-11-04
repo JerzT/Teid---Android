@@ -60,7 +60,7 @@ private fun getMetadata(file: DocumentFile, context: Context): Map<String?, Stri
     return try {
         retriever.setDataSource(context, file.uri)
 
-        val songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
+        val songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
         val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
             ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
             ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR)
@@ -70,9 +70,9 @@ private fun getMetadata(file: DocumentFile, context: Context): Map<String?, Stri
             ?: "1"
 
         mapOf(
-            "albumName" to songName,
+            "songName" to songName,
             "artistName" to artistName,
-            "albumYear" to songYear,
+            "songYear" to songYear,
             "cdNumber" to cdNumber[0].toString(),
         )
     } catch (e: Exception) {

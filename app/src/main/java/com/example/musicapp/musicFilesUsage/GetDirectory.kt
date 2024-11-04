@@ -33,7 +33,6 @@ import kotlin.math.log
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun GetDirectory(
-    database: DBHelper,
     uri: MutableState<Uri?>,
     albumsList: MutableList<Album>,
 ) {
@@ -60,17 +59,6 @@ fun GetDirectory(
                 context = context,
                 albumsList = albumsList,
             ).await()
-
-            for(album in albumsList){
-                database.addAlbum(album)
-            }
-            val albumsInDatabase = getAlbumsFromDatabase(context)
-
-            synchronizeAlbums(
-                albumsFromDatabase = albumsInDatabase,
-                albumsInDirectory = albumsList,
-                context = context
-            )
         }
     }
 
