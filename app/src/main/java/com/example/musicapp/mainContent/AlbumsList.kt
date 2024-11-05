@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -28,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -58,23 +62,25 @@ fun AlbumsList(
     albumsList: List<Album>,
     songsList: MutableList<Song>,
 ) {
-    val context = LocalContext.current
+    val state = LazyListState()
 
 /*    LaunchedEffect(albumsList) {
         cacheAlbumCovers(albumsList, context)
     }*/
 
-    Column(
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
-            .verticalScroll(rememberScrollState())
     ) {
-        for(album in albumsList){
+        items(
+            albumsList,
+            key = { album -> album.uri }
+        ){ album ->
             AlbumItem(
                 album = album,
-                songsList = songsList,
+                songsList = songsList
             )
         }
     }
@@ -113,6 +119,8 @@ fun AlbumItem(
     songsList: MutableList<Song>,
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
     Button(
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(
@@ -122,16 +130,11 @@ fun AlbumItem(
         contentPadding = PaddingValues(10.dp),
         onClick = {
             songsList.clear()
-            GlobalScope.launch {
-                coroutineScope {
-                    getSongs(
-                        album = album,
-                        songsList = songsList,
-                        context = context).await()
-                    for (song in songsList){
-                        Log.v("test1", song.toString())
-                    }
-                }
+            coroutineScope.launch {
+                getSongs(
+                    album = album,
+                    songsList = songsList,
+                    context = context).await()
             }
         }
     ) {
