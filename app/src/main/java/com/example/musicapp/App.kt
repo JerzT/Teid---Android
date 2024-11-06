@@ -57,16 +57,14 @@ fun App() {
 
     LaunchedEffect(Unit) {
         if (uri.value != null) {
-            val albumsFromDatabase = getAlbumsFromDatabase(context)
-            albumsFromDatabase.sortBy { it.name }
+            val albumsFromDatabase = getAlbumsFromDatabase(context).apply { sortBy { it.name } }
             albumsList.addAll(albumsFromDatabase)
             Log.v("test1", "passed1")
 
             val albumsInDirectory = getAlbumsFromDirectory(
                 context = context,
                 uri = uri.value
-            )
-            albumsInDirectory.sortBy { it.name }
+            ).apply { sortBy { it.name } }
             albumsList.clear()
             albumsList.addAll(albumsInDirectory)
             Log.v("test1", "passed2")

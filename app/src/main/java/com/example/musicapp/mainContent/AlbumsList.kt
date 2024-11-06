@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -18,11 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -49,7 +45,6 @@ import com.example.musicapp.musicFilesUsage.Song
 import com.example.musicapp.musicFilesUsage.getEmbeddedImage
 import com.example.musicapp.musicFilesUsage.getSongs
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -62,11 +57,17 @@ fun AlbumsList(
     albumsList: List<Album>,
     songsList: MutableList<Song>,
 ) {
-    val state = LazyListState()
+    val context = LocalContext.current
 
 /*    LaunchedEffect(albumsList) {
         cacheAlbumCovers(albumsList, context)
     }*/
+
+    LaunchedEffect(albumsList) {
+        coroutineScope {
+            cacheAlbumCovers(albumsList, context)
+        }
+    }
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -76,13 +77,14 @@ fun AlbumsList(
     ) {
         items(
             albumsList,
-            key = { album -> album.uri }
-        ){ album ->
-            AlbumItem(
-                album = album,
-                songsList = songsList
-            )
-        }
+            key = { album -> album.uri },
+            itemContent = { album ->
+                AlbumItem(
+                    album = album,
+                    songsList = songsList
+                )
+            }
+        )
     }
 }
 
