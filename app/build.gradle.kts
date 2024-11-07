@@ -78,4 +78,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.glide)
     implementation(libs.compose)
+    implementation(libs.kotlinx.serialization.json)
 }

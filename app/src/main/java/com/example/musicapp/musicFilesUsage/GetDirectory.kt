@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
+import com.example.musicapp.mainContent.cacheAlbumCovers
 import com.example.musicapp.settings.SettingsDataStore
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -42,12 +43,16 @@ fun GetDirectory(
         }
         GlobalScope.launch {
             settings.saveDirectoryPath(uri.toString())
+
             findAlbums(
                 uri = uri.value,
                 context = context,
                 albumsList = albumsList,
             ).await()
+
             albumsList.sortBy { it.name }
+
+            cacheAlbumCovers(albumsList, context)
         }
     }
 

@@ -26,7 +26,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,11 +48,8 @@ import com.example.musicapp.musicFilesUsage.Song
 import com.example.musicapp.musicFilesUsage.getEmbeddedImage
 import com.example.musicapp.musicFilesUsage.getSongs
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-private val albumCoverCache = mutableStateMapOf<String, ImageBitmap?>()
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
@@ -57,18 +57,6 @@ fun AlbumsList(
     albumsList: List<Album>,
     songsList: MutableList<Song>,
 ) {
-    val context = LocalContext.current
-
-/*    LaunchedEffect(albumsList) {
-        cacheAlbumCovers(albumsList, context)
-    }*/
-
-    LaunchedEffect(albumsList) {
-        coroutineScope {
-            cacheAlbumCovers(albumsList, context)
-        }
-    }
-
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
@@ -88,35 +76,10 @@ fun AlbumsList(
     }
 }
 
-suspend fun cacheAlbumCovers(albums: List<Album>, context: Context) {
-    albums.forEach { album ->
-        if (albumCoverCache[album.uri.toString()] == null) {
-            albumCoverCache[album.uri.toString()] = loadAlbumCover(album, context)
-        }
-    }
-}
-
-suspend fun loadAlbumCover(album: Album, context: Context): ImageBitmap? {
-    if(album.cover != null){
-        return withContext(Dispatchers.IO){
-            val coverUri: Uri = album.cover
-            context.contentResolver.openInputStream(coverUri).use { inputStream ->
-                val bitmap = BitmapFactory.decodeStream(inputStream)
-                return@withContext bitmap?.asImageBitmap()
-            }
-        }
-    }
-    else{
-        return withContext(Dispatchers.IO) {
-            getEmbeddedImage(album, context)
-        }
-    }
-}
-
 @RequiresApi(Build.VERSION_CODES.P)
-@SuppressLint("CoroutineCreationDuringComposition")
+@SuppressLint("CoroutineCreationDuringComposition", "SuspiciousIndentation")
 @Composable
-fun AlbumItem(
+private fun AlbumItem(
     album: Album,
     songsList: MutableList<Song>,
 ) {
@@ -145,7 +108,7 @@ fun AlbumItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            val cachedCover = albumCoverCache[album.uri.toString()]
+          val cachedCover = albumCoverCache[album.uri.toString()]
 
             if (cachedCover != null) {
                 Image(

@@ -20,6 +20,7 @@ import com.example.musicapp.bottomBar.BottomBarCustom
 import com.example.musicapp.mainContent.AlbumsList
 import com.example.musicapp.mainContent.DirectorySelectionUi
 import com.example.musicapp.mainContent.MainContent
+import com.example.musicapp.mainContent.cacheAlbumCovers
 import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.onStartApp.changeNotValidDirectoryPathToUri
 import com.example.musicapp.onStartApp.getAlbumsFromDirectory
@@ -53,28 +54,36 @@ fun App() {
         settings.directoryPathFlow.collect { directoryPath ->
             uri.value = changeNotValidDirectoryPathToUri(directoryPath)
         }
+
+        settings.directoryPathFlow.collect{ albumsCovers ->
+            Log.v("test1", albumsCovers.toString())
+        }
     }
 
     LaunchedEffect(Unit) {
         if (uri.value != null) {
+
             val albumsFromDatabase = getAlbumsFromDatabase(context).apply { sortBy { it.name } }
+
             albumsList.addAll(albumsFromDatabase)
-            Log.v("test1", "passed1")
+
+            cacheAlbumCovers(albumsFromDatabase, context)
 
             val albumsInDirectory = getAlbumsFromDirectory(
                 context = context,
                 uri = uri.value
             ).apply { sortBy { it.name } }
+
             albumsList.clear()
             albumsList.addAll(albumsInDirectory)
-            Log.v("test1", "passed2")
+
+            cacheAlbumCovers(albumsInDirectory, context)
 
             synchronizeAlbums(
                 albumsFromDatabase = albumsFromDatabase,
                 albumsInDirectory = albumsInDirectory,
                 context = context,
             )
-            Log.v("test1", "passed3")
         }
     }
 
