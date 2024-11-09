@@ -1,9 +1,6 @@
 package com.example.musicapp.mainContent
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -25,16 +22,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
@@ -45,11 +35,8 @@ import androidx.compose.ui.unit.sp
 import com.example.musicapp.R
 import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.musicFilesUsage.Song
-import com.example.musicapp.musicFilesUsage.getEmbeddedImage
 import com.example.musicapp.musicFilesUsage.getSongs
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
@@ -99,7 +86,8 @@ private fun AlbumItem(
                 getSongs(
                     album = album,
                     songsList = songsList,
-                    context = context).await()
+                    context = context
+                ).await()
             }
         }
     ) {

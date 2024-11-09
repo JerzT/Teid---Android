@@ -26,7 +26,7 @@ fun getSongs(
         "amr", "mid", "xmf",
         "mxmf", "rtttl", "rtx",
         "ota", "imy", "3gp",
-        "ts", "mkv", "mpeg")
+        "ts", "mkv", "wv")
 
     if(documentFile != null && documentFile.isDirectory){
         val files = documentFile.listFiles()
@@ -39,10 +39,15 @@ fun getSongs(
                 val metadata = getMetadata(
                     file = file,
                     context = context)
+
+                val formatedTitle = file.name?.removeFileExtension()
+
                 val song = Song(
                     uri = file.uri,
-                    title = metadata["songName"],
+                    title = metadata["songName"] ?: formatedTitle,
                     format = file.type,
+                    number = metadata["songNumber"]?.toInt(),
+                    length = metadata["songLength"]?.toInt()
                 )
 
                 songsList.add(song)
@@ -55,29 +60,44 @@ fun getSongs(
 }
 
 @RequiresApi(Build.VERSION_CODES.P)
-private fun getMetadata(file: DocumentFile, context: Context): Map<String?, String?> {
+private fun getMetadata(file: DocumentFile, context: Context): Map<String, String?> {
     val retriever = MediaMetadataRetriever()
     return try {
         retriever.setDataSource(context, file.uri)
 
-        val songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-        val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
-            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR)
-            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER)
-        val songYear = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)
-        val cdNumber = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DISC_NUMBER)
+        val songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)?.trim()
+        val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)?.trim()
+            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)?.trim()
+            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR)?.trim()
+            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER)?.trim()
+        val songYear = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)?.trim()
+        val cdNumber = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DISC_NUMBER)?.trim()
             ?: "1"
+        val songNumber = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)?.trim()
+            ?: "1"
+        val songLength = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.trim()
 
         mapOf(
             "songName" to songName,
             "artistName" to artistName,
             "songYear" to songYear,
             "cdNumber" to cdNumber[0].toString(),
+            "songNumber" to songNumber,
+            "songLength" to songLength,
+            
         )
     } catch (e: Exception) {
         mapOf()
     } finally {
         retriever.release()
+    }
+}
+
+private fun String.removeFileExtension(): String {
+    val lastDotIndex = this.lastIndexOf(".")
+    return if (lastDotIndex != -1) {
+        this.substring(0, lastDotIndex)
+    } else {
+        this
     }
 }

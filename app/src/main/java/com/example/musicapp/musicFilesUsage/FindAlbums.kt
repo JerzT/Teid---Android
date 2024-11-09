@@ -38,7 +38,7 @@ fun findAlbums(
         "amr", "mid", "xmf",
         "mxmf", "rtttl", "rtx",
         "ota", "imy", "3gp",
-        "ts", "mkv", "mpeg")
+        "ts", "mkv", "wv")
 
     //Checking every files in given directory
     val documentFile = DocumentFile.fromTreeUri(context, uri)
@@ -53,6 +53,9 @@ fun findAlbums(
                     }
                 }
                 else{
+                    if(file.parentFile?.name == "Sweet Trip - (2003) Velocity Design Comfort"){
+                        Log.v("test1", "${file.name}, ${file.type}")
+                    }
                     //check if folder contains audio files and if true makes album
                     if(file.type?.let {
                                 type -> supportedAudioFormats.any {
@@ -83,13 +86,13 @@ private fun getMetadata(file: DocumentFile, context: Context): Map<String?, Stri
     return try {
         retriever.setDataSource(context, file.uri)
 
-        val albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
-        val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
-            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
-            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR)
-            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER)
-        val albumYear = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)
-        val cdNumber = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DISC_NUMBER)
+        val albumName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)?.trim()
+        val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)?.trim()
+            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)?.trim()
+            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR)?.trim()
+            ?: retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER)?.trim()
+        val albumYear = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)?.trim()
+        val cdNumber = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DISC_NUMBER)?.trim()
             ?: "1"
 
         mapOf(

@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.musicapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.musicapp"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -79,4 +79,5 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.androidx.navigation.compose)
 }

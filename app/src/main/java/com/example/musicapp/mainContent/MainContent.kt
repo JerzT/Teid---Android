@@ -22,8 +22,10 @@ fun MainContent(
         )
     }
     else{
+        songsList.sortBy { song -> song.number }
         SongsList(
             songsList = songsList
         )
     }
 }
+

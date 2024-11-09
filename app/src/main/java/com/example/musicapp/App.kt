@@ -32,10 +32,7 @@ import com.example.musicapp.ui.theme.MusicAppTheme
 import getAlbumsFromDatabase
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 
 @OptIn(DelicateCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.P)
@@ -66,8 +63,8 @@ fun App() {
             val albumsFromDatabase = getAlbumsFromDatabase(context).apply { sortBy { it.name } }
 
             albumsList.addAll(albumsFromDatabase)
-
             cacheAlbumCovers(albumsFromDatabase, context)
+            Log.v("test1", "passed1")
 
             val albumsInDirectory = getAlbumsFromDirectory(
                 context = context,
@@ -76,14 +73,15 @@ fun App() {
 
             albumsList.clear()
             albumsList.addAll(albumsInDirectory)
-
             cacheAlbumCovers(albumsInDirectory, context)
+            Log.v("test1", "passed2")
 
             synchronizeAlbums(
                 albumsFromDatabase = albumsFromDatabase,
                 albumsInDirectory = albumsInDirectory,
                 context = context,
             )
+            Log.v("test1", "passed3")
         }
     }
 
