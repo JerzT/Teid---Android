@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,10 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.example.musicapp.R
 import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.musicFilesUsage.Song
@@ -48,8 +52,16 @@ fun AlbumsList(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp)
+            .padding(10.dp, 0.dp)
+            .zIndex(-1f)
     ) {
+        items(1){
+            Spacer(
+                modifier = Modifier
+                    .width(10.dp)
+            )
+        }
+
         items(
             albumsList,
             key = { album -> album.uri },
@@ -60,6 +72,13 @@ fun AlbumsList(
                 )
             }
         )
+
+        items(1){
+            Spacer(
+                modifier = Modifier
+                    .width(10.dp)
+            )
+        }
     }
 }
 

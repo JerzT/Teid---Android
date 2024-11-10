@@ -96,7 +96,7 @@ fun App() {
             ) {
                 SearchBar(
                     modifier = Modifier
-                        .zIndex(1f)
+                        .zIndex(2f)
                 )
                 if (uri.value == null) {
                     DirectorySelectionUi(
@@ -105,7 +105,7 @@ fun App() {
                     )
                 } else {
                     MainContent(
-                        albumsList = albumsList
+                        albumsList = albumsList,
                     )
                 }
             }

@@ -47,7 +47,7 @@ fun getSongs(
                     title = metadata["songName"] ?: formatedTitle,
                     format = file.type,
                     number = metadata["songNumber"]?.toInt(),
-                    length = metadata["songLength"]?.toInt()
+                    length = metadata["songLength"]?.toInt() ?: 0
                 )
 
                 songsList.add(song)

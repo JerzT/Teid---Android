@@ -5,9 +5,12 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 
 object MediaPlayerApp {
     private var mediaPlayer: MediaPlayer? = null
+    val isPlaying = mutableStateOf(false)
 
     fun addMusicToPlay(context: Context, uri: Uri) {
         try {
@@ -38,6 +41,7 @@ object MediaPlayerApp {
         mediaPlayer?.let {
             if (!it.isPlaying) {
                 it.start()
+                isPlaying.value = true
             }
         }
     }
@@ -46,15 +50,14 @@ object MediaPlayerApp {
         mediaPlayer?.let {
             if (it.isPlaying) {
                 it.pause()
+                isPlaying.value = false
             }
         }
     }
 
-    val isPlaying: Boolean
-        get() = mediaPlayer?.isPlaying ?: false
-
     fun releasePlayer() {
         mediaPlayer?.release()
         mediaPlayer = null
+        isPlaying.value = false
     }
 }
