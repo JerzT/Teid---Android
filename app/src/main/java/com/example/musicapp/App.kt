@@ -64,7 +64,6 @@ fun App() {
 
             albumsList.addAll(albumsFromDatabase)
             cacheAlbumCovers(albumsFromDatabase, context)
-            Log.v("test1", "passed1")
 
             val albumsInDirectory = getAlbumsFromDirectory(
                 context = context,
@@ -74,14 +73,12 @@ fun App() {
             albumsList.clear()
             albumsList.addAll(albumsInDirectory)
             cacheAlbumCovers(albumsInDirectory, context)
-            Log.v("test1", "passed2")
 
             synchronizeAlbums(
                 albumsFromDatabase = albumsFromDatabase,
                 albumsInDirectory = albumsInDirectory,
                 context = context,
             )
-            Log.v("test1", "passed3")
         }
     }
 

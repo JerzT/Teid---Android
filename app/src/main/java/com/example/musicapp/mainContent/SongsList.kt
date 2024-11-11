@@ -3,7 +3,9 @@ package com.example.musicapp.mainContent
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,20 +23,47 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalAutofill
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.core.net.toUri
 import com.example.musicapp.R
 import com.example.musicapp.musicFilesUsage.MediaPlayerApp
 import com.example.musicapp.musicFilesUsage.Song
+import com.example.musicapp.musicFilesUsage.getSongs
+import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun SongsList(
-    songsList: List<Song>,
+    uri: Uri?,
 ){
+    val context = LocalContext.current
+
+    val songsList = remember{ mutableStateListOf<Song>() }
+
+    LaunchedEffect(uri) {
+        if (uri != null){
+            getSongs(
+                uri = uri,
+                context = context,
+                songsList = songsList
+            ).await()
+            songsList.sortBy { song -> song.number }
+        }
+    }
+
+    LaunchedEffect(songsList) {
+        songsList.sortBy { song -> song.number }
+    }
+
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())

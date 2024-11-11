@@ -2,6 +2,7 @@ package com.example.musicapp.mainContent
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -36,17 +37,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
 import com.example.musicapp.R
 import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.musicFilesUsage.Song
 import com.example.musicapp.musicFilesUsage.getSongs
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
+import kotlin.math.round
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun AlbumsList(
     albumsList: List<Album>,
-    songsList: MutableList<Song>,
+    navController: NavController,
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -68,7 +72,7 @@ fun AlbumsList(
             itemContent = { album ->
                 AlbumItem(
                     album = album,
-                    songsList = songsList
+                    navController = navController,
                 )
             }
         )
@@ -87,11 +91,8 @@ fun AlbumsList(
 @Composable
 private fun AlbumItem(
     album: Album,
-    songsList: MutableList<Song>,
+    navController: NavController,
 ) {
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-
     Button(
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(
@@ -100,14 +101,8 @@ private fun AlbumItem(
         ),
         contentPadding = PaddingValues(10.dp),
         onClick = {
-            songsList.clear()
-            coroutineScope.launch {
-                getSongs(
-                    album = album,
-                    songsList = songsList,
-                    context = context
-                ).await()
-            }
+            val stupid = URLEncoder.encode(album.uri.toString(), "UTF-8")
+            navController.navigate(route = ContentScreen.SongList.withArgs(stupid))
         }
     ) {
         Row(

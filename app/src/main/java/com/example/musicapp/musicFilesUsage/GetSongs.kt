@@ -2,6 +2,7 @@ package com.example.musicapp.musicFilesUsage
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -14,11 +15,11 @@ import kotlinx.coroutines.async
 @OptIn(DelicateCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.P)
 fun getSongs(
-    album: Album,
+    uri: Uri,
     context: Context,
     songsList: MutableList<Song>
 ): Deferred<Unit> = GlobalScope.async {
-    val documentFile = DocumentFile.fromTreeUri(context, album.uri)
+    val documentFile = DocumentFile.fromTreeUri(context, uri)
 
     val supportedAudioFormats = listOf(
         "mp3", "flac", "m4a",
