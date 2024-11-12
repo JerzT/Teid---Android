@@ -11,17 +11,19 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 
 @Composable
 fun SearchShadow(){
     Spacer(
         modifier = Modifier
+            .zIndex(10f)
             .fillMaxWidth()
             .height(1.dp)
             .drawBehind {
                 val shadowHeight = 40.dp.toPx()
                 val gradientColors = listOf(
-                    Color.Black.copy(alpha = 0.20f),
+                    Color.Black.copy(alpha = 0.30f),
                     Color.Transparent
                 )
                 drawRect(

@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -34,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.net.toUri
+import androidx.navigation.NavController
 import com.example.musicapp.R
 import com.example.musicapp.musicFilesUsage.MediaPlayerApp
 import com.example.musicapp.musicFilesUsage.Song
@@ -49,6 +51,12 @@ fun SongsList(
 
     val songsList = remember{ mutableStateListOf<Song>() }
 
+    val sortedSongsList = remember(songsList){
+        derivedStateOf {
+            songsList.sortedBy { song -> song.number }
+        }
+    }
+
     LaunchedEffect(uri) {
         if (uri != null){
             getSongs(
@@ -56,26 +64,20 @@ fun SongsList(
                 context = context,
                 songsList = songsList
             ).await()
-            songsList.sortBy { song -> song.number }
         }
-    }
-
-    LaunchedEffect(songsList) {
-        songsList.sortBy { song -> song.number }
     }
 
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(10.dp)
-            .zIndex(-1f)
     ) {
         HeaderOfDisc()
         HorizontalDivider(
             color = MaterialTheme.colorScheme.surface,
             thickness = 2.dp
         )
-        for (song in songsList){
+        for (song in sortedSongsList.value){
             SongItem(song = song)
         }
     }

@@ -27,29 +27,7 @@ val Context.settings: DataStore<Preferences> by preferencesDataStore(name = "set
 class SettingsDataStore(private val context: Context) {
     companion object {
         private val DIRECTORY_KEY = stringPreferencesKey("directory_storage")
-        private val ALBUMS_COVERS_KEY = stringPreferencesKey("albums_covers")
     }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun saveAlbumsCovers(albumsCovers: Map<String, ImageBitmap?>) {
-        val serializableMap = albumsCovers.forEach { entry ->
-            entry.value?.let { bitmap ->
-                val byteArray = ByteArray(bitmap.toString().toInt())
-                Base64.getEncoder().encodeToString(byteArray)
-            }
-        }
-
-        val jsonString = Json.encodeToString(serializableMap)
-
-        context.settings.edit { preferences ->
-            preferences[ALBUMS_COVERS_KEY] = jsonString
-        }
-    }
-
-    val albumsCoversFlow: Flow<String?> = context.settings.data
-        .map { preferences ->
-            preferences[ALBUMS_COVERS_KEY]
-        }
 
     suspend fun saveDirectoryPath(directoryPath: String) {
         context.settings.edit { preferences ->

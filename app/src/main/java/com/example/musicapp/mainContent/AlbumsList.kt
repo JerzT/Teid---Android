@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -25,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.musicapp.R
+import com.example.musicapp.Screen
 import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.musicFilesUsage.Song
 import com.example.musicapp.musicFilesUsage.getSongs
@@ -52,12 +55,15 @@ fun AlbumsList(
     albumsList: List<Album>,
     navController: NavController,
 ) {
+    val state = remember { LazyListState() }
+
     LazyColumn(
+        state = state,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp, 0.dp)
-            .zIndex(-1f)
+            .zIndex(1f)
     ) {
         items(1){
             Spacer(
@@ -102,8 +108,10 @@ private fun AlbumItem(
         contentPadding = PaddingValues(10.dp),
         onClick = {
             val stupid = URLEncoder.encode(album.uri.toString(), "UTF-8")
-            navController.navigate(route = ContentScreen.SongList.withArgs(stupid))
-        }
+            navController.navigate(route = Screen.SongList.withArgs(stupid, album.name.toString()))
+        },
+        modifier = Modifier
+            .zIndex(1f)
     ) {
         Row(
             horizontalArrangement = Arrangement.Start,

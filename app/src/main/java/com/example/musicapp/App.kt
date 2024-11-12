@@ -16,10 +16,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.zIndex
+import androidx.core.net.toUri
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.musicapp.bottomBar.BottomBarCustom
 import com.example.musicapp.mainContent.AlbumsList
 import com.example.musicapp.mainContent.DirectorySelectionUi
-import com.example.musicapp.mainContent.MainContent
+import com.example.musicapp.mainContent.SongsList
 import com.example.musicapp.mainContent.cacheAlbumCovers
 import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.onStartApp.changeNotValidDirectoryPathToUri
@@ -44,68 +50,144 @@ fun App() {
     val uri = remember { mutableStateOf<Uri?>(null) }
 
     val albumsList = remember { mutableStateListOf<Album>() }
-
-    GlobalScope.launch {
+    //albumList loading and synchronizing
+    LaunchedEffect(Unit) {
         val settings = SettingsDataStore(context)
 
         settings.directoryPathFlow.collect { directoryPath ->
             uri.value = changeNotValidDirectoryPathToUri(directoryPath)
+
+            if (uri.value != null) {
+
+                val albumsFromDatabase = getAlbumsFromDatabase(context).apply { sortBy { it.name } }
+
+                albumsList.addAll(albumsFromDatabase)
+                cacheAlbumCovers(albumsFromDatabase, context)
+
+                val albumsInDirectory = getAlbumsFromDirectory(
+                    context = context,
+                    uri = uri.value
+                ).apply { sortBy { it.name } }
+
+                albumsList.clear()
+                albumsList.addAll(albumsInDirectory)
+                cacheAlbumCovers(albumsInDirectory, context)
+
+                synchronizeAlbums(
+                    albumsFromDatabase = albumsFromDatabase,
+                    albumsInDirectory = albumsInDirectory,
+                    context = context,
+                )
+            }
         }
 
-        settings.directoryPathFlow.collect{ albumsCovers ->
-            Log.v("test1", albumsCovers.toString())
-        }
     }
 
-    LaunchedEffect(Unit) {
-        if (uri.value != null) {
-
-            val albumsFromDatabase = getAlbumsFromDatabase(context).apply { sortBy { it.name } }
-
-            albumsList.addAll(albumsFromDatabase)
-            cacheAlbumCovers(albumsFromDatabase, context)
-
-            val albumsInDirectory = getAlbumsFromDirectory(
-                context = context,
-                uri = uri.value
-            ).apply { sortBy { it.name } }
-
-            albumsList.clear()
-            albumsList.addAll(albumsInDirectory)
-            cacheAlbumCovers(albumsInDirectory, context)
-
-            synchronizeAlbums(
-                albumsFromDatabase = albumsFromDatabase,
-                albumsInDirectory = albumsInDirectory,
-                context = context,
-            )
-        }
-    }
+    val navController = rememberNavController()
 
     MusicAppTheme {
-        Scaffold(
-            topBar = { TopAppBarCustom() },
-            bottomBar = { if (true) BottomBarCustom() },
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
+        NavHost(
+            navController = navController,
+            startDestination = if(uri.value == null) Screen.GetUri.route else Screen.AlbumList.route
+        ){
+            composable(
+                route = Screen.GetUri.route
             ) {
-                SearchBar(
-                    modifier = Modifier
-                        .zIndex(2f)
+                Scaffold(
+                    topBar = { TopAppBarCustom(
+                        title = "Get Directory"
+                    ) },
+                    bottomBar = { if (true) BottomBarCustom() },
+                ) { innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                    ) {
+                        SearchBar(
+                            modifier = Modifier
+                                .zIndex(3f)
+                        )
+                        DirectorySelectionUi(
+                            uri = uri,
+                            albumsList = albumsList
+                        )
+                    }
+                }
+            }
+            composable(
+                route = Screen.AlbumList.route
+            ) {
+                Scaffold(
+                    topBar = { TopAppBarCustom(
+                        title = "Library"
+                    ) },
+                    bottomBar = { if (true) BottomBarCustom() },
+                ) { innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                    ) {
+                        SearchBar(
+                            modifier = Modifier
+                                .zIndex(3f)
+                        )
+                        AlbumsList(
+                            albumsList = albumsList,
+                            navController = navController
+                        )
+                    }
+                }
+            }
+            composable(
+                route = Screen.SongList.route + "/{uri}/{name}",
+                arguments = listOf(
+                    navArgument("uri"){
+                        type = NavType.StringType
+                        defaultValue = "a"
+                        nullable = true
+                    }
                 )
-                if (uri.value == null) {
-                    DirectorySelectionUi(
-                        uri = uri,
-                        albumsList = albumsList
-                    )
-                } else {
-                    MainContent(
-                        albumsList = albumsList,
-                    )
+            ) { entry ->
+                Scaffold(
+                    topBar = { TopAppBarCustom(
+                        title = entry.arguments?.getString("name").toString(),
+                        navController = navController
+                    ) },
+                    bottomBar = { if (true) BottomBarCustom() },
+                ) { innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                    ) {
+                        SearchBar(
+                            modifier = Modifier
+                                .zIndex(3f)
+                        )
+                        SongsList(
+                            uri = entry.arguments?.getString("uri")?.toUri(),
+                        )
+                    }
                 }
             }
         }
+    }
+}
+
+open class Screen(
+    val route: String
+){
+    object AlbumList: Screen("AlbumList")
+    object SongList: Screen("SongList")
+    object GetUri: Screen("GetUri")
+
+    fun withArgs(vararg args: String): String{
+        var validRoute = ""
+
+        validRoute += route
+        args.forEach { arg ->
+            validRoute += ("/$arg")
+        }
+
+        return validRoute
     }
 }
