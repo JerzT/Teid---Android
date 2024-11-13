@@ -8,11 +8,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.example.musicapp.R
+import com.example.musicapp.musicFilesUsage.MediaPlayerApp
 
 @Composable
 fun BottomBarCustom(){
+    val context = LocalContext.current
+
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.primary,
     ) {
@@ -22,22 +26,36 @@ fun BottomBarCustom(){
             modifier = Modifier
                 .fillMaxWidth()
         ) {
+            //shuffle
             BottomBarButton(
                 onClick = { /*TODO*/ },
                 painter = painterResource(id = R.drawable.baseline_shuffle_24),
                 contentDescription = "Play"
             )
+            //previous
             BottomBarButton(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    MediaPlayerApp.previousSongPlay(
+                        context = context
+                    )
+                },
                 painter = painterResource(id = R.drawable.baseline_skip_previous_24),
                 contentDescription = "Play"
             )
+
             BottomBarPlayPauseButton()
+
+            //next
             BottomBarButton(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    MediaPlayerApp.nextSongPlay(
+                        context = context
+                    )
+                },
                 painter = painterResource(id = R.drawable.baseline_skip_next_24),
                 contentDescription = "Play"
             )
+            //loop
             BottomBarButton(
                 onClick = { /*TODO*/ },
                 painter = painterResource(id = R.drawable.baseline_replay_24),

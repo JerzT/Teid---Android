@@ -11,8 +11,10 @@ import androidx.compose.runtime.mutableStateOf
 object MediaPlayerApp {
     private var mediaPlayer: MediaPlayer? = null
     val isPlaying = mutableStateOf(false)
+    var songList: List<Song> = listOf()
+    var currentPlaying = mutableStateOf<Song?>(null)
 
-    fun addMusicToPlay(context: Context, uri: Uri) {
+    fun addMusicToPlay(context: Context, song: Song) {
         try {
             if (mediaPlayer == null) {
                 mediaPlayer = MediaPlayer().apply {
@@ -22,13 +24,15 @@ object MediaPlayerApp {
                             .setUsage(AudioAttributes.USAGE_MEDIA)
                             .build()
                     )
-                    setDataSource(context, uri)
+                    setDataSource(context, song.uri)
+                    currentPlaying.value = song
                     prepare()
                 }
             } else {
                 mediaPlayer?.reset()
                 mediaPlayer?.apply {
-                    setDataSource(context, uri)
+                    setDataSource(context, song.uri)
+                    currentPlaying.value = song
                     prepare()
                 }
             }
@@ -53,6 +57,46 @@ object MediaPlayerApp {
                 isPlaying.value = false
             }
         }
+    }
+
+    fun setAlbumAsPlaylist(albumsSongs: List<Song>){
+        songList = albumsSongs
+    }
+
+    fun nextSongPlay(
+        context: Context
+    ){
+        if (songList.isEmpty()) return
+
+        var index = 0
+        if (currentPlaying.value != null){
+            if (songList.indexOf(currentPlaying.value) != songList.size - 1){
+                index = songList.indexOf(currentPlaying.value) + 1
+            }
+        }
+        addMusicToPlay(
+            context = context,
+            song = songList[index]
+        )
+        playMusic()
+    }
+
+    fun previousSongPlay(
+        context: Context
+    ){
+        if (songList.isEmpty()) return
+
+        var index = songList.size - 1
+        if(currentPlaying.value != null){
+            if (songList.indexOf(currentPlaying.value) != 0){
+                index = songList.indexOf(currentPlaying.value) - 1
+            }
+        }
+        addMusicToPlay(
+            context = context,
+            song = songList[index]
+        )
+        playMusic()
     }
 
     fun releasePlayer() {

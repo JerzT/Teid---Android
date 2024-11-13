@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.musicapp.R
@@ -55,6 +56,7 @@ fun TopAppBarCustom(
                 Text(
                     text = title,
                     fontSize = 24.sp,
+                    maxLines = 1
                 )
             }
         },

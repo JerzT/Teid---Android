@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalAutofill
@@ -40,6 +41,9 @@ import com.example.musicapp.R
 import com.example.musicapp.musicFilesUsage.MediaPlayerApp
 import com.example.musicapp.musicFilesUsage.Song
 import com.example.musicapp.musicFilesUsage.getSongs
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.P)
@@ -64,6 +68,9 @@ fun SongsList(
                 context = context,
                 songsList = songsList
             ).await()
+            if (MediaPlayerApp.songList.isEmpty()){
+                MediaPlayerApp.setAlbumAsPlaylist(songsList.sortedBy { it.number })
+            }
         }
     }
 
@@ -78,16 +85,32 @@ fun SongsList(
             thickness = 2.dp
         )
         for (song in sortedSongsList.value){
-            SongItem(song = song)
+            SongItem(
+                song = song,
+                songsList = songsList,
+            )
         }
     }
 }
 
-@SuppressLint("DefaultLocale")
+@OptIn(DelicateCoroutinesApi::class)
+@SuppressLint("DefaultLocale", "CoroutineCreationDuringComposition")
 @Composable
 private fun SongItem(
     song: Song,
+    songsList: List<Song>
 ){
+    val isNowPlaying = remember { MediaPlayerApp.currentPlaying }
+    val isPlaying = remember { mutableStateOf(false) }
+
+    GlobalScope.launch {
+        isPlaying.value = song == isNowPlaying.value
+    }
+
+    LaunchedEffect(isNowPlaying.value) {
+        isPlaying.value = song == isNowPlaying.value
+    }
+
     val context = LocalContext.current
 
     val minutes = (song.length / 1000) / 60
@@ -100,12 +123,15 @@ private fun SongItem(
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(
             contentColor = MaterialTheme.colorScheme.tertiary,
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor =
+                if(isPlaying.value) MaterialTheme.colorScheme.onTertiary
+                else MaterialTheme.colorScheme.background,
         ),
         onClick = {
             testPlaying(
                 context = context,
-                uri = song.uri,
+                song = song,
+                songsList = songsList,
             )
         },
         modifier = Modifier
@@ -191,11 +217,13 @@ private fun HeaderOfDisc(){
 
 private fun testPlaying(
     context: Context,
-    uri: Uri
+    song: Song,
+    songsList: List<Song>
 ){
+    MediaPlayerApp.setAlbumAsPlaylist(songsList.sortedBy { it.number })
     MediaPlayerApp.addMusicToPlay(
         context = context,
-        uri = uri
+        song = song
     )
     MediaPlayerApp.playMusic()
 }

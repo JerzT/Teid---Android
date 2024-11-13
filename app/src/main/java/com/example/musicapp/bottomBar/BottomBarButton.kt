@@ -20,7 +20,7 @@ fun BottomBarButton(
     painter: Painter,
     contentDescription: String,
 ) = Button(
-    onClick = { onClick() },
+    onClick = onClick,
     contentPadding = PaddingValues(0.dp),
     elevation = null,
     shape = CircleShape,
