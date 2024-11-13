@@ -14,6 +14,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import com.example.musicapp.musicFilesUsage.Album
 import com.example.musicapp.musicFilesUsage.GetDirectory
 import com.example.musicapp.musicFilesUsage.setUpDatabase
@@ -22,7 +23,8 @@ import com.example.musicapp.musicFilesUsage.setUpDatabase
 @Composable
 fun DirectorySelectionUi(
     uri: MutableState<Uri?>,
-    albumsList: MutableList<Album>
+    albumsList: MutableList<Album>,
+    navController: NavController,
 ){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -34,6 +36,7 @@ fun DirectorySelectionUi(
         GetDirectory(
             uri = uri,
             albumsList = albumsList,
+            navController = navController,
         )
     }
 }

@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.musicapp.Screen
 import com.example.musicapp.mainContent.cacheAlbumCovers
 import com.example.musicapp.settings.SettingsDataStore
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -26,6 +28,7 @@ import kotlinx.coroutines.launch
 fun GetDirectory(
     uri: MutableState<Uri?>,
     albumsList: MutableList<Album>,
+    navController: NavController,
 ) {
     val context = LocalContext.current
 
@@ -51,10 +54,6 @@ fun GetDirectory(
                 context = context,
                 albumsList = albumsList,
             ).await()
-
-            albumsList.sortBy { it.name }
-
-            cacheAlbumCovers(albumsList, context)
         }
     }
 

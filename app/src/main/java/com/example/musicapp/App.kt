@@ -5,8 +5,12 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,14 +53,13 @@ fun App() {
 
     val uri = remember { mutableStateOf<Uri?>(null) }
 
+    val settings = SettingsDataStore(context)
+
     val albumsList = remember { mutableStateListOf<Album>() }
     //albumList loading and synchronizing
     LaunchedEffect(Unit) {
-        val settings = SettingsDataStore(context)
-
         settings.directoryPathFlow.collect { directoryPath ->
             uri.value = changeNotValidDirectoryPathToUri(directoryPath)
-
             if (uri.value != null) {
 
                 val albumsFromDatabase = getAlbumsFromDatabase(context).apply { sortBy { it.name } }
@@ -80,92 +83,104 @@ fun App() {
                 )
             }
         }
-
     }
 
     val navController = rememberNavController()
 
     MusicAppTheme {
-        NavHost(
-            navController = navController,
-            startDestination = if(uri.value == null) Screen.GetUri.route else Screen.AlbumList.route
-        ){
-            composable(
-                route = Screen.GetUri.route
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            NavHost(
+                navController = navController,
+                startDestination = if (uri.value == null) Screen.GetUri.route else Screen.AlbumList.route
             ) {
-                Scaffold(
-                    topBar = { TopAppBarCustom(
-                        title = "Get Directory"
-                    ) },
-                    bottomBar = { if (true) BottomBarCustom() },
-                ) { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                    ) {
-                        SearchBar(
+                composable(
+                    route = Screen.GetUri.route
+                ) {
+                    Scaffold(
+                        topBar = {
+                            TopAppBarCustom(
+                                title = "Get Directory"
+                            )
+                        },
+                        bottomBar = { if (true) BottomBarCustom() },
+                    ) { innerPadding ->
+                        Column(
                             modifier = Modifier
-                                .zIndex(3f)
-                        )
-                        DirectorySelectionUi(
-                            uri = uri,
-                            albumsList = albumsList
-                        )
+                                .padding(innerPadding)
+                        ) {
+                            SearchBar(
+                                modifier = Modifier
+                                    .zIndex(3f)
+                            )
+                            DirectorySelectionUi(
+                                uri = uri,
+                                albumsList = albumsList,
+                                navController = navController
+                            )
+                        }
                     }
                 }
-            }
-            composable(
-                route = Screen.AlbumList.route
-            ) {
-                Scaffold(
-                    topBar = { TopAppBarCustom(
-                        title = "Library"
-                    ) },
-                    bottomBar = { if (true) BottomBarCustom() },
-                ) { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                    ) {
-                        SearchBar(
+                composable(
+                    route = Screen.AlbumList.route
+                ) {
+                    Scaffold(
+                        topBar = {
+                            TopAppBarCustom(
+                                title = "Library"
+                            )
+                        },
+                        bottomBar = { if (true) BottomBarCustom() },
+                    ) { innerPadding ->
+                        Column(
                             modifier = Modifier
-                                .zIndex(3f)
-                        )
-                        AlbumsList(
-                            albumsList = albumsList,
-                            navController = navController
-                        )
+                                .padding(innerPadding)
+                        ) {
+                            SearchBar(
+                                modifier = Modifier
+                                    .zIndex(3f)
+                            )
+                            AlbumsList(
+                                albumsList = albumsList,
+                                navController = navController
+                            )
+                        }
                     }
                 }
-            }
-            composable(
-                route = Screen.SongList.route + "/{uri}/{name}",
-                arguments = listOf(
-                    navArgument("uri"){
-                        type = NavType.StringType
-                        defaultValue = "a"
-                        nullable = true
-                    }
-                )
-            ) { entry ->
-                Scaffold(
-                    topBar = { TopAppBarCustom(
-                        title = entry.arguments?.getString("name").toString(),
-                        navController = navController
-                    ) },
-                    bottomBar = { if (true) BottomBarCustom() },
-                ) { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                    ) {
-                        SearchBar(
+                composable(
+                    route = Screen.SongList.route + "/{uri}/{name}",
+                    arguments = listOf(
+                        navArgument("uri") {
+                            type = NavType.StringType
+                            defaultValue = "a"
+                            nullable = true
+                        }
+                    )
+                ) { entry ->
+                    Scaffold(
+                        topBar = {
+                            TopAppBarCustom(
+                                title = entry.arguments?.getString("name").toString(),
+                                navController = navController
+                            )
+                        },
+                        bottomBar = { if (true) BottomBarCustom() },
+                    ) { innerPadding ->
+                        Column(
                             modifier = Modifier
-                                .zIndex(3f)
-                        )
-                        SongsList(
-                            uri = entry.arguments?.getString("uri")?.toUri(),
-                        )
+                                .padding(innerPadding)
+                        ) {
+                            SearchBar(
+                                modifier = Modifier
+                                    .zIndex(3f)
+                            )
+                            SongsList(
+                                uri = entry.arguments?.getString("uri")?.toUri(),
+                            )
+                        }
                     }
                 }
             }
