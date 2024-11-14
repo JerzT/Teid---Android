@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
@@ -17,6 +18,7 @@ import com.example.musicapp.ui.theme.MusicAppTheme
 @Composable
 fun SearchBar(
     modifier: Modifier,
+    searchText: MutableState<String>
 ) {
     Row(
         horizontalArrangement = Arrangement.End,
@@ -28,7 +30,8 @@ fun SearchBar(
             SearchTextField(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(0.dp, 0.dp, 10.dp, 0.dp)
+                    .padding(0.dp, 0.dp, 10.dp, 0.dp),
+                searchText = searchText
             )
             SearchButton(
                 onClick = { /*TODO*/ },

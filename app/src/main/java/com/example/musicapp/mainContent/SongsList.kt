@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,16 +51,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun SongsList(
     uri: Uri?,
+    searchText: MutableState<String>,
 ){
     val context = LocalContext.current
 
     val songsList = remember{ mutableStateListOf<Song>() }
-
-    val sortedSongsList = remember(songsList){
-        derivedStateOf {
-            songsList.sortedBy { song -> song.number }
-        }
-    }
 
     LaunchedEffect(uri) {
         if (uri != null){
@@ -74,6 +70,10 @@ fun SongsList(
         }
     }
 
+    val filteredAlbums = songsList.filter { song ->
+        song.title!!.contains(searchText.value, ignoreCase = true)
+    }.sortedBy { it.number }
+
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
@@ -84,7 +84,7 @@ fun SongsList(
             color = MaterialTheme.colorScheme.surface,
             thickness = 2.dp
         )
-        for (song in sortedSongsList.value){
+        for (song in filteredAlbums){
             SongItem(
                 song = song,
                 songsList = songsList,

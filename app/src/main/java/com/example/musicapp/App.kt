@@ -87,6 +87,7 @@ fun App() {
 
     val navController = rememberNavController()
 
+
     MusicAppTheme {
         Box(
             modifier = Modifier
@@ -106,16 +107,12 @@ fun App() {
                                 title = "Get Directory"
                             )
                         },
-                        bottomBar = { if (true) BottomBarCustom() },
+                        bottomBar = { if (false) BottomBarCustom() },
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier
                                 .padding(innerPadding)
                         ) {
-                            SearchBar(
-                                modifier = Modifier
-                                    .zIndex(3f)
-                            )
                             DirectorySelectionUi(
                                 uri = uri,
                                 albumsList = albumsList,
@@ -127,6 +124,7 @@ fun App() {
                 composable(
                     route = Screen.AlbumList.route
                 ) {
+                    val searchText = remember { mutableStateOf("")}
                     Scaffold(
                         topBar = {
                             TopAppBarCustom(
@@ -141,11 +139,13 @@ fun App() {
                         ) {
                             SearchBar(
                                 modifier = Modifier
-                                    .zIndex(3f)
+                                    .zIndex(3f),
+                                searchText = searchText,
                             )
                             AlbumsList(
                                 albumsList = albumsList,
-                                navController = navController
+                                navController = navController,
+                                searchText = searchText,
                             )
                         }
                     }
@@ -160,6 +160,7 @@ fun App() {
                         }
                     )
                 ) { entry ->
+                    val searchText = remember { mutableStateOf("")}
                     Scaffold(
                         topBar = {
                             TopAppBarCustom(
@@ -175,10 +176,12 @@ fun App() {
                         ) {
                             SearchBar(
                                 modifier = Modifier
-                                    .zIndex(3f)
+                                    .zIndex(3f),
+                                searchText = searchText,
                             )
                             SongsList(
                                 uri = entry.arguments?.getString("uri")?.toUri(),
+                                searchText = searchText,
                             )
                         }
                     }
