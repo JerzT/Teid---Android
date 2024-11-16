@@ -19,6 +19,7 @@ fun getSongs(
     context: Context,
     songsList: MutableList<Song>
 ): Deferred<Unit> = GlobalScope.async {
+    val database = setUpDatabase(context)
     val documentFile = DocumentFile.fromTreeUri(context, uri)
 
     val supportedAudioFormats = listOf(
@@ -47,10 +48,10 @@ fun getSongs(
                     uri = file.uri,
                     title = metadata["songName"] ?: formatedTitle,
                     format = file.type,
-                    number = metadata["songNumber"]?.toInt(),
+                    number = metadata["songNumber"]?.toInt() ?: 0,
                     length = metadata["songLength"]?.toInt() ?: 0
                 )
-
+                database.addSong(song = song)
                 songsList.add(song)
             }
         }

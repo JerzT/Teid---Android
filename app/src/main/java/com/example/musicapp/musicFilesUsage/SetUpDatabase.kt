@@ -1,10 +1,12 @@
 package com.example.musicapp.musicFilesUsage
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.health.connect.datatypes.units.Length
 import android.util.Log
 
 fun setUpDatabase(context: Context): DBHelper{
@@ -16,30 +18,41 @@ fun setUpDatabase(context: Context): DBHelper{
 
 class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
-    // below is the method for creating a database by a sqlite query
     override fun onCreate(db: SQLiteDatabase) {
-        // below is a sqlite query, where column names
-        // along with their data types is given
-        val query =
-            ("CREATE TABLE " + TABLE_NAME +
-                    " (" + ID_COL + " INTEGER PRIMARY KEY, "
-                    + NAME_COL + " TEXT,"
-                    + URI_COL + " TEXT,"
-                    + COVER_COL + " TEXT,"
-                    + ARTIST_COL + " TEXT,"
-                    + YEAR_COL + " TEXT,"
-                    + CD_NUMBER_COL + " INT"+")")
-        // we are calling sqlite
-        // method for executing our query
-        db.execSQL(query)
+        val queryAlbums ="""
+            CREATE TABLE $MUSIC_ALBUMS (
+                $ID_COL INTEGER PRIMARY KEY,
+                $NAME_COL TEXT,
+                $URI_COL TEXT UNIQUE, 
+                $COVER_COL TEXT,
+                $ARTIST_COL TEXT,
+                $YEAR_COL INTEGER, 
+                $CD_NUMBER_COL INTEGER
+            )""".trimIndent()
+        db.execSQL(queryAlbums)
+
+        val querySongs = """
+            CREATE TABLE $SONGS (
+                $ID_COL INTEGER PRIMARY KEY,
+                $TITLE_COL TEXT,
+                $URI_COL TEXT UNIQUE,
+                $FORMAT_COL TEXT,
+                $NUMBER_COL INTEGER,
+                $LENGTH_COL INTEGER, 
+                $TIME_PLAYED_COL INTEGER
+            )""".trimIndent()
+
+        db.execSQL(querySongs)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
         // this method is to check if table already exists
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME)
+        db.execSQL("DROP TABLE IF EXISTS $MUSIC_ALBUMS")
+        db.execSQL("DROP TABLE IF EXISTS $SONGS")
         onCreate(db)
     }
 
+    @SuppressLint("Recycle")
     fun addAlbum(album: Album) {
         val db = this.writableDatabase
 
@@ -53,14 +66,15 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
 
         try {
             // Parameterized query to check if the album already exists in the database
-            val query = "SELECT * FROM $TABLE_NAME " +
+            val query = "SELECT * FROM $MUSIC_ALBUMS " +
                     "WHERE $NAME_COL = ? " +
                     "AND $URI_COL = ? " +
                     "AND $COVER_COL = ? " +
                     "AND $ARTIST_COL = ? " +
                     "AND $YEAR_COL = ?" +
                     "AND $CD_NUMBER_COL = ?"
-            val cursor = db.rawQuery(query, arrayOf(name, uri, cover, artist, year, cdNumber.toString()))
+            val cursor = db.rawQuery(query,
+                arrayOf(name, uri, cover, artist, year, cdNumber.toString()))
 
             if (cursor.moveToFirst()) {
                 // Album already exists
@@ -76,12 +90,9 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                     put(CD_NUMBER_COL, cdNumber)
                 }
 
-                db.insert(TABLE_NAME, null, values)
+                db.insert(MUSIC_ALBUMS, null, values)
                 Log.v("DBHelper", "Album added successfully: $name")
             }
-
-            // Ensure the cursor is closed to avoid memory leaks
-            cursor.close()
         } catch (e: Exception) {
             // Catch any exceptions and log them
             Log.e("DBHelper", "Error while adding album: ${e.message}", e)
@@ -110,7 +121,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 album.cdNumber.toString()
             )
 
-            db.delete(TABLE_NAME, whereClause, whereArgs)
+            db.delete( MUSIC_ALBUMS, whereClause, whereArgs)
         }
         catch (e: Exception){
             Log.e("DBHelper", "Error while deleting album: ${e.message}", e)
@@ -120,12 +131,61 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         }
     }
 
+    @SuppressLint("Recycle")
+    fun addSong(song: Song){
+        val db = this.writableDatabase
+
+        val uri = song.uri
+        val title = song.title ?: ""
+        val format = song.format ?: ""
+        val number = song.number
+        val length = song.length
+        val timePlayed = song.timePlayed
+
+        try {
+            // Parameterized query to check if the album already exists in the database
+            val query = "SELECT * FROM $SONGS " +
+                    "WHERE $TITLE_COL = ? " +
+                    "AND $URI_COL = ? " +
+                    "AND $FORMAT_COL = ? " +
+                    "AND $NUMBER_COL = ? " +
+                    "AND $LENGTH_COL = ?" +
+                    "AND $TIME_PLAYED_COL = ?"
+            val cursor = db.rawQuery(query,
+                arrayOf(title, uri.toString(), format, "$number", "$length", "$timePlayed"))
+
+            if (cursor.moveToFirst()) {
+                // Album already exists
+                Log.v("DBHelper", "Album already exists: $title")
+            } else {
+                // Insert album if it does not exist
+                val values = ContentValues().apply {
+                    put(TITLE_COL, title)
+                    put(URI_COL, uri.toString())
+                    put(FORMAT_COL, format)
+                    put(NUMBER_COL, number)
+                    put(LENGTH_COL, length)
+                    put(TIME_PLAYED_COL, timePlayed)
+                }
+
+                db.insert(SONGS, null, values)
+                Log.v("DBHelper", "Album added successfully: $title")
+            }
+        }
+        catch (e: Exception){
+            Log.e("DBHelper", "Error while adding song: ${e.message}", e)
+        }
+        finally {
+            db.close()
+        }
+    }
+
     // below method is to get
     // all data from our database
-    fun getAlbums(): Cursor? {
+    fun getAlbums(): Cursor {
         val db = this.readableDatabase
 
-        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null)
+        return db.rawQuery("SELECT * FROM $MUSIC_ALBUMS", null)
     }
 
     companion object{
@@ -133,7 +193,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
 
         private const val DATABASE_VERSION = 1
 
-        const val TABLE_NAME = "music_albums"
+        const val MUSIC_ALBUMS = "music_albums"
 
         const val ID_COL = "id"
 
@@ -148,5 +208,17 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         const val YEAR_COL = "year"
 
         const val CD_NUMBER_COL = "cd_number"
+
+        const val SONGS = "songs"
+
+        const val TITLE_COL = "title"
+
+        const val FORMAT_COL = "format"
+
+        const val NUMBER_COL = "number"
+
+        const val LENGTH_COL = "length"
+
+        const val TIME_PLAYED_COL = "time_played"
     }
 }
