@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.musicapp.R
@@ -22,6 +23,7 @@ import com.example.musicapp.musicFilesUsage.MediaPlayerApp
 @Composable
 fun BottomBarPlayPauseButton() {
     val isPlaying = remember { MediaPlayerApp.isPlaying }
+    val context = LocalContext.current
 
     Button(
         onClick = {
@@ -29,6 +31,10 @@ fun BottomBarPlayPauseButton() {
                 MediaPlayerApp.stopMusic()
             }
             else{
+                if (MediaPlayerApp.currentPlaying.value == null){
+                    MediaPlayerApp.nextSongPlay(context = context)
+                }
+
                 MediaPlayerApp.playMusic()
             }
         },

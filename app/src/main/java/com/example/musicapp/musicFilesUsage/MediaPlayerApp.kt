@@ -11,7 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 object MediaPlayerApp {
     private var mediaPlayer: MediaPlayer? = null
     val isPlaying = mutableStateOf(false)
-    var songList: List<Song> = listOf()
+    var songList: MutableList<Song> = mutableListOf()
     var currentPlaying = mutableStateOf<Song?>(null)
 
     fun addMusicToPlay(context: Context, song: Song) {
@@ -60,7 +60,7 @@ object MediaPlayerApp {
     }
 
     fun setAlbumAsPlaylist(albumsSongs: List<Song>){
-        songList = albumsSongs
+        songList = albumsSongs.toMutableList()
     }
 
     fun nextSongPlay(

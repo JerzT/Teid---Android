@@ -27,6 +27,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -56,11 +58,14 @@ fun AlbumsList(
     albumsList: List<Album>,
     navController: NavController,
     searchText: MutableState<String>,
+    state: LazyListState,
 ) {
-    val state = remember { LazyListState() }
-
-    val filteredAlbums = albumsList.filter { album ->
-        album.name!!.contains(searchText.value, ignoreCase = true)
+    val filteredAlbums by remember(searchText.value) {
+        derivedStateOf {
+            albumsList.filter { album ->
+                album.name?.contains(searchText.value, ignoreCase = true) == true
+            }
+        }
     }
 
     LazyColumn(

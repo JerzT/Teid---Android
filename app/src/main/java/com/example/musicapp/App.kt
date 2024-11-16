@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ import com.example.musicapp.mainContent.DirectorySelectionUi
 import com.example.musicapp.mainContent.SongsList
 import com.example.musicapp.mainContent.cacheAlbumCovers
 import com.example.musicapp.musicFilesUsage.Album
+import com.example.musicapp.musicFilesUsage.MediaPlayerApp
 import com.example.musicapp.onStartApp.changeNotValidDirectoryPathToUri
 import com.example.musicapp.onStartApp.getAlbumsFromDirectory
 import com.example.musicapp.onStartApp.synchronizeAlbums
@@ -44,7 +46,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-@OptIn(DelicateCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "Range")
 @Composable
@@ -86,7 +87,8 @@ fun App() {
     }
 
     val navController = rememberNavController()
-
+    val albumListState = remember { LazyListState() }
+    val albumSearchText = remember { mutableStateOf("")}
 
     MusicAppTheme {
         Box(
@@ -98,6 +100,7 @@ fun App() {
                 navController = navController,
                 startDestination = if (uri.value == null) Screen.GetUri.route else Screen.AlbumList.route
             ) {
+                //Get Directory
                 composable(
                     route = Screen.GetUri.route
                 ) {
@@ -121,17 +124,17 @@ fun App() {
                         }
                     }
                 }
+                //Album List
                 composable(
                     route = Screen.AlbumList.route
                 ) {
-                    val searchText = remember { mutableStateOf("")}
                     Scaffold(
                         topBar = {
                             TopAppBarCustom(
                                 title = "Library"
                             )
                         },
-                        bottomBar = { if (true) BottomBarCustom() },
+                        bottomBar = { if (MediaPlayerApp.currentPlaying.value != null) BottomBarCustom() },
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier
@@ -140,16 +143,18 @@ fun App() {
                             SearchBar(
                                 modifier = Modifier
                                     .zIndex(3f),
-                                searchText = searchText,
+                                searchText = albumSearchText,
                             )
                             AlbumsList(
                                 albumsList = albumsList,
                                 navController = navController,
-                                searchText = searchText,
+                                searchText = albumSearchText,
+                                state = albumListState,
                             )
                         }
                     }
                 }
+                //Song List
                 composable(
                     route = Screen.SongList.route + "/{uri}/{name}",
                     arguments = listOf(
@@ -161,6 +166,7 @@ fun App() {
                     )
                 ) { entry ->
                     val searchText = remember { mutableStateOf("")}
+
                     Scaffold(
                         topBar = {
                             TopAppBarCustom(
@@ -168,7 +174,7 @@ fun App() {
                                 navController = navController
                             )
                         },
-                        bottomBar = { if (true) BottomBarCustom() },
+                        bottomBar = { if (MediaPlayerApp.currentPlaying.value != null) BottomBarCustom() },
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier

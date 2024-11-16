@@ -64,9 +64,6 @@ fun SongsList(
                 context = context,
                 songsList = songsList
             ).await()
-            if (MediaPlayerApp.songList.isEmpty()){
-                MediaPlayerApp.setAlbumAsPlaylist(songsList.sortedBy { it.number })
-            }
         }
     }
 
