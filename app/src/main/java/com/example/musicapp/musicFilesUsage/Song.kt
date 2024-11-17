@@ -4,6 +4,7 @@ import android.net.Uri
 
 data class Song(
     val uri: Uri,
+    val parentUri: Uri,
     val title: String?,
     val format: String?,
     val number: Int,

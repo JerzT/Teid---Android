@@ -14,38 +14,36 @@ fun getAlbumsFromDatabase(
     //get saved albums
     val albumsList: MutableList<Album> = mutableListOf()
     val getAlbumResult = database.getAlbums()
-    if(getAlbumResult != null){
-        getAlbumResult.use { albumRow ->
-            while (albumRow.moveToNext()){
-                val name: String? = if(albumRow.getString(albumRow.getColumnIndex("name")) != "")
-                    albumRow.getString(albumRow.getColumnIndex("name")) else null
+    getAlbumResult.use { albumRow ->
+        while (albumRow.moveToNext()){
+            val name: String? = if(albumRow.getString(albumRow.getColumnIndex("name")) != "")
+                albumRow.getString(albumRow.getColumnIndex("name")) else null
 
-                val uri: Uri = albumRow.getString(albumRow.getColumnIndex("uri")).toUri()
+            val uri: Uri = albumRow.getString(albumRow.getColumnIndex("uri")).toUri()
 
-                val cover: Uri? = if(albumRow.getString(albumRow.getColumnIndex("cover")) != "")
-                    albumRow.getString(albumRow.getColumnIndex("cover")).toUri() else null
+            val cover: Uri? = if(albumRow.getString(albumRow.getColumnIndex("cover")) != "")
+                albumRow.getString(albumRow.getColumnIndex("cover")).toUri() else null
 
-                val artist: String? = if(albumRow.getString(albumRow.getColumnIndex("artist")) != "")
-                    albumRow.getString(albumRow.getColumnIndex("artist")) else null
+            val artist: String? = if(albumRow.getString(albumRow.getColumnIndex("artist")) != "")
+                albumRow.getString(albumRow.getColumnIndex("artist")) else null
 
-                val year: String? = if(albumRow.getString(albumRow.getColumnIndex("year")) != "")
-                    albumRow.getString(albumRow.getColumnIndex("year")) else null
+            val year: String? = if(albumRow.getString(albumRow.getColumnIndex("year")) != "")
+                albumRow.getString(albumRow.getColumnIndex("year")) else null
 
-                val cdNumber: Int = albumRow.getInt(albumRow.getColumnIndex("cd_number"))
+            val cdNumber: Int = albumRow.getInt(albumRow.getColumnIndex("cd_number"))
 
-                val album = Album(
-                    name = name,
-                    uri = uri,
-                    cover = cover,
-                    artist = artist,
-                    year = year,
-                    cdNumber = cdNumber,
-                )
+            val album = Album(
+                name = name,
+                uri = uri,
+                cover = cover,
+                artist = artist,
+                year = year,
+                cdNumber = cdNumber,
+            )
 
-                albumsList += album
-            }
+            albumsList += album
         }
-        getAlbumResult.close()
     }
+    getAlbumResult.close()
     return albumsList
 }

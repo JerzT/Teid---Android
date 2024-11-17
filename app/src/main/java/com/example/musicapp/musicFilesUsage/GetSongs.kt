@@ -46,6 +46,7 @@ fun getSongs(
 
                 val song = Song(
                     uri = file.uri,
+                    parentUri = documentFile.uri,
                     title = metadata["songName"] ?: formatedTitle,
                     format = file.type,
                     number = metadata["songNumber"]?.toInt() ?: 0,

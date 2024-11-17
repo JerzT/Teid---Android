@@ -7,7 +7,9 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.health.connect.datatypes.units.Length
+import android.net.Uri
 import android.util.Log
+import java.net.URI
 
 fun setUpDatabase(context: Context): DBHelper{
     val database = DBHelper(context, null)
@@ -36,6 +38,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 $ID_COL INTEGER PRIMARY KEY,
                 $TITLE_COL TEXT,
                 $URI_COL TEXT UNIQUE,
+                $PARENT_URI_COL TEXT,
                 $FORMAT_COL TEXT,
                 $NUMBER_COL INTEGER,
                 $LENGTH_COL INTEGER, 
@@ -131,11 +134,18 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         }
     }
 
+    fun getAlbums(): Cursor {
+        val db = this.readableDatabase
+
+        return db.rawQuery("SELECT * FROM $MUSIC_ALBUMS", null)
+    }
+
     @SuppressLint("Recycle")
     fun addSong(song: Song){
         val db = this.writableDatabase
 
         val uri = song.uri
+        val parentUri = song.parentUri
         val title = song.title ?: ""
         val format = song.format ?: ""
         val number = song.number
@@ -147,12 +157,13 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
             val query = "SELECT * FROM $SONGS " +
                     "WHERE $TITLE_COL = ? " +
                     "AND $URI_COL = ? " +
+                    "AND $PARENT_URI_COL = ? " +
                     "AND $FORMAT_COL = ? " +
                     "AND $NUMBER_COL = ? " +
                     "AND $LENGTH_COL = ?" +
                     "AND $TIME_PLAYED_COL = ?"
             val cursor = db.rawQuery(query,
-                arrayOf(title, uri.toString(), format, "$number", "$length", "$timePlayed"))
+                arrayOf(title, uri.toString(), parentUri.toString(), format, "$number", "$length", "$timePlayed"))
 
             if (cursor.moveToFirst()) {
                 // Album already exists
@@ -162,6 +173,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 val values = ContentValues().apply {
                     put(TITLE_COL, title)
                     put(URI_COL, uri.toString())
+                    put(PARENT_URI_COL, parentUri.toString())
                     put(FORMAT_COL, format)
                     put(NUMBER_COL, number)
                     put(LENGTH_COL, length)
@@ -180,12 +192,16 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         }
     }
 
-    // below method is to get
-    // all data from our database
-    fun getAlbums(): Cursor {
+    fun getSongs(): Cursor{
         val db = this.readableDatabase
 
-        return db.rawQuery("SELECT * FROM $MUSIC_ALBUMS", null)
+        return db.rawQuery("SELECT * FROM $SONGS", null)
+    }
+
+    fun getSongsWithUri(parentUri: Uri): Cursor{
+        val db = this.readableDatabase
+
+        return db.rawQuery("SELECT * FROM $SONGS WHERE $PARENT_URI_COL = ?", arrayOf(parentUri.toString()))
     }
 
     companion object{
@@ -212,6 +228,8 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         const val SONGS = "songs"
 
         const val TITLE_COL = "title"
+
+        const val PARENT_URI_COL = "parent_uri"
 
         const val FORMAT_COL = "format"
 
