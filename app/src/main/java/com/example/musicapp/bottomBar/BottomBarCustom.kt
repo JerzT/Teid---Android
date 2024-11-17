@@ -28,7 +28,9 @@ fun BottomBarCustom(){
         ) {
             //shuffle
             BottomBarButton(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    MediaPlayerApp.shuffleSongList()
+                },
                 painter = painterResource(id = R.drawable.baseline_shuffle_24),
                 contentDescription = "Play"
             )

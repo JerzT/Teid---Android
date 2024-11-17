@@ -65,8 +65,6 @@ fun SongsList(
 
             songsList.clear()
             songsList.addAll(songsFromDirectory)
-
-
         }
     }
 

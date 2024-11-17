@@ -12,6 +12,7 @@ object MediaPlayerApp {
     private var mediaPlayer: MediaPlayer? = null
     val isPlaying = mutableStateOf(false)
     private var songList: MutableList<Song> = mutableListOf()
+    var isShuffled: Boolean = false
     var currentPlaying = mutableStateOf<Song?>(null)
 
     fun addMusicToPlay(context: Context, song: Song) {
@@ -36,6 +37,13 @@ object MediaPlayerApp {
                     prepare()
                 }
             }
+
+            isShuffled = false
+
+            mediaPlayer?.setOnCompletionListener {
+                nextSongPlay(context)
+            }
+
         } catch (e: Exception) {
             Log.e("MediaPlayerApp", "Error initializing MediaPlayer: ${e.message}")
         }
@@ -97,6 +105,11 @@ object MediaPlayerApp {
             song = songList[index]
         )
         playMusic()
+    }
+
+    fun shuffleSongList(){
+        songList.shuffle()
+        isShuffled = true
     }
 
     fun releasePlayer() {
