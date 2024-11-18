@@ -130,7 +130,7 @@ fun App() {
                                 title = "Library"
                             )
                         },
-                        bottomBar = { if (MediaPlayerApp.currentPlaying.value != null) BottomBarCustom() },
+                        bottomBar = { if (true) BottomBarCustom() },
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier
