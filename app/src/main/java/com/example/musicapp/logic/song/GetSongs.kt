@@ -49,9 +49,10 @@ fun getSongs(
                     uri = file.uri,
                     parentUri = documentFile.uri,
                     title = metadata["songName"] ?: formatedTitle,
+                    author = metadata["artistName"] ?: "",
                     format = file.type,
                     number = metadata["songNumber"]?.toInt() ?: 0,
-                    length = metadata["songLength"]?.toInt() ?: 0
+                    length = metadata["songLength"]?.toInt() ?: 0,
                 )
                 database.addSong(song = song)
                 songsList.add(song)

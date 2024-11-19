@@ -39,6 +39,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 $TITLE_COL TEXT,
                 $URI_COL TEXT UNIQUE,
                 $PARENT_URI_COL TEXT,
+                $ARTIST_COL TEXT,
                 $FORMAT_COL TEXT,
                 $NUMBER_COL INTEGER,
                 $LENGTH_COL INTEGER, 
@@ -147,6 +148,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         val uri = song.uri
         val parentUri = song.parentUri
         val title = song.title ?: ""
+        val artist = song.author ?: ""
         val format = song.format ?: ""
         val number = song.number
         val length = song.length
@@ -158,12 +160,13 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                     "WHERE $TITLE_COL = ? " +
                     "AND $URI_COL = ? " +
                     "AND $PARENT_URI_COL = ? " +
+                    "AND $ARTIST_COL = ?" +
                     "AND $FORMAT_COL = ? " +
                     "AND $NUMBER_COL = ? " +
                     "AND $LENGTH_COL = ?" +
                     "AND $TIME_PLAYED_COL = ?"
             val cursor = db.rawQuery(query,
-                arrayOf(title, uri.toString(), parentUri.toString(), format, "$number", "$length", "$timePlayed"))
+                arrayOf(title, uri.toString(), parentUri.toString(), artist, format, "$number", "$length", "$timePlayed"))
 
             if (cursor.moveToFirst()) {
                 // Album already exists
@@ -174,6 +177,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                     put(TITLE_COL, title)
                     put(URI_COL, uri.toString())
                     put(PARENT_URI_COL, parentUri.toString())
+                    put(ARTIST_COL, artist)
                     put(FORMAT_COL, format)
                     put(NUMBER_COL, number)
                     put(LENGTH_COL, length)

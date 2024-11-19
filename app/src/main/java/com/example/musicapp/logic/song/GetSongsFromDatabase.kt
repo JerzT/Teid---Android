@@ -27,6 +27,9 @@ fun getSongsFromDatabaseWithUri(
 
             val songParentUri: Uri = songRow.getString(songRow.getColumnIndex("parent_uri")).toUri()
 
+            val author: String? = if(songRow.getString(songRow.getColumnIndex("artist")) != "")
+                songRow.getString(songRow.getColumnIndex("artist")) else null
+
             val format: String? = if(songRow.getString(songRow.getColumnIndex("format")) != "")
                 songRow.getString(songRow.getColumnIndex("format")) else null
 
@@ -40,6 +43,7 @@ fun getSongsFromDatabaseWithUri(
                 title = title,
                 uri = uri,
                 parentUri = songParentUri,
+                author = author,
                 format = format,
                 number = number,
                 length = length,
