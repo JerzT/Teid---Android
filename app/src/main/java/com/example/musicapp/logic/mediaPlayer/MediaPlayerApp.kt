@@ -5,13 +5,16 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.ImageBitmap
+import com.bumptech.glide.request.target.BitmapImageViewTarget
+import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.song.Song
 
 object MediaPlayerApp {
     private var mediaPlayer: MediaPlayer? = null
     val isPlaying = mutableStateOf(false)
     private var songList: MutableList<Song> = mutableListOf()
-    var isShuffled: Boolean = false
+    private var isShuffled: Boolean = false
     var currentPlaying = mutableStateOf<Song?>(null)
 
     fun addMusicToPlay(context: Context, song: Song) {

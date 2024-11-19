@@ -106,7 +106,6 @@ fun App() {
                                 title = "Get Directory"
                             )
                         },
-                        bottomBar = { if (false) BottomBarCustom() },
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier
@@ -130,7 +129,9 @@ fun App() {
                                 title = "Library"
                             )
                         },
-                        bottomBar = { if (true) BottomBarCustom() },
+                        bottomBar = { if (true) BottomBarCustom(
+                            albumList = albumsList
+                        ) },
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier
@@ -170,7 +171,9 @@ fun App() {
                                 navController = navController
                             )
                         },
-                        bottomBar = { if (MediaPlayerApp.currentPlaying.value != null) BottomBarCustom() },
+                        bottomBar = { if (MediaPlayerApp.currentPlaying.value != null) BottomBarCustom(
+                            albumList = albumsList
+                        ) },
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier
