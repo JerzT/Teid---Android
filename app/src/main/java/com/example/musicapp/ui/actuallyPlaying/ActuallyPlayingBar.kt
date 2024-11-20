@@ -1,23 +1,31 @@
 package com.example.musicapp.ui.actuallyPlaying
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -26,54 +34,95 @@ import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.image.albumCoverCache
 import com.example.musicapp.logic.mediaPlayer.MediaPlayerApp
 import com.example.musicapp.logic.song.Song
+import kotlinx.coroutines.delay
 
 @Composable
 fun ActuallyPlayingBar(
     albumList: List<Album>,
     modifier: Modifier
 ) {
-    val currentPlaying = remember { MediaPlayerApp.currentPlaying }
+    val currentPlayingSong = remember { MediaPlayerApp.currentPlaying }
     val image = remember { mutableStateOf<ImageBitmap?>(null) }
+    val progress = remember { mutableFloatStateOf(0f) }
 
-    LaunchedEffect(currentPlaying.value) {
-        currentPlaying.value?.let {
+    LaunchedEffect(currentPlayingSong.value) {
+        currentPlayingSong.value?.let {
             image.value = getImageFromAlbum(albumList, it)
+        }
+
+        while (MediaPlayerApp.mediaPlayer!!.isPlaying){
+            progress.floatValue = MediaPlayerApp.mediaPlayer!!.currentPosition.toFloat() / MediaPlayerApp.mediaPlayer!!.duration.toFloat()
+            delay(100)
         }
     }
 
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.tertiary)
+            .background(MaterialTheme.colorScheme.onBackground)
             .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
     ) {
-        image.value?.let {
-            Image(
-                painter = BitmapPainter(it),
-                contentDescription = "Album Cover",
-                modifier = Modifier
-                    .padding(10.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(4.dp)
-                    )
-            )
-        }
-        Column(
-            modifier = Modifier
-                .padding(vertical = 5.dp)
-        ) {
-            currentPlaying.value?.let { 
-                Text(
-                    text = it.title.toString(),
-                    fontSize = 26.sp,
-                    fontWeight = FontWeight(900)
+        Row {
+            image.value?.let {
+                Image(
+                    painter = BitmapPainter(it),
+                    contentDescription = "Album Cover",
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .height(80.dp)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = RoundedCornerShape(4.dp)
+                        )
                 )
-                Text(text = it.author.toString())
             }
- 
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .height(96.dp)
+                    .padding(vertical = 8.dp)
+            ) {
+                currentPlayingSong.value?.let {
+                    Text(
+                        color = MaterialTheme.colorScheme.surface,
+                        text = it.title.toString(),
+                        fontSize = 26.sp,
+                        fontWeight = FontWeight(900),
+                        maxLines = 1,
+                    )
+                    Text(
+                        color = MaterialTheme.colorScheme.surface,
+                        text = it.author.toString(),
+                        maxLines = 1,
+                    )
+                }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+        ){
+/*            Text(
+                text = "A",
+                modifier = Modifier
+                    .zIndex(1f)
+            )*/
+            LinearProgressIndicator(
+                progress = { progress.floatValue },
+                color = MaterialTheme.colorScheme.tertiary,
+                trackColor = MaterialTheme.colorScheme.background,
+                strokeCap = StrokeCap.Square,
+                gapSize = 0.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(18.dp)
+                    .clip(RoundedCornerShape(4.dp))
+            ){
+
+            }
+
         }
     }
 }

@@ -11,7 +11,7 @@ import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.song.Song
 
 object MediaPlayerApp {
-    private var mediaPlayer: MediaPlayer? = null
+    var mediaPlayer: MediaPlayer? = null
     val isPlaying = mutableStateOf(false)
     private var songList: MutableList<Song> = mutableListOf()
     private var isShuffled: Boolean = false
