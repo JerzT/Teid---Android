@@ -1,9 +1,9 @@
 package com.example.musicapp.ui.actuallyPlaying
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material.Slider
+import androidx.compose.material.SliderDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,10 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,6 +35,7 @@ import com.example.musicapp.logic.mediaPlayer.MediaPlayerApp
 import com.example.musicapp.logic.song.Song
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActuallyPlayingBar(
     albumList: List<Album>,
@@ -45,14 +45,16 @@ fun ActuallyPlayingBar(
     val image = remember { mutableStateOf<ImageBitmap?>(null) }
     val progress = remember { mutableFloatStateOf(0f) }
 
+    val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+
     LaunchedEffect(currentPlayingSong.value) {
         currentPlayingSong.value?.let {
             image.value = getImageFromAlbum(albumList, it)
-        }
 
-        while (MediaPlayerApp.mediaPlayer!!.isPlaying){
-            progress.floatValue = MediaPlayerApp.mediaPlayer!!.currentPosition.toFloat() / MediaPlayerApp.mediaPlayer!!.duration.toFloat()
-            delay(100)
+            while (MediaPlayerApp.mediaPlayer!!.isPlaying){
+                progress.floatValue = MediaPlayerApp.mediaPlayer!!.currentPosition.toFloat() / MediaPlayerApp.mediaPlayer!!.duration.toFloat()
+                delay(100)
+            }
         }
     }
 
@@ -109,20 +111,19 @@ fun ActuallyPlayingBar(
                 modifier = Modifier
                     .zIndex(1f)
             )*/
-            LinearProgressIndicator(
-                progress = { progress.floatValue },
-                color = MaterialTheme.colorScheme.tertiary,
-                trackColor = MaterialTheme.colorScheme.background,
-                strokeCap = StrokeCap.Square,
-                gapSize = 0.dp,
+
+            Slider(
+                value = progress.floatValue,
+                onValueChange = {},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(18.dp)
-                    .clip(RoundedCornerShape(4.dp))
-            ){
-
-            }
-
+                    .height(18.dp),
+                colors = SliderDefaults.colors(
+                    thumbColor = MaterialTheme.colorScheme.tertiary,
+                    activeTrackColor = MaterialTheme.colorScheme.tertiary,
+                    inactiveTrackColor = MaterialTheme.colorScheme.background,
+                 ),
+            )
         }
     }
 }
