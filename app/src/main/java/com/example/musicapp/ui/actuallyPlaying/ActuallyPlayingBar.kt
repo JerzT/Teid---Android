@@ -1,5 +1,7 @@
 package com.example.musicapp.ui.actuallyPlaying
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,13 +10,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,13 +32,14 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.image.albumCoverCache
 import com.example.musicapp.logic.mediaPlayer.MediaPlayerApp
 import com.example.musicapp.logic.song.Song
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("DefaultLocale")
 @Composable
 fun ActuallyPlayingBar(
     albumList: List<Album>,
@@ -44,15 +48,35 @@ fun ActuallyPlayingBar(
     val currentPlayingSong = remember { MediaPlayerApp.currentPlaying }
     val image = remember { mutableStateOf<ImageBitmap?>(null) }
     val progress = remember { mutableFloatStateOf(0f) }
-
-    val interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    val durationText = remember { mutableStateOf("0:00") }
+    val currentPositionText = remember { mutableStateOf("0:00") }
 
     LaunchedEffect(currentPlayingSong.value) {
         currentPlayingSong.value?.let {
             image.value = getImageFromAlbum(albumList, it)
 
-            while (MediaPlayerApp.mediaPlayer!!.isPlaying){
-                progress.floatValue = MediaPlayerApp.mediaPlayer!!.currentPosition.toFloat() / MediaPlayerApp.mediaPlayer!!.duration.toFloat()
+            val durationMinutes = MediaPlayerApp.mediaPlayer?.duration!! / 1000 / 60
+            val durationSeconds = MediaPlayerApp.mediaPlayer?.duration!! / 1000 % 60
+
+            durationText.value = String.format("%d:%02d", durationMinutes, durationSeconds)
+
+            var currentMinutes = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 / 60
+            var currentSeconds = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 % 60
+
+            currentPositionText.value  = String.format("%d:%02d", currentMinutes, currentSeconds)
+
+            while (MediaPlayerApp.isPlaying.value){
+                //slider update
+                progress.floatValue =
+                    MediaPlayerApp.mediaPlayer!!.currentPosition.toFloat() /
+                    MediaPlayerApp.mediaPlayer!!.duration.toFloat()
+
+                //update of text
+                currentMinutes = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 / 60
+                currentSeconds = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 % 60
+
+                currentPositionText.value = String.format("%d:%02d", currentMinutes, currentSeconds)
+
                 delay(100)
             }
         }
@@ -61,18 +85,22 @@ fun ActuallyPlayingBar(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .fillMaxHeight()
             .background(MaterialTheme.colorScheme.onBackground)
             .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
     ) {
-        Row {
+        Row(
+            modifier = Modifier
+                .weight(5f)
+                .padding(10.dp, 0.dp, 10.dp, 10.dp)
+                .offset(y = 10.dp)
+        ) {
             image.value?.let {
                 Image(
                     painter = BitmapPainter(it),
                     contentDescription = "Album Cover",
                     modifier = Modifier
-                        .padding(10.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .height(80.dp)
                         .border(
                             width = 1.dp,
                             color = MaterialTheme.colorScheme.surface,
@@ -83,8 +111,8 @@ fun ActuallyPlayingBar(
             Column(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .height(96.dp)
-                    .padding(vertical = 8.dp)
+                    .padding(10.dp)
+                    .fillMaxHeight()
             ) {
                 currentPlayingSong.value?.let {
                     Text(
@@ -102,27 +130,37 @@ fun ActuallyPlayingBar(
                 }
             }
         }
+
         Box(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
+                .weight(2f)
         ){
-/*            Text(
-                text = "A",
+            Row(
+                horizontalArrangement = Arrangement.End,
                 modifier = Modifier
-                    .zIndex(1f)
-            )*/
-
+                    .fillMaxWidth()
+                    .offset(y = (-10).dp)
+            ) {
+                Text(
+                    text = currentPositionText.value,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = " / " + durationText.value,
+                    color = MaterialTheme.colorScheme.surface
+                )
+            }
             Slider(
                 value = progress.floatValue,
                 onValueChange = {},
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(18.dp),
+                    .fillMaxWidth(),
                 colors = SliderDefaults.colors(
                     thumbColor = MaterialTheme.colorScheme.tertiary,
                     activeTrackColor = MaterialTheme.colorScheme.tertiary,
                     inactiveTrackColor = MaterialTheme.colorScheme.background,
-                 ),
+                    )
             )
         }
     }

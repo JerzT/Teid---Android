@@ -35,7 +35,7 @@ fun BottomBarCustom(
         contentPadding = PaddingValues(0.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .height(260.dp)
+            .height(290.dp)
             .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
     ) {
         Column(

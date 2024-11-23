@@ -130,8 +130,7 @@ fun App() {
                             )
                         },
                         bottomBar = { if (MediaPlayerApp.currentPlaying.value != null)
-                            BottomBarCustom(
-                                albumList = albumsList)},
+                            BottomBarCustom(albumList = albumsList)},
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier
@@ -172,8 +171,7 @@ fun App() {
                             )
                         },
                         bottomBar = { if (MediaPlayerApp.currentPlaying.value != null)
-                            BottomBarCustom(
-                                albumList = albumsList)},
+                            BottomBarCustom(albumList = albumsList)},
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier
