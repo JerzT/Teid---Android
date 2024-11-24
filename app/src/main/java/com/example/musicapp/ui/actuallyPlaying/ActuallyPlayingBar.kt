@@ -5,14 +5,12 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,7 +30,6 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.image.albumCoverCache
 import com.example.musicapp.logic.mediaPlayer.MediaPlayerApp
@@ -47,7 +44,10 @@ fun ActuallyPlayingBar(
 ) {
     val currentPlayingSong = remember { MediaPlayerApp.currentPlaying }
     val image = remember { mutableStateOf<ImageBitmap?>(null) }
-    val progress = remember { mutableFloatStateOf(0f) }
+    val progress = remember { mutableFloatStateOf(
+        MediaPlayerApp.mediaPlayer?.currentPosition!!.toFloat() /
+            MediaPlayerApp.mediaPlayer?.duration!!.toFloat()
+    )}
     val durationText = remember { mutableStateOf("0:00") }
     val currentPositionText = remember { mutableStateOf("0:00") }
 
@@ -59,27 +59,25 @@ fun ActuallyPlayingBar(
             val durationSeconds = MediaPlayerApp.mediaPlayer?.duration!! / 1000 % 60
 
             durationText.value = String.format("%d:%02d", durationMinutes, durationSeconds)
-
-            var currentMinutes = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 / 60
-            var currentSeconds = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 % 60
-
-            currentPositionText.value  = String.format("%d:%02d", currentMinutes, currentSeconds)
-
-            while (MediaPlayerApp.isPlaying.value){
-                //slider update
-                progress.floatValue =
-                    MediaPlayerApp.mediaPlayer!!.currentPosition.toFloat() /
-                    MediaPlayerApp.mediaPlayer!!.duration.toFloat()
-
-                //update of text
-                currentMinutes = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 / 60
-                currentSeconds = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 % 60
-
-                currentPositionText.value = String.format("%d:%02d", currentMinutes, currentSeconds)
-
-                delay(100)
-            }
         }
+    }
+
+    LaunchedEffect( MediaPlayerApp.isPlaying.value) {
+        while (MediaPlayerApp.isPlaying.value){
+            //slider update
+            progress.floatValue =
+                MediaPlayerApp.mediaPlayer!!.currentPosition.toFloat() /
+                        MediaPlayerApp.mediaPlayer!!.duration.toFloat()
+
+            delay(100)
+        }
+    }
+
+    LaunchedEffect(progress.floatValue) {
+        val currentMinutes = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 / 60
+        val currentSeconds = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 % 60
+
+        currentPositionText.value  = String.format("%d:%02d", currentMinutes, currentSeconds)
     }
 
     Column(
@@ -153,13 +151,25 @@ fun ActuallyPlayingBar(
             }
             Slider(
                 value = progress.floatValue,
-                onValueChange = {},
+                onValueChange = {
+                    MediaPlayerApp.stopMusicButIsPlaying()
+                    progress.floatValue = it
+                    val validTime = (it * MediaPlayerApp.mediaPlayer?.duration!!).toInt()
+
+                    MediaPlayerApp.mediaPlayer?.seekTo(validTime)
+                },
+                onValueChangeFinished = {
+                    if (MediaPlayerApp.isPlaying.value){
+                        MediaPlayerApp.playMusic()
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth(),
-                colors = SliderDefaults.colors(
-                    thumbColor = MaterialTheme.colorScheme.tertiary,
-                    activeTrackColor = MaterialTheme.colorScheme.tertiary,
-                    inactiveTrackColor = MaterialTheme.colorScheme.background,
+                colors = SliderDefaults
+                    .colors(
+                        thumbColor = MaterialTheme.colorScheme.tertiary,
+                        activeTrackColor = MaterialTheme.colorScheme.tertiary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.background,
                     )
             )
         }

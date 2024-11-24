@@ -70,6 +70,15 @@ object MediaPlayerApp {
         }
     }
 
+    //it made specially for slider in ActuallyPlayingBar
+    fun stopMusicButIsPlaying(){
+        mediaPlayer?.let {
+            if (it.isPlaying){
+                it.pause()
+            }
+        }
+    }
+
     fun setAlbumAsPlaylist(albumsSongs: List<Song>){
         songList = albumsSongs.toMutableList()
     }
