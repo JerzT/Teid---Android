@@ -1,7 +1,6 @@
 package com.example.musicapp.ui.actuallyPlaying
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,12 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.image.albumCoverCache
 import com.example.musicapp.logic.mediaPlayer.MediaPlayerApp
+import com.example.musicapp.logic.mediaPlayer.mediaPlayerNotification
 import com.example.musicapp.logic.song.Song
 import kotlinx.coroutines.delay
 
@@ -50,6 +51,17 @@ fun ActuallyPlayingBar(
     )}
     val durationText = remember { mutableStateOf("0:00") }
     val currentPositionText = remember { mutableStateOf("0:00") }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(image.value) {
+        image.value?.let {
+            mediaPlayerNotification(
+                context = context,
+                imageBitmap = it
+            )
+        }
+    }
 
     LaunchedEffect(currentPlayingSong.value) {
         currentPlayingSong.value?.let {

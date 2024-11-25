@@ -3,6 +3,7 @@ package com.example.musicapp
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -41,6 +42,7 @@ import com.example.musicapp.logic.settings.SettingsDataStore
 import com.example.musicapp.ui.topAppBar.TopAppBarCustom
 import com.example.musicapp.ui.theme.MusicAppTheme
 import com.example.musicapp.logic.album.getAlbumsFromDatabase
+import com.example.musicapp.logic.mediaPlayer.mediaPlayerNotification
 
 @RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "Range")
@@ -85,6 +87,7 @@ fun App() {
     val navController = rememberNavController()
     val albumListState = remember { LazyListState() }
     val albumSearchText = remember { mutableStateOf("")}
+
 
     MusicAppTheme {
         Box(
