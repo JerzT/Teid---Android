@@ -54,14 +54,14 @@ fun ActuallyPlayingBar(
 
     val context = LocalContext.current
 
-    LaunchedEffect(image.value) {
+/*    LaunchedEffect(currentPlayingSong.value) {
         image.value?.let {
             mediaPlayerNotification(
                 context = context,
                 imageBitmap = it
             )
         }
-    }
+    }*/
 
     LaunchedEffect(currentPlayingSong.value) {
         currentPlayingSong.value?.let {
