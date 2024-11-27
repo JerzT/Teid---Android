@@ -8,25 +8,25 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
 private val DarkColorScheme = darkColorScheme(
-    background = Gray,
-    onBackground = LightGray,
-    primary = Black,
-    secondary = LightBlack,
-    tertiary = Blue,
-    onTertiary = Blue50,
-    surface = White,
-    onSurface = White70,
+    background = GrayDarkTheme,
+    onBackground = LightGrayDarkTheme,
+    primary = BlackDarkTheme,
+    secondary = LightBlackDarkTheme,
+    tertiary = BlueDarkTheme,
+    onTertiary = Blue50DarkTheme,
+    surface = WhiteDarkTheme,
+    onSurface = White70DarkTheme,
 )
 
 private val LightColorScheme = lightColorScheme(
-    background = Gray,
-    onBackground = LightGray,
-    primary = Black,
-    secondary = LightBlack,
-    tertiary = Red,
-    onTertiary = Blue50,
-    surface = White,
-    onSurface = White70,
+    background = WhiteLightTheme,
+    onBackground = GrayLightTheme,
+    primary = DirtyWhiteLightTheme,
+    secondary = GrayLightTheme,
+    tertiary = BlueLightTheme,
+    onTertiary = Blue50LightTheme,
+    surface = BlackLightTheme,
+    onSurface = Black70LightTheme,
 
     /* Other default colors to override
     primary
