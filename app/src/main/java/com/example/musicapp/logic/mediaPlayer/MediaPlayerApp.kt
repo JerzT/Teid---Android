@@ -1,15 +1,12 @@
 package com.example.musicapp.logic.mediaPlayer
 
 import android.content.Context
+import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
-import android.util.Log
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.ImageBitmap
-import com.bumptech.glide.request.target.BitmapImageViewTarget
-import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.song.Song
+
 
 object MediaPlayerApp {
     var mediaPlayer: MediaPlayer? = null
@@ -18,38 +15,43 @@ object MediaPlayerApp {
     private var isShuffled: Boolean = false
     var currentPlaying = mutableStateOf<Song?>(null)
 
-    fun addMusicToPlay(context: Context, song: Song) {
-        try {
-            if (mediaPlayer == null) {
-                mediaPlayer = MediaPlayer().apply {
-                    setAudioAttributes(
-                        AudioAttributes.Builder()
-                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .build()
-                    )
-                    setDataSource(context, song.uri)
-                    currentPlaying.value = song
-                    prepare()
-                }
-            } else {
-                mediaPlayer?.reset()
-                mediaPlayer?.apply {
-                    setDataSource(context, song.uri)
-                    currentPlaying.value = song
-                    prepare()
-                }
-            }
-
-            isShuffled = false
-
-            mediaPlayer?.setOnCompletionListener {
-                nextSongPlay(context)
-            }
-
-        } catch (e: Exception) {
-            Log.e("MediaPlayerApp", "Error initializing MediaPlayer: ${e.message}")
+    private fun createMediaPlayer(context: Context){
+        mediaPlayer = MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
         }
+        mediaPlayer?.setOnCompletionListener {
+            nextSongPlay(context)
+        }
+        val serviceIntent: Intent = Intent(
+            context,
+            PlaybackService::class.java
+        )
+        context.startService(serviceIntent)
+        mediaPlayerNotification(context = context)
+    }
+
+    fun addMusicToPlay(context: Context, song: Song) {
+        if (mediaPlayer == null) {
+            createMediaPlayer(context)
+            mediaPlayer?.apply{
+                setDataSource(context, song.uri)
+                currentPlaying.value = song
+                prepare()
+            }
+        } else {
+            mediaPlayer?.reset()
+            mediaPlayer?.apply {
+                setDataSource(context, song.uri)
+                currentPlaying.value = song
+                prepare()
+            }
+        }
+        isShuffled = false
     }
 
     fun playMusic() {
