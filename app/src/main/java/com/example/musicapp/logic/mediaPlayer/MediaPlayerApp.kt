@@ -4,9 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import com.example.musicapp.logic.song.Song
-
 
 object MediaPlayerApp {
     var mediaPlayer: MediaPlayer? = null
@@ -15,6 +16,7 @@ object MediaPlayerApp {
     private var isShuffled: Boolean = false
     var currentPlaying = mutableStateOf<Song?>(null)
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun createMediaPlayer(context: Context){
         mediaPlayer = MediaPlayer().apply {
             setAudioAttributes(
@@ -32,9 +34,9 @@ object MediaPlayerApp {
             PlaybackService::class.java
         )
         context.startService(serviceIntent)
-        mediaPlayerNotification(context = context)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun addMusicToPlay(context: Context, song: Song) {
         if (mediaPlayer == null) {
             createMediaPlayer(context)
@@ -43,6 +45,7 @@ object MediaPlayerApp {
                 currentPlaying.value = song
                 prepare()
             }
+            mediaPlayerNotification(context = context)
         } else {
             mediaPlayer?.reset()
             mediaPlayer?.apply {
@@ -85,6 +88,7 @@ object MediaPlayerApp {
         songList = albumsSongs.toMutableList()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun nextSongPlay(
         context: Context
     ){
@@ -103,6 +107,7 @@ object MediaPlayerApp {
         playMusic()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun previousSongPlay(
         context: Context
     ){

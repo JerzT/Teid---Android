@@ -35,8 +35,8 @@ class PlaybackService: Service(), MediaPlayer.OnPreparedListener {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-
         MediaPlayerApp.releasePlayer()
+
+        super.onDestroy()
     }
 }
