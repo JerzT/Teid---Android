@@ -3,7 +3,6 @@ package com.example.musicapp
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,22 +26,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.musicapp.ui.bottomBar.BottomBarCustom
-import com.example.musicapp.ui.lists.AlbumsList
-import com.example.musicapp.ui.directorySelection.DirectorySelectionUi
-import com.example.musicapp.ui.lists.SongsList
-import com.example.musicapp.logic.image.cacheAlbumCovers
 import com.example.musicapp.logic.album.Album
-import com.example.musicapp.logic.mediaPlayer.MediaPlayerApp
-import com.example.musicapp.logic.directory.changeNotValidDirectoryPathToUri
+import com.example.musicapp.logic.album.getAlbumsFromDatabase
 import com.example.musicapp.logic.album.getAlbumsFromDirectory
 import com.example.musicapp.logic.album.synchronizeAlbums
-import com.example.musicapp.ui.searchBar.SearchBar
+import com.example.musicapp.logic.directory.changeNotValidDirectoryPathToUri
+import com.example.musicapp.logic.image.cacheAlbumCovers
+import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.settings.SettingsDataStore
-import com.example.musicapp.ui.topAppBar.TopAppBarCustom
+import com.example.musicapp.ui.bottomBar.BottomBarCustom
+import com.example.musicapp.ui.directorySelection.DirectorySelectionUi
+import com.example.musicapp.ui.lists.AlbumsList
+import com.example.musicapp.ui.lists.SongsList
+import com.example.musicapp.ui.searchBar.SearchBar
 import com.example.musicapp.ui.theme.MusicAppTheme
-import com.example.musicapp.logic.album.getAlbumsFromDatabase
-import com.example.musicapp.logic.mediaPlayer.mediaPlayerNotification
+import com.example.musicapp.ui.topAppBar.TopAppBarCustom
 
 @RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "Range")
@@ -132,7 +130,7 @@ fun App() {
                                 title = "Library"
                             )
                         },
-                        bottomBar = { if (MediaPlayerApp.currentPlaying.value != null)
+                        bottomBar = { if (AppExoPlayer.haveSongs.value)
                             BottomBarCustom(albumList = albumsList)},
                     ) { innerPadding ->
                         Column(
@@ -173,7 +171,7 @@ fun App() {
                                 navController = navController
                             )
                         },
-                        bottomBar = { if (MediaPlayerApp.currentPlaying.value != null)
+                        bottomBar = { if(AppExoPlayer.haveSongs.value)
                             BottomBarCustom(albumList = albumsList)},
                     ) { innerPadding ->
                         Column(

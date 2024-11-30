@@ -13,8 +13,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.mediaPlayer.PlaybackService
+import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+
+var sessionToken: SessionToken? = null
+var controllerFuture: ListenableFuture<MediaController>? = null
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.P)
@@ -33,11 +38,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             App()
         }
+        sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
+        controllerFuture = MediaController.Builder(this, sessionToken!!).buildAsync()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onDestroy() {
-        Log.v("test2", "test2")
         val notificationManager = baseContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.deleteNotificationChannel("1")
 

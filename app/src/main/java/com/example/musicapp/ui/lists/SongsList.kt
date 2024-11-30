@@ -33,7 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.musicapp.R
-import com.example.musicapp.logic.mediaPlayer.MediaPlayerApp
+import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.song.Song
 import com.example.musicapp.logic.song.getSongs
 import com.example.musicapp.logic.song.getSongsFromDatabaseWithUri
@@ -98,16 +98,7 @@ private fun SongItem(
     song: Song,
     songsList: List<Song>
 ){
-    val isNowPlaying = remember { MediaPlayerApp.currentPlaying }
     val isPlaying = remember { mutableStateOf(false) }
-
-    GlobalScope.launch {
-        isPlaying.value = song == isNowPlaying.value
-    }
-
-    LaunchedEffect(isNowPlaying.value) {
-        isPlaying.value = song == isNowPlaying.value
-    }
 
     val context = LocalContext.current
 
@@ -125,13 +116,7 @@ private fun SongItem(
                 if(isPlaying.value) MaterialTheme.colorScheme.onTertiary
                 else MaterialTheme.colorScheme.background,
         ),
-        onClick = {
-            testPlaying(
-                context = context,
-                song = song,
-                songsList = songsList,
-            )
-        },
+        onClick = { AppExoPlayer.addPlaylist(songsList)},
         modifier = Modifier
             .fillMaxWidth()
     ) {
@@ -218,10 +203,4 @@ private fun testPlaying(
     song: Song,
     songsList: List<Song>
 ){
-    MediaPlayerApp.setAlbumAsPlaylist(songsList.sortedBy { it.number })
-    MediaPlayerApp.addMusicToPlay(
-        context = context,
-        song = song
-    )
-    MediaPlayerApp.playMusic()
 }

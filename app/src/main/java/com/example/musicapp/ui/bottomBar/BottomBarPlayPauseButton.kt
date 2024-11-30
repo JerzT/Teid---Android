@@ -17,25 +17,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.musicapp.R
-import com.example.musicapp.logic.mediaPlayer.MediaPlayerApp
+import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 
 @SuppressLint("SdCardPath")
 @Composable
 fun BottomBarPlayPauseButton() {
-    val isPlaying = remember { MediaPlayerApp.isPlaying }
+    val isPlaying = remember { AppExoPlayer.isPlaying }
     val context = LocalContext.current
 
     Button(
         onClick = {
             if (isPlaying.value){
-                MediaPlayerApp.stopMusic()
+                AppExoPlayer.stopMusic()
             }
             else{
-                if (MediaPlayerApp.currentPlaying.value == null){
-                    MediaPlayerApp.nextSongPlay(context = context)
-                }
-
-                MediaPlayerApp.playMusic()
+                AppExoPlayer.playMusic()
             }
         },
         contentPadding = PaddingValues(0.dp),

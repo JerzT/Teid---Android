@@ -13,13 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Slider
-import androidx.compose.material.SliderDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -27,15 +24,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.image.albumCoverCache
-import com.example.musicapp.logic.mediaPlayer.MediaPlayerApp
-import com.example.musicapp.logic.mediaPlayer.mediaPlayerNotification
 import com.example.musicapp.logic.song.Song
-import kotlinx.coroutines.delay
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -43,53 +35,18 @@ fun ActuallyPlayingBar(
     albumList: List<Album>,
     modifier: Modifier
 ) {
-    val currentPlayingSong = remember { MediaPlayerApp.currentPlaying }
     val image = remember { mutableStateOf<ImageBitmap?>(null) }
-    val progress = remember { mutableFloatStateOf(
-        MediaPlayerApp.mediaPlayer?.currentPosition!!.toFloat() /
-            MediaPlayerApp.mediaPlayer?.duration!!.toFloat()
-    )}
+    val progress = remember { 0f }
     val durationText = remember { mutableStateOf("0:00") }
     val currentPositionText = remember { mutableStateOf("0:00") }
 
     val context = LocalContext.current
 
-/*    LaunchedEffect(currentPlayingSong.value) {
-        image.value?.let {
-            mediaPlayerNotification(
-                context = context,
-                imageBitmap = it
-            )
-        }
-    }*/
-
-    LaunchedEffect(currentPlayingSong.value) {
-        currentPlayingSong.value?.let {
-            image.value = getImageFromAlbum(albumList, it)
-
-            val durationMinutes = MediaPlayerApp.mediaPlayer?.duration!! / 1000 / 60
-            val durationSeconds = MediaPlayerApp.mediaPlayer?.duration!! / 1000 % 60
-
-            durationText.value = String.format("%d:%02d", durationMinutes, durationSeconds)
-        }
-    }
-
-    LaunchedEffect( MediaPlayerApp.isPlaying.value) {
-        while (MediaPlayerApp.isPlaying.value){
-            //slider update
-            progress.floatValue =
-                MediaPlayerApp.mediaPlayer!!.currentPosition.toFloat() /
-                        MediaPlayerApp.mediaPlayer!!.duration.toFloat()
-
-            delay(100)
-        }
-    }
-
-    LaunchedEffect(progress.floatValue) {
-        val currentMinutes = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 / 60
+    LaunchedEffect(progress) {
+/*        val currentMinutes = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 / 60
         val currentSeconds = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 % 60
 
-        currentPositionText.value  = String.format("%d:%02d", currentMinutes, currentSeconds)
+        currentPositionText.value  = String.format("%d:%02d", currentMinutes, currentSeconds)*/
     }
 
     Column(
@@ -124,7 +81,7 @@ fun ActuallyPlayingBar(
                     .padding(10.dp)
                     .fillMaxHeight()
             ) {
-                currentPlayingSong.value?.let {
+/*                currentPlayingSong.value?.let {
                     Text(
                         color = MaterialTheme.colorScheme.surface,
                         text = it.title.toString(),
@@ -137,7 +94,7 @@ fun ActuallyPlayingBar(
                         text = it.author.toString(),
                         maxLines = 1,
                     )
-                }
+                }*/
             }
         }
 
@@ -161,7 +118,7 @@ fun ActuallyPlayingBar(
                     color = MaterialTheme.colorScheme.surface
                 )
             }
-            Slider(
+/*            Slider(
                 value = progress.floatValue,
                 onValueChange = {
                     MediaPlayerApp.stopMusicButIsPlaying()
@@ -183,7 +140,7 @@ fun ActuallyPlayingBar(
                         activeTrackColor = MaterialTheme.colorScheme.tertiary,
                         inactiveTrackColor = MaterialTheme.colorScheme.background,
                     )
-            )
+            )*/
         }
     }
 }

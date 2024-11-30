@@ -20,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.musicapp.R
 import com.example.musicapp.logic.album.Album
-import com.example.musicapp.logic.mediaPlayer.MediaPlayerApp
 import com.example.musicapp.ui.actuallyPlaying.ActuallyPlayingBar
 
 @Composable
@@ -56,19 +55,13 @@ fun BottomBarCustom(
             ) {
                 //shuffle
                 BottomBarButton(
-                    onClick = {
-                        MediaPlayerApp.shuffleSongList()
-                    },
+                    onClick = {},
                     painter = painterResource(id = R.drawable.baseline_shuffle_24),
                     contentDescription = "Play"
                 )
                 //previous
                 BottomBarButton(
-                    onClick = {
-                        MediaPlayerApp.previousSongPlay(
-                            context = context
-                        )
-                    },
+                    onClick = {},
                     painter = painterResource(id = R.drawable.baseline_skip_previous_24),
                     contentDescription = "Play"
                 )
@@ -77,11 +70,7 @@ fun BottomBarCustom(
 
                 //next
                 BottomBarButton(
-                    onClick = {
-                        MediaPlayerApp.nextSongPlay(
-                            context = context
-                        )
-                    },
+                    onClick = {},
                     painter = painterResource(id = R.drawable.baseline_skip_next_24),
                     contentDescription = "Play"
                 )
