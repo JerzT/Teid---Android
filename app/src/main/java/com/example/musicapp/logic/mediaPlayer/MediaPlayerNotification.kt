@@ -6,20 +6,27 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaSession
+import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.core.net.toUri
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.legacy.MediaMetadataCompat
 import androidx.media3.session.legacy.MediaSessionCompat
 import com.example.musicapp.R
+import com.example.musicapp.logic.database.setUpDatabase
+import com.example.musicapp.logic.image.albumCoverCache
 import kotlin.random.Random
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(UnstableApi::class)
-@SuppressLint("RestrictedApi")
+@SuppressLint("RestrictedApi", "Range")
 fun mediaPlayerNotification(
     context: Context,
     //imageBitmap: ImageBitmap
@@ -35,31 +42,28 @@ fun mediaPlayerNotification(
         R.drawable.baseline_play_arrow_24, "Pause", playPausePendingIntent
     ).build()
 
+    var coverUri: Uri? = null
+    val db = setUpDatabase(context)
+    val albumResult = db.getAlbumsFromUri(MediaPlayerApp.currentPlaying.value?.parentUri!!)
+    albumResult.use { albumRow ->
+        while (albumRow.moveToNext()){
+            coverUri = if(albumRow.getString(albumRow.getColumnIndex("cover")) != "")
+                albumRow.getString(albumRow.getColumnIndex("cover")).toUri() else null
+        }
+    }
+
     val mediaSession = MediaSessionCompat(context, "PlayerService")
     mediaSession.setMetadata(
         MediaMetadataCompat.Builder()
-
-            // Title.
             .putString(MediaMetadata.METADATA_KEY_TITLE, MediaPlayerApp.currentPlaying.value?.title!!)
 
-            // Artist.
-            // Could also be the channel name or TV series.
             .putString(MediaMetadata.METADATA_KEY_ARTIST, MediaPlayerApp.currentPlaying.value?.author!!)
 
-            // Album art.
-            // Could also be a screenshot or hero image for video content
-            // The URI scheme needs to be "content", "file", or "android.resource".
-            .putString(
-                MediaMetadata.METADATA_KEY_ALBUM_ART_URI, MediaPlayerApp.currentPlaying.value?.parentUri!!.toString()
-            )
+            .putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, coverUri.toString())
 
+            .putLong(MediaMetadata.METADATA_KEY_DURATION, MediaPlayerApp.mediaPlayer!!.duration.toLong()) // 4
 
-        // Duration.
-        // If duration isn't set, such as for live broadcasts, then the progress
-        // indicator won't be shown on the seekbar.
-        .putLong(MediaMetadata.METADATA_KEY_DURATION, MediaPlayerApp.mediaPlayer!!.duration.toLong()) // 4
-
-        .build()
+            .build()
     )
 
     val mediaStyle = Notification.MediaStyle().setMediaSession(mediaSession.sessionToken.token as MediaSession.Token?)

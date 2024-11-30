@@ -141,6 +141,12 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         return db.rawQuery("SELECT * FROM $MUSIC_ALBUMS", null)
     }
 
+    fun getAlbumsFromUri(uri: Uri): Cursor{
+        val db = this.readableDatabase
+
+        return db.rawQuery("SELECT * FROM $MUSIC_ALBUMS WHERE $URI_COL == ?", arrayOf(uri.toString()))
+    }
+
     @SuppressLint("Recycle")
     fun addSong(song: Song){
         val db = this.writableDatabase
