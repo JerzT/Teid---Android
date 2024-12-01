@@ -24,9 +24,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.image.albumCoverCache
+import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.song.Song
 
 @SuppressLint("DefaultLocale")
@@ -39,6 +42,7 @@ fun ActuallyPlayingBar(
     val progress = remember { 0f }
     val durationText = remember { mutableStateOf("0:00") }
     val currentPositionText = remember { mutableStateOf("0:00") }
+    val currentSong = remember { AppExoPlayer.currentSong }
 
     val context = LocalContext.current
 
@@ -81,7 +85,7 @@ fun ActuallyPlayingBar(
                     .padding(10.dp)
                     .fillMaxHeight()
             ) {
-/*                currentPlayingSong.value?.let {
+                currentSong.value?.let {
                     Text(
                         color = MaterialTheme.colorScheme.surface,
                         text = it.title.toString(),
@@ -94,7 +98,7 @@ fun ActuallyPlayingBar(
                         text = it.author.toString(),
                         maxLines = 1,
                     )
-                }*/
+                }
             }
         }
 

@@ -1,6 +1,7 @@
 package com.example.musicapp.ui.bottomBar
 
 import android.annotation.SuppressLint
+import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -10,22 +11,37 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import com.example.musicapp.App
 import com.example.musicapp.R
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 
+@OptIn(UnstableApi::class)
 @SuppressLint("SdCardPath")
 @Composable
 fun BottomBarPlayPauseButton() {
-    val isPlaying = remember { AppExoPlayer.isPlaying }
+    val isPlaying = remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    Button(
+    LaunchedEffect(AppExoPlayer.player) {
+        AppExoPlayer.player?.addListener(object : Player.Listener{
+            @Deprecated("Deprecated in Java", ReplaceWith("isPlaying.value = playWhenReady"))
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                isPlaying.value = playWhenReady
+            }
+        })
+    }
+
+        Button(
         onClick = {
             if (isPlaying.value){
                 AppExoPlayer.stopMusic()

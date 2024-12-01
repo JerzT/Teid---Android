@@ -116,7 +116,14 @@ private fun SongItem(
                 if(isPlaying.value) MaterialTheme.colorScheme.onTertiary
                 else MaterialTheme.colorScheme.background,
         ),
-        onClick = { AppExoPlayer.addPlaylist(songsList)},
+        onClick = {
+            AppExoPlayer.setPlaylist(
+                context = context,
+                songList = songsList,
+            )
+            AppExoPlayer.playMusic()
+            AppExoPlayer.setPlaylistToSelectedSong(song, songsList)
+            },
         modifier = Modifier
             .fillMaxWidth()
     ) {
