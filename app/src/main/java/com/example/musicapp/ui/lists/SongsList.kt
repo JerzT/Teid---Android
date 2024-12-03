@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.musicapp.App
 import com.example.musicapp.R
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.song.Song
@@ -91,14 +92,18 @@ fun SongsList(
     }
 }
 
-@OptIn(DelicateCoroutinesApi::class)
 @SuppressLint("DefaultLocale", "CoroutineCreationDuringComposition")
 @Composable
 private fun SongItem(
     song: Song,
     songsList: List<Song>
 ){
+    val actuallyPlayingSong = remember { AppExoPlayer.currentSong }
     val isPlaying = remember { mutableStateOf(false) }
+
+    LaunchedEffect(actuallyPlayingSong.value) {
+        isPlaying.value = song == AppExoPlayer.currentSong.value
+    }
 
     val context = LocalContext.current
 

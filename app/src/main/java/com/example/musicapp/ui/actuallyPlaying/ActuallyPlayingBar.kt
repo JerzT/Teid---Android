@@ -46,6 +46,15 @@ fun ActuallyPlayingBar(
 
     val context = LocalContext.current
 
+    LaunchedEffect(currentSong.value) {
+        image.value = currentSong.value?.let {
+            getImageFromAlbum(
+                albumList = albumList,
+                currentPlaying = it
+            )
+        }
+    }
+
     LaunchedEffect(progress) {
 /*        val currentMinutes = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 / 60
         val currentSeconds = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 % 60

@@ -32,16 +32,17 @@ fun BottomBarPlayPauseButton() {
     val isPlaying = remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    LaunchedEffect(AppExoPlayer.player) {
-        AppExoPlayer.player?.addListener(object : Player.Listener{
-            @Deprecated("Deprecated in Java", ReplaceWith("isPlaying.value = playWhenReady"))
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                isPlaying.value = playWhenReady
-            }
-        })
-    }
+    AppExoPlayer.player?.addListener(object : Player.Listener{
+        @Deprecated("Deprecated in Java", ReplaceWith("isPlaying.value = playWhenReady"))
+        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+            isPlaying.value = playWhenReady
+        }
+    })
 
-        Button(
+    LaunchedEffect(Unit) {
+        isPlaying.value = AppExoPlayer.player?.isPlaying ?: false
+    }
+    Button(
         onClick = {
             if (isPlaying.value){
                 AppExoPlayer.stopMusic()
