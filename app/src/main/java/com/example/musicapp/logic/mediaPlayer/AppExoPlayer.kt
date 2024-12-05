@@ -1,5 +1,6 @@
 package com.example.musicapp.logic.mediaPlayer
 
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
@@ -16,9 +17,15 @@ object AppExoPlayer{
     var player: ExoPlayer? = null
     val haveSongs = mutableStateOf(false)
     val currentSong = mutableStateOf<Song?>(null)
+    val isPlaying = mutableStateOf<Boolean>(false)
 
     fun createPlayer(context: Context){
         player = ExoPlayer.Builder(context).build()
+        player!!.addListener(object: Player.Listener{
+            override fun onIsPlayingChanged(isPlayingExo: Boolean) {
+                isPlaying.value = isPlayingExo
+            }
+        })
     }
 
     @SuppressLint("Range")
@@ -52,6 +59,7 @@ object AppExoPlayer{
         val mediaItem = createMediaItem(context, song)
         player?.let {
             it.setMediaItem(mediaItem)
+            it.prepare()
             playMusic()
             haveSongs.value = true
         }
@@ -69,6 +77,7 @@ object AppExoPlayer{
             }
         }
         player?.let {
+            it.prepare()
             playMusic()
             haveSongs.value = true
         }
@@ -81,15 +90,10 @@ object AppExoPlayer{
     }
 
     fun playMusic(){
-        player?.let {
-            it.prepare()
-            it.play()
-        }
+        player?.play()
     }
 
     fun stopMusic(){
-        player?.let {
-            it.pause()
-        }
+        player?.pause()
     }
 }

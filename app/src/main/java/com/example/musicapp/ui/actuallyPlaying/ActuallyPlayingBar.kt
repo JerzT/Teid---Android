@@ -13,10 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Slider
+import androidx.compose.material.SliderDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -31,6 +34,7 @@ import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.image.albumCoverCache
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.song.Song
+import kotlinx.coroutines.delay
 
 @SuppressLint("DefaultLocale")
 @Composable
@@ -39,11 +43,13 @@ fun ActuallyPlayingBar(
     modifier: Modifier
 ) {
     val image = remember { mutableStateOf<ImageBitmap?>(null) }
-    val progress = remember { 0f }
+    val progress = remember { mutableFloatStateOf(
+        AppExoPlayer.player!!.currentPosition.toFloat() /
+                AppExoPlayer.player!!.duration.toFloat()) }
     val durationText = remember { mutableStateOf("0:00") }
     val currentPositionText = remember { mutableStateOf("0:00") }
     val currentSong = remember { AppExoPlayer.currentSong }
-
+    val isPlaying = remember { AppExoPlayer.isPlaying }
     val context = LocalContext.current
 
     LaunchedEffect(currentSong.value) {
@@ -53,13 +59,30 @@ fun ActuallyPlayingBar(
                 currentPlaying = it
             )
         }
+
+        val durationMinutes = currentSong.value?.length!! / 1000 / 60
+        val durationSeconds = currentSong.value?.length!! / 1000 % 60
+
+        durationText.value = String.format("%d:%02d", durationMinutes, durationSeconds)
     }
 
-    LaunchedEffect(progress) {
-/*        val currentMinutes = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 / 60
-        val currentSeconds = MediaPlayerApp.mediaPlayer?.currentPosition!! / 1000 % 60
+    LaunchedEffect(isPlaying.value) {
+        while (isPlaying.value){
+            //slider update
+            progress.floatValue =
+                AppExoPlayer.player!!.currentPosition.toFloat() /
+                        AppExoPlayer.player!!.duration.toFloat()
 
-        currentPositionText.value  = String.format("%d:%02d", currentMinutes, currentSeconds)*/
+            //update of text
+            delay(100)
+        }
+    }
+
+    LaunchedEffect(progress.floatValue) {
+        val currentMinutes = AppExoPlayer.player?.currentPosition!! / 1000 / 60
+        val currentSeconds = AppExoPlayer.player?.currentPosition!! / 1000 % 60
+
+        currentPositionText.value  = String.format("%d:%02d", currentMinutes, currentSeconds)
     }
 
     Column(
@@ -131,19 +154,12 @@ fun ActuallyPlayingBar(
                     color = MaterialTheme.colorScheme.surface
                 )
             }
-/*            Slider(
+            Slider(
                 value = progress.floatValue,
                 onValueChange = {
-                    MediaPlayerApp.stopMusicButIsPlaying()
                     progress.floatValue = it
-                    val validTime = (it * MediaPlayerApp.mediaPlayer?.duration!!).toInt()
-
-                    MediaPlayerApp.mediaPlayer?.seekTo(validTime)
-                },
-                onValueChangeFinished = {
-                    if (MediaPlayerApp.isPlaying.value){
-                        MediaPlayerApp.playMusic()
-                    }
+                    val validTime = (it * AppExoPlayer.player?.duration!!).toInt()
+                    AppExoPlayer.player?.seekTo(validTime.toLong())
                 },
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -153,7 +169,7 @@ fun ActuallyPlayingBar(
                         activeTrackColor = MaterialTheme.colorScheme.tertiary,
                         inactiveTrackColor = MaterialTheme.colorScheme.background,
                     )
-            )*/
+            )
         }
     }
 }
