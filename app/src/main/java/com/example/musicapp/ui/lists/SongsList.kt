@@ -124,7 +124,7 @@ private fun SongItem(
         onClick = {
             AppExoPlayer.setPlaylist(
                 context = context,
-                songList = songsList,
+                songPlaylist = songsList,
             )
             AppExoPlayer.playMusic()
             AppExoPlayer.setPlaylistToSelectedSong(song, songsList)
