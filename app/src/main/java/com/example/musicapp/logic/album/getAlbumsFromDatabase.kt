@@ -9,10 +9,10 @@ import com.example.musicapp.logic.database.setUpDatabase
 @SuppressLint("Range")
 fun getAlbumsFromDatabase(
     context: Context,
-): MutableList<Album> {
+): MutableList<Any> {
     val database = setUpDatabase(context)
     //get saved albums
-    val albumsList: MutableList<Album> = mutableListOf()
+    val albumsList: MutableList<Any> = mutableListOf()
     val getAlbumResult = database.getAlbums()
     getAlbumResult.use { albumRow ->
         while (albumRow.moveToNext()){

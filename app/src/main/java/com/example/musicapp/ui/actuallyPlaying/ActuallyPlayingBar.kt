@@ -39,7 +39,7 @@ import kotlinx.coroutines.delay
 @SuppressLint("DefaultLocale")
 @Composable
 fun ActuallyPlayingBar(
-    albumList: List<Album>,
+    albumList: List<Any>,
     modifier: Modifier
 ) {
     val image = remember { mutableStateOf<ImageBitmap?>(null) }
@@ -176,15 +176,19 @@ fun ActuallyPlayingBar(
 
 
 private fun getImageFromAlbum(
-    albumList: List<Album>,
+    albumList: List<Any>,
     currentPlaying: Song,
 ): ImageBitmap? {
     val uri: String
 
     for(album in albumList){
-        if(album.uri == currentPlaying.parentUri){
-            uri = "${album.uri}"
-            return albumCoverCache[uri]
+        when(album){
+            is Album -> {
+                if(album.uri == currentPlaying.parentUri){
+                    uri = "${album.uri}"
+                    return albumCoverCache[uri]
+                }
+            }
         }
     }
 

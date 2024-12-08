@@ -9,9 +9,9 @@ import androidx.annotation.RequiresApi
 suspend fun getAlbumsFromDirectory(
     context: Context,
     uri: Uri?
-): MutableList<Album> {
+): MutableList<Any> {
 
-    val albumsInDirectory: MutableList<Album> = mutableListOf()
+    val albumsInDirectory: MutableList<Any> = mutableListOf()
 
     findAlbums(
         uri = uri,

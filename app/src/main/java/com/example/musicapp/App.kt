@@ -26,7 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.musicapp.logic.album.Album
+import com.example.musicapp.logic.album.connectDiscFromAlbums
 import com.example.musicapp.logic.album.getAlbumsFromDatabase
 import com.example.musicapp.logic.album.getAlbumsFromDirectory
 import com.example.musicapp.logic.album.synchronizeAlbums
@@ -52,26 +52,28 @@ fun App() {
 
     val settings = SettingsDataStore(context)
 
-    val albumsList = remember { mutableStateListOf<Album>() }
+    val albumsList = remember { mutableStateListOf<Any>() }
     //albumList loading and synchronizing
     LaunchedEffect(Unit) {
         settings.directoryPathFlow.collect { directoryPath ->
             uri.value = changeNotValidDirectoryPathToUri(directoryPath)
             if (uri.value != null) {
 
-                val albumsFromDatabase = getAlbumsFromDatabase(context).apply { sortBy { it.name } }
+                val albumsFromDatabase = getAlbumsFromDatabase(context)/*.apply { sortBy { it.name } }*/
+                val connectedAlbumsFromDatabase = connectDiscFromAlbums(albumsFromDatabase)
 
-                albumsList.addAll(albumsFromDatabase)
-                cacheAlbumCovers(albumsFromDatabase, context)
+                albumsList.addAll(connectedAlbumsFromDatabase)
+                cacheAlbumCovers(connectedAlbumsFromDatabase, context)
 
                 val albumsInDirectory = getAlbumsFromDirectory(
                     context = context,
                     uri = uri.value
-                ).apply { sortBy { it.name } }
+                )/*.apply { sortBy { it.name } }*/
+                val connectedAlbumsFromDirectory = connectDiscFromAlbums(albumsInDirectory)
 
                 albumsList.clear()
-                albumsList.addAll(albumsInDirectory)
-                cacheAlbumCovers(albumsInDirectory, context)
+                albumsList.addAll(connectedAlbumsFromDirectory)
+                cacheAlbumCovers(connectedAlbumsFromDirectory, context)
 
                 synchronizeAlbums(
                     albumsFromDatabase = albumsFromDatabase,
@@ -131,7 +133,7 @@ fun App() {
                             )
                         },
                         bottomBar = { if (AppExoPlayer.haveSongs.value)
-                            BottomBarCustom(albumList = albumsList)},
+                            BottomBarCustom(albumList = albumsList) },
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier

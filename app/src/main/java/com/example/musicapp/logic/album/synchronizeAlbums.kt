@@ -4,8 +4,8 @@ import android.content.Context
 import com.example.musicapp.logic.database.setUpDatabase
 
 fun synchronizeAlbums(
-    albumsFromDatabase: MutableList<Album>,
-    albumsInDirectory: MutableList<Album>,
+    albumsFromDatabase: MutableList<Any>,
+    albumsInDirectory: MutableList<Any>,
     context: Context,
 ){
     val database = setUpDatabase(context)
@@ -18,9 +18,17 @@ fun synchronizeAlbums(
     val albumsToAdd = albumsInDirectorySet - albumsFromDatabaseSet
 
     for (album in albumsToDelete){
-        database.deleteAlbum(album)
+        when(album){
+            is Album ->{
+                database.deleteAlbum(album)
+            }
+        }
     }
     for(album in albumsToAdd){
-        database.addAlbum(album)
+        when(album){
+            is Album ->{
+                database.addAlbum(album)
+            }
+        }
     }
 }

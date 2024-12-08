@@ -25,7 +25,7 @@ import com.example.musicapp.ui.actuallyPlaying.ActuallyPlayingBar
 
 @Composable
 fun BottomBarCustom(
-    albumList: List<Album>,
+    albumList: List<Any>,
 ){
     val context = LocalContext.current
 

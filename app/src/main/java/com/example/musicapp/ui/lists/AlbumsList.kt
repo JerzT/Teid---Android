@@ -48,7 +48,7 @@ import java.net.URLEncoder
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun AlbumsList(
-    albumsList: List<Album>,
+    albumsList: List<Any>,
     navController: NavController,
     searchText: MutableState<String>,
     state: LazyListState,
@@ -56,7 +56,8 @@ fun AlbumsList(
     val filteredAlbums by remember(searchText.value) {
         derivedStateOf {
             albumsList.filter { album ->
-                album.name?.contains(searchText.value, ignoreCase = true) == true
+                /*album.name?.contains(searchText.value, ignoreCase = true) == true*/
+                true
             }
         }
     }
@@ -78,12 +79,31 @@ fun AlbumsList(
 
         items(
             filteredAlbums,
-            key = { album -> album.uri },
+            key = { album ->
+                when(album){
+                    is Album -> {
+                        album.uri
+                    }
+                    is List<*> -> {
+                        (album as List<Album>)[0].uri
+                    }
+                    else -> {}
+                }},
             itemContent = { album ->
-                AlbumItem(
-                    album = album,
-                    navController = navController,
-                )
+                when(album){
+                    is Album -> {
+                        AlbumItem(
+                            album = album,
+                            navController = navController,
+                        )
+                    }
+                    is List<*> -> {
+                        AlbumItem(
+                            album = (album as List<Album>)[0],
+                            navController = navController
+                        )
+                    }
+                }
             }
         )
 

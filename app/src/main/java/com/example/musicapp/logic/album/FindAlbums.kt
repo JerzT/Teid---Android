@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 fun findAlbums(
     uri: Uri?,
     context: Context,
-    albumsList: MutableList<Album>,
+    albumsList: MutableList<Any>,
 ): Deferred<Unit> = GlobalScope.async{
     val database = setUpDatabase(context)
 

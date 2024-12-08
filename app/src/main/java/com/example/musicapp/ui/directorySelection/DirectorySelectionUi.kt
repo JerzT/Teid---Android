@@ -19,7 +19,7 @@ import com.example.musicapp.logic.directory.GetDirectory
 @Composable
 fun DirectorySelectionUi(
     uri: MutableState<Uri?>,
-    albumsList: MutableList<Album>,
+    albumsList: MutableList<Any>,
     navController: NavController,
 ){
     Column(

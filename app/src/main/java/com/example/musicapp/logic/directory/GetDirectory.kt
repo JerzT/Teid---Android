@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun GetDirectory(
     uri: MutableState<Uri?>,
-    albumsList: MutableList<Album>,
+    albumsList: MutableList<Any>,
     navController: NavController,
 ) {
     val context = LocalContext.current

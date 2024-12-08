@@ -18,11 +18,31 @@ val albumCoverCache = mutableStateMapOf<String, ImageBitmap?>()
 
 @OptIn(DelicateCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
-suspend fun cacheAlbumCovers(albums: List<Album>, context: Context) {
+suspend fun cacheAlbumCovers(albums: MutableList<Any>, context: Context) {
     albums.forEach { album ->
-        GlobalScope.launch {
-            if (albumCoverCache[album.uri.toString()] == null) {
-                albumCoverCache[album.uri.toString()] = loadAlbumCover(album, context)
+        when(album){
+            is Album->{
+                GlobalScope.launch {
+                    if (albumCoverCache[album.uri.toString()] == null) {
+                        albumCoverCache[album.uri.toString()] = loadAlbumCover(album, context)
+                    }
+                }
+            }
+            is List<*> -> {
+                GlobalScope.launch {
+                    val albumList = album as List<Album>
+                    var albumFromList: Album? = null
+
+                    for (album in albumList){
+                        if (album.cover != null){
+                            albumFromList = (album as List<Album>)[albumList.indexOf(album)]
+                        }
+                    }
+
+                    if (albumCoverCache[albumFromList?.uri.toString()] == null){
+                        albumCoverCache[albumFromList?.uri.toString()] = loadAlbumCover(albumFromList!!, context)
+                    }
+                }
             }
         }
     }
