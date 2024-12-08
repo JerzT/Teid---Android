@@ -26,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.album.connectDiscFromAlbums
 import com.example.musicapp.logic.album.getAlbumsFromDatabase
 import com.example.musicapp.logic.album.getAlbumsFromDirectory
@@ -59,7 +60,8 @@ fun App() {
             uri.value = changeNotValidDirectoryPathToUri(directoryPath)
             if (uri.value != null) {
 
-                val albumsFromDatabase = getAlbumsFromDatabase(context)/*.apply { sortBy { it.name } }*/
+                val albumsFromDatabase = getAlbumsFromDatabase(context)
+                    .apply { sortBy { if (it is Album) it.name else ""  } }
                 val connectedAlbumsFromDatabase = connectDiscFromAlbums(albumsFromDatabase)
 
                 albumsList.addAll(connectedAlbumsFromDatabase)
@@ -68,7 +70,7 @@ fun App() {
                 val albumsInDirectory = getAlbumsFromDirectory(
                     context = context,
                     uri = uri.value
-                )/*.apply { sortBy { it.name } }*/
+                ).apply { sortBy { if (it is Album) it.name else ""  } }
                 val connectedAlbumsFromDirectory = connectDiscFromAlbums(albumsInDirectory)
 
                 albumsList.clear()

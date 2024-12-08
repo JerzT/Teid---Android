@@ -56,8 +56,11 @@ fun AlbumsList(
     val filteredAlbums by remember(searchText.value) {
         derivedStateOf {
             albumsList.filter { album ->
-                /*album.name?.contains(searchText.value, ignoreCase = true) == true*/
-                true
+                when(album){
+                    is Album -> album.name?.contains(searchText.value, ignoreCase = true) == true
+                    is List<*> -> (album as List<Album>)[0].name?.contains(searchText.value, ignoreCase = true) == true
+                    else -> false
+                }
             }
         }
     }
@@ -90,20 +93,10 @@ fun AlbumsList(
                     else -> {}
                 }},
             itemContent = { album ->
-                when(album){
-                    is Album -> {
-                        AlbumItem(
-                            album = album,
-                            navController = navController,
-                        )
-                    }
-                    is List<*> -> {
-                        AlbumItem(
-                            album = (album as List<Album>)[0],
-                            navController = navController
-                        )
-                    }
-                }
+                AlbumItem(
+                    album = album,
+                    navController = navController,
+                )
             }
         )
 
@@ -120,9 +113,19 @@ fun AlbumsList(
 @SuppressLint("CoroutineCreationDuringComposition", "SuspiciousIndentation")
 @Composable
 private fun AlbumItem(
-    album: Album,
+    album: Any,
     navController: NavController,
 ) {
+    var data: Album? = null
+    when(album){
+        is Album -> {
+            data = album
+        }
+        is List<*> -> {
+            data = (album as List<Album>)[0]
+        }
+    }
+
     Button(
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(
@@ -131,8 +134,8 @@ private fun AlbumItem(
         ),
         contentPadding = PaddingValues(10.dp),
         onClick = {
-            val stupid = URLEncoder.encode(album.uri.toString(), "UTF-8")
-            navController.navigate(route = Screen.SongList.withArgs(stupid, album.name.toString()))
+            val stupid = URLEncoder.encode(data?.uri.toString(), "UTF-8")
+            navController.navigate(route = Screen.SongList.withArgs(stupid, data?.name.toString()))
         },
         modifier = Modifier
             .zIndex(1f)
@@ -142,12 +145,12 @@ private fun AlbumItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
-          val cachedCover = albumCoverCache[album.uri.toString()]
+          val cachedCover = albumCoverCache[data?.uri.toString()]
 
             if (cachedCover != null) {
                 Image(
                     painter = BitmapPainter(cachedCover),
-                    contentDescription = album.name,
+                    contentDescription = data?.name,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .graphicsLayer {
@@ -164,7 +167,7 @@ private fun AlbumItem(
             }
 
             Text(
-                text = album.name.toString(),
+                text = data?.name.toString(),
                 color = MaterialTheme.colorScheme.surface,
                 fontSize = 20.sp,
                 maxLines = 1,
