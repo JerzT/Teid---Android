@@ -60,6 +60,9 @@ fun ActuallyPlayingBar(
             )
         }
 
+        progress.floatValue = AppExoPlayer.player!!.currentPosition.toFloat() /
+                AppExoPlayer.player!!.duration.toFloat()
+
         val durationMinutes = currentSong.value?.length!! / 1000 / 60
         val durationSeconds = currentSong.value?.length!! / 1000 % 60
 
