@@ -26,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.album.connectDiscFromAlbums
 import com.example.musicapp.logic.album.getAlbumsFromDatabase
@@ -42,6 +43,7 @@ import com.example.musicapp.ui.lists.SongsList
 import com.example.musicapp.ui.searchBar.SearchBar
 import com.example.musicapp.ui.theme.MusicAppTheme
 import com.example.musicapp.ui.topAppBar.TopAppBarCustom
+import kotlinx.serialization.Serializable
 
 @RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "Range")
@@ -99,12 +101,10 @@ fun App() {
         ) {
             NavHost(
                 navController = navController,
-                startDestination = if (uri.value == null) Screen.GetUri.route else Screen.AlbumList.route
+                startDestination = if (uri.value == null) Screen.GetUri else Screen.AlbumList
             ) {
                 //Get Directory
-                composable(
-                    route = Screen.GetUri.route
-                ) {
+                composable<Screen.GetUri>{
                     Scaffold(
                         topBar = {
                             TopAppBarCustom(
@@ -125,9 +125,7 @@ fun App() {
                     }
                 }
                 //Album List
-                composable(
-                    route = Screen.AlbumList.route
-                ) {
+                composable<Screen.AlbumList>{
                     Scaffold(
                         topBar = {
                             TopAppBarCustom(
@@ -156,22 +154,14 @@ fun App() {
                     }
                 }
                 //Song List
-                composable(
-                    route = Screen.SongList.route + "/{uri}/{name}",
-                    arguments = listOf(
-                        navArgument("uri") {
-                            type = NavType.StringType
-                            defaultValue = "a"
-                            nullable = true
-                        }
-                    )
-                ) { entry ->
+                composable<Screen.SongList>{
                     val searchText = remember { mutableStateOf("")}
+                    val args = it.toRoute<Screen.SongList>()
 
                     Scaffold(
                         topBar = {
                             TopAppBarCustom(
-                                title = entry.arguments?.getString("name").toString(),
+                                title = args.name.toString(),
                                 navController = navController
                             )
                         },
@@ -188,7 +178,7 @@ fun App() {
                                 searchText = searchText,
                             )
                             SongsList(
-                                uri = entry.arguments?.getString("uri")?.toUri(),
+                                uri = args.uri.toUri(),
                                 searchText = searchText,
                             )
                         }
@@ -199,13 +189,18 @@ fun App() {
     }
 }
 
-open class Screen(
-    val route: String
-){
-    object AlbumList: Screen("AlbumList")
-    object SongList: Screen("SongList")
-    object GetUri: Screen("GetUri")
-
+open class Screen
+{
+    @Serializable
+    object AlbumList
+    @Serializable
+    data class SongList(
+        val uri: String,
+        val name: String?,
+    )
+    @Serializable
+    object GetUri
+/*
     fun withArgs(vararg args: String): String{
         var validRoute = ""
 
@@ -215,5 +210,5 @@ open class Screen(
         }
 
         return validRoute
-    }
+    }*/
 }

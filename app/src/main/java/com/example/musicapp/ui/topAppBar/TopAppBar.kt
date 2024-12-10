@@ -45,7 +45,7 @@ fun TopAppBarCustom(
             ) {
                 if(navController != null){
                     IconButton(
-                        onClick = { navController.navigate(route = Screen.AlbumList.route) }
+                        onClick = { navController.navigate(Screen.AlbumList) }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_arrow_back_24),

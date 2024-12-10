@@ -134,8 +134,10 @@ private fun AlbumItem(
         ),
         contentPadding = PaddingValues(10.dp),
         onClick = {
-            val stupid = URLEncoder.encode(data?.uri.toString(), "UTF-8")
-            navController.navigate(route = Screen.SongList.withArgs(stupid, data?.name.toString()))
+            navController.navigate(Screen.SongList(
+                uri = data?.uri.toString(),
+                name = data?.name.toString()
+            ))
         },
         modifier = Modifier
             .zIndex(1f)
