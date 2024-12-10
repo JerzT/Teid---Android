@@ -64,12 +64,14 @@ fun SongsList(
                 songsList = songsFromDirectory
             ).await()
 
+            songsFromDirectory.sortBy { song -> song.number }
+
             songsList.clear()
             songsList.addAll(songsFromDirectory)
         }
     }
 
-    val filteredAlbums = songsList.filter { song ->
+    val filteredSongs = songsList.filter { song ->
         song.title!!.contains(searchText.value, ignoreCase = true)
     }.sortedBy { it.number }
 
@@ -83,7 +85,7 @@ fun SongsList(
             color = MaterialTheme.colorScheme.surface,
             thickness = 2.dp
         )
-        for (song in filteredAlbums){
+        for (song in filteredSongs){
             SongItem(
                 song = song,
                 songsList = songsList,
