@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.example.musicapp.App
 import com.example.musicapp.R
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
@@ -45,51 +47,57 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun SongsList(
-    uri: Uri?,
+    listUri: List<String>,
     searchText: MutableState<String>,
 ){
     val context = LocalContext.current
 
-    val songsList = remember{ mutableStateListOf<Song>() }
+    val discList = remember { mutableStateListOf<MutableList<Song>>()}
 
-    LaunchedEffect(uri) {
-        if (uri != null){
-            songsList.addAll(getSongsFromDatabaseWithUri(context, uri))
+    LaunchedEffect(listUri) {
+        if (listUri.isNotEmpty()){
+            for (i in 0..< listUri.count()){
+                discList.add(mutableStateListOf())
+                discList[i].addAll(getSongsFromDatabaseWithUri(context, listUri[i].toUri()))
+                discList[i].sortBy { song -> song.number }
+            }
 
-            val songsFromDirectory: SnapshotStateList<Song> = mutableStateListOf()
+            for (i in 0..< listUri.count()){
+                val songsFromDirectory: SnapshotStateList<Song> = mutableStateListOf()
+                getSongs(
+                    uri = listUri[i].toUri(),
+                    context = context,
+                    songsList = songsFromDirectory
+                ).await()
 
-            getSongs(
-                uri = uri,
-                context = context,
-                songsList = songsFromDirectory
-            ).await()
-
-            songsFromDirectory.sortBy { song -> song.number }
-
-            songsList.clear()
-            songsList.addAll(songsFromDirectory)
+                discList[i].clear()
+                discList[i].addAll(songsFromDirectory)
+                discList[i].sortBy { song -> song.number }
+            }
         }
     }
 
-    val filteredSongs = songsList.filter { song ->
-        song.title!!.contains(searchText.value, ignoreCase = true)
-    }.sortedBy { it.number }
+//    val filteredSongs = songsList.filter { song ->
+//        song.title!!.contains(searchText.value, ignoreCase = true)
+//    }.sortedBy { it.number }
 
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(10.dp)
     ) {
-        HeaderOfDisc()
-        HorizontalDivider(
-            color = MaterialTheme.colorScheme.surface,
-            thickness = 2.dp
-        )
-        for (song in filteredSongs){
-            SongItem(
-                song = song,
-                songsList = songsList,
+        for (disc in discList){
+            HeaderOfDisc()
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.surface,
+                thickness = 2.dp
             )
+            for (song in disc){
+                SongItem(
+                    song = song,
+                    songsList = disc,
+                )
+            }
         }
     }
 }

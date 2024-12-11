@@ -178,7 +178,7 @@ fun App() {
                                 searchText = searchText,
                             )
                             SongsList(
-                                uri = args.uri.toUri(),
+                                listUri = args.listUri,
                                 searchText = searchText,
                             )
                         }
@@ -195,20 +195,9 @@ open class Screen
     object AlbumList
     @Serializable
     data class SongList(
-        val uri: String,
+        val listUri: List<String>,
         val name: String?,
     )
     @Serializable
     object GetUri
-/*
-    fun withArgs(vararg args: String): String{
-        var validRoute = ""
-
-        validRoute += route
-        args.forEach { arg ->
-            validRoute += ("/$arg")
-        }
-
-        return validRoute
-    }*/
 }

@@ -1,6 +1,7 @@
 package com.example.musicapp.ui.lists
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -58,7 +59,8 @@ fun AlbumsList(
             albumsList.filter { album ->
                 when(album){
                     is Album -> album.name?.contains(searchText.value, ignoreCase = true) == true
-                    is List<*> -> (album as List<Album>)[0].name?.contains(searchText.value, ignoreCase = true) == true
+                    is List<*> -> (album as List<Album>)[0]
+                        .name?.contains(searchText.value, ignoreCase = true) == true
                     else -> false
                 }
             }
@@ -117,12 +119,16 @@ private fun AlbumItem(
     navController: NavController,
 ) {
     var data: Album? = null
+    var listUri: List<String>? = null
     when(album){
         is Album -> {
             data = album
+            listUri = listOf(album.uri.toString())
         }
         is List<*> -> {
             data = (album as List<Album>)[0]
+            listUri = album.sortedBy { it.cdNumber }
+                .map { it.uri.toString() }.toMutableList()
         }
     }
 
@@ -135,7 +141,7 @@ private fun AlbumItem(
         contentPadding = PaddingValues(10.dp),
         onClick = {
             navController.navigate(Screen.SongList(
-                uri = data?.uri.toString(),
+                listUri = listUri!!,
                 name = data?.name.toString()
             ))
         },
