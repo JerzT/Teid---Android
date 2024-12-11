@@ -188,8 +188,14 @@ private fun getImageFromAlbum(
         when(album){
             is Album -> {
                 if(album.uri == currentPlaying.parentUri){
-                    uri = "${album.uri}"
-                    return albumCoverCache[uri]
+                    return albumCoverCache["${album.uri}"]
+                }
+            }
+            is List<*> ->{
+                for(disc in(album as List<Album>)){
+                    if (disc.uri == currentPlaying.parentUri) {
+                        return albumCoverCache["${disc.uri}"]
+                    }
                 }
             }
         }

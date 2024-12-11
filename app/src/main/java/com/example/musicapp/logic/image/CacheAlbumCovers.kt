@@ -32,16 +32,19 @@ suspend fun cacheAlbumCovers(albums: MutableList<Any>, context: Context) {
             is List<*> -> {
                 GlobalScope.launch {
                     val albumList = album as List<Album>
-                    var albumFromList: Album = albumList[0]
+                    var albumWithImage: Album = albumList[0]
 
-                    for (albumA in albumList){
-                        if (albumA.cover != null){
-                            albumFromList = albumList[albumList.indexOf(albumA)]
+                    for (disc in albumList){
+                        if (disc.cover != null){
+                            albumWithImage = albumList[albumList.indexOf(disc)]
                         }
                     }
 
-                    if (albumCoverCache[albumList[0].uri.toString()] == null){
-                        albumCoverCache[albumList[0].uri.toString()] = loadAlbumCover(albumFromList, context)
+                    for(disc in albumList)
+                    {
+                        if (albumCoverCache[disc.uri.toString()] == null){
+                            albumCoverCache[disc.uri.toString()] = loadAlbumCover(albumWithImage, context)
+                        }
                     }
                 }
             }
