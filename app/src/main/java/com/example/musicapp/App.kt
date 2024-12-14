@@ -180,6 +180,7 @@ fun App() {
                             SongsList(
                                 listUri = args.listUri,
                                 searchText = searchText,
+                                albumsList = albumsList,
                             )
                         }
                     }

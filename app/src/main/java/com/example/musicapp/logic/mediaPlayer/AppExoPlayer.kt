@@ -7,13 +7,16 @@ import android.net.Uri
 import android.util.Log
 import androidx.annotation.OptIn
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.database.setUpDatabase
+import com.example.musicapp.logic.image.albumCoverCache
 import com.example.musicapp.logic.song.Song
 
 object AppExoPlayer{
@@ -32,23 +35,18 @@ object AppExoPlayer{
 
             @OptIn(UnstableApi::class)
             override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-                Log.v("test2", player!!.currentWindowIndex.toString())
                 currentSong.value = songList[player!!.currentWindowIndex]
             }
         })
     }
 
     @SuppressLint("Range")
-    private fun createMediaItem(context: Context, song: Song): MediaItem {
-        var coverUri: Uri? = null
-        val db = setUpDatabase(context)
-        val albumRequest = db.getAlbumFromUri(song.parentUri)
-        albumRequest.use { albumRow ->
-            while (albumRow.moveToNext()){
-                coverUri = if(albumRow.getString(albumRow.getColumnIndex("cover")) != "")
-                    albumRow.getString(albumRow.getColumnIndex("cover")).toUri() else null
-            }
-        }
+    private fun createMediaItem(
+        song: Song,
+        albumsList: List<Any>,
+    ): MediaItem {
+        currentSong.value = song
+        val coverUri: Uri? = getImageFromAlbum(albumsList, currentSong.value!!)
 
         val mediaItem =
             MediaItem.Builder()
@@ -65,8 +63,11 @@ object AppExoPlayer{
         return mediaItem
     }
 
-    fun addSong(context: Context, song: Song){
-        val mediaItem = createMediaItem(context, song)
+    fun addSong(
+        song: Song,
+        albumsList: List<Any>
+    ){
+        val mediaItem = createMediaItem(song, albumsList)
         player?.let {
             it.setMediaItem(mediaItem)
             it.prepare()
@@ -75,7 +76,10 @@ object AppExoPlayer{
         }
     }
 
-    fun setPlaylist(context: Context, songPlaylist: List<Song>){
+    fun setPlaylist(
+        songPlaylist: List<Song>,
+        albumsList: List<Any>
+    ){
         songList = songPlaylist.toMutableList()
 
         player?.let {
@@ -84,7 +88,7 @@ object AppExoPlayer{
         }
         for (song in songPlaylist){
             player?.let {
-                val mediaItem = createMediaItem(context, song)
+                val mediaItem = createMediaItem(song, albumsList)
                 it.addMediaItem(mediaItem)
             }
         }
@@ -93,6 +97,31 @@ object AppExoPlayer{
             playMusic()
             haveSongs.value = true
         }
+    }
+
+    private fun getImageFromAlbum(
+        albumList: List<Any>,
+        currentPlaying: Song,
+    ): Uri? {
+        for(album in albumList){
+            when(album){
+                is Album -> {
+                    if(album.uri == currentPlaying.parentUri){
+                        return album.cover
+                    }
+                }
+                is List<*> ->{
+                    val discs = album.filterIsInstance<Album>()
+                    for (disc in discs) {
+                        if (disc.uri == currentPlaying.parentUri) {
+                            return disc.cover ?: discs.firstOrNull { it.cover != null }?.cover
+                        }
+                    }
+                }
+            }
+        }
+
+        return null
     }
 
     fun setPlaylistToSelectedSong(selectedSong: Song, songList: List<Song>){

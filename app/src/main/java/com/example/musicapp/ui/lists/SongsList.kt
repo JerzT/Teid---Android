@@ -49,6 +49,8 @@ import kotlinx.coroutines.launch
 fun SongsList(
     listUri: List<String>,
     searchText: MutableState<String>,
+    //album list is needed to get images to notification
+    albumsList: List<Any>,
 ){
     val context = LocalContext.current
 
@@ -96,6 +98,7 @@ fun SongsList(
                 SongItem(
                     song = song,
                     songsList = disc,
+                    albumsList = albumsList,
                 )
             }
         }
@@ -106,7 +109,8 @@ fun SongsList(
 @Composable
 private fun SongItem(
     song: Song,
-    songsList: List<Song>
+    songsList: List<Song>,
+    albumsList: List<Any>
 ){
     val actuallyPlayingSong = remember { AppExoPlayer.currentSong }
     val isPlaying = remember { mutableStateOf(false) }
@@ -133,8 +137,8 @@ private fun SongItem(
         ),
         onClick = {
             AppExoPlayer.setPlaylist(
-                context = context,
                 songPlaylist = songsList,
+                albumsList = albumsList,
             )
             AppExoPlayer.playMusic()
             AppExoPlayer.setPlaylistToSelectedSong(song, songsList)
@@ -218,11 +222,4 @@ private fun HeaderOfDisc(){
                 .weight(1f)
         )
     }
-}
-
-private fun testPlaying(
-    context: Context,
-    song: Song,
-    songsList: List<Song>
-){
 }
