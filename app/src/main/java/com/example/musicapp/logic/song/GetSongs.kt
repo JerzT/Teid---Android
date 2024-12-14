@@ -78,9 +78,13 @@ private fun getMetadata(file: DocumentFile, context: Context): Map<String, Strin
         val songYear = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)?.trim()
         val cdNumber = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DISC_NUMBER)?.trim()
             ?: "1"
-        val songNumber = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)?.trim()
+        var songNumber = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)?.trim()
             ?: "1"
         val songLength = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.trim()
+
+        if(songNumber.contains("/")){
+            songNumber = songNumber.split("/")[0]
+        }
 
         mapOf(
             "songName" to songName,
@@ -89,7 +93,6 @@ private fun getMetadata(file: DocumentFile, context: Context): Map<String, Strin
             "cdNumber" to cdNumber[0].toString(),
             "songNumber" to songNumber,
             "songLength" to songLength,
-            
         )
     } catch (e: Exception) {
         mapOf()

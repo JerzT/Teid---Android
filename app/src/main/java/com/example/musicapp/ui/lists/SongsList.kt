@@ -61,7 +61,6 @@ fun SongsList(
                 discList[i].addAll(getSongsFromDatabaseWithUri(context, listUri[i].toUri()))
                 discList[i].sortBy { song -> song.number }
             }
-
             for (i in 0..< listUri.count()){
                 val songsFromDirectory: SnapshotStateList<Song> = mutableStateListOf()
                 getSongs(
@@ -69,7 +68,6 @@ fun SongsList(
                     context = context,
                     songsList = songsFromDirectory
                 ).await()
-
                 discList[i].clear()
                 discList[i].addAll(songsFromDirectory)
                 discList[i].sortBy { song -> song.number }
@@ -77,16 +75,18 @@ fun SongsList(
         }
     }
 
-//    val filteredSongs = songsList.filter { song ->
-//        song.title!!.contains(searchText.value, ignoreCase = true)
-//    }.sortedBy { it.number }
+    val filteredDisc = discList.map { disc ->
+        disc.filter { song: Song ->
+            song.title!!.contains(searchText.value, ignoreCase = true)
+        }.sortedBy { it.number }
+    }
 
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(10.dp)
     ) {
-        for (disc in discList){
+        for (disc in filteredDisc){
             HeaderOfDisc()
             HorizontalDivider(
                 color = MaterialTheme.colorScheme.surface,
