@@ -20,12 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.zIndex
-import androidx.core.net.toUri
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.album.connectDiscFromAlbums
@@ -38,8 +35,8 @@ import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.settings.SettingsDataStore
 import com.example.musicapp.ui.bottomBar.BottomBarCustom
 import com.example.musicapp.ui.directorySelection.DirectorySelectionUi
-import com.example.musicapp.ui.lists.AlbumsList
-import com.example.musicapp.ui.lists.SongsList
+import com.example.musicapp.ui.Lists.Albumslist.AlbumsList
+import com.example.musicapp.ui.Lists.SongsList.SongsList
 import com.example.musicapp.ui.searchBar.SearchBar
 import com.example.musicapp.ui.theme.MusicAppTheme
 import com.example.musicapp.ui.topAppBar.TopAppBarCustom
