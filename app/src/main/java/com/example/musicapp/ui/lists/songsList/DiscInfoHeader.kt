@@ -1,4 +1,4 @@
-package com.example.musicapp.ui.Lists.SongsList
+package com.example.musicapp.ui.lists.songsList
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.example.musicapp.ui.Lists.SongsList
+package com.example.musicapp.ui.lists.songsList
 
 import android.os.Build
 import androidx.annotation.RequiresApi

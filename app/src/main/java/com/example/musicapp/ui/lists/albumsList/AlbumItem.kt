@@ -1,4 +1,4 @@
-package com.example.musicapp.ui.Lists.Albumslist
+package com.example.musicapp.ui.lists.albumsList
 
 import android.annotation.SuppressLint
 import android.os.Build

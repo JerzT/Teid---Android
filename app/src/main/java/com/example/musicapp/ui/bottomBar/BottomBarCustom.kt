@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.musicapp.R
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
@@ -26,6 +27,7 @@ import com.example.musicapp.ui.actuallyPlaying.ActuallyPlayingBar
 @Composable
 fun BottomBarCustom(
     albumList: List<Any>,
+    navController: NavController,
 ){
     val context = LocalContext.current
 
@@ -42,6 +44,7 @@ fun BottomBarCustom(
         ) {
             ActuallyPlayingBar(
                 albumList = albumList,
+                navController = navController,
                 modifier = Modifier
                     .weight(1f)
             )

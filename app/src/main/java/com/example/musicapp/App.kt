@@ -35,8 +35,8 @@ import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.settings.SettingsDataStore
 import com.example.musicapp.ui.bottomBar.BottomBarCustom
 import com.example.musicapp.ui.directorySelection.DirectorySelectionUi
-import com.example.musicapp.ui.Lists.Albumslist.AlbumsList
-import com.example.musicapp.ui.Lists.SongsList.SongsList
+import com.example.musicapp.ui.lists.albumsList.AlbumsList
+import com.example.musicapp.ui.lists.songsList.SongsList
 import com.example.musicapp.ui.searchBar.SearchBar
 import com.example.musicapp.ui.theme.MusicAppTheme
 import com.example.musicapp.ui.topAppBar.TopAppBarCustom
@@ -130,7 +130,10 @@ fun App() {
                             )
                         },
                         bottomBar = { if (AppExoPlayer.haveSongs.value)
-                            BottomBarCustom(albumList = albumsList) },
+                            BottomBarCustom(
+                                albumList = albumsList,
+                                navController = navController,
+                            )},
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier
@@ -163,7 +166,10 @@ fun App() {
                             )
                         },
                         bottomBar = { if(AppExoPlayer.haveSongs.value)
-                            BottomBarCustom(albumList = albumsList)},
+                            BottomBarCustom(
+                                albumList = albumsList,
+                                navController = navController,
+                            )},
                     ) { innerPadding ->
                         Column(
                             modifier = Modifier
