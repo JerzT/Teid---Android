@@ -4,19 +4,14 @@ package com.example.musicapp.logic.mediaPlayer
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.musicapp.logic.album.Album
-import com.example.musicapp.logic.database.setUpDatabase
-import com.example.musicapp.logic.image.albumCoverCache
 import com.example.musicapp.logic.song.Song
 
 object AppExoPlayer{

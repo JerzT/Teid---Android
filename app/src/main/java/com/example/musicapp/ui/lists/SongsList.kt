@@ -1,10 +1,7 @@
 package com.example.musicapp.ui.lists
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +14,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,15 +33,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import com.example.musicapp.App
 import com.example.musicapp.R
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.song.Song
 import com.example.musicapp.logic.song.getSongs
 import com.example.musicapp.logic.song.getSongsFromDatabaseWithUri
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
@@ -89,6 +84,10 @@ fun SongsList(
             .padding(10.dp)
     ) {
         for (disc in filteredDisc){
+            InfoHeader(
+                songsList = disc,
+                discIndex = filteredDisc.indexOf(disc)
+            )
             HeaderOfDisc()
             HorizontalDivider(
                 color = MaterialTheme.colorScheme.surface,
@@ -127,7 +126,7 @@ private fun SongItem(
     val songDurationFormated = String.format("%d:%02d", minutes, seconds)
 
     Button(
-        contentPadding = PaddingValues(5.dp),
+        contentPadding = PaddingValues(5.dp, 0.dp),
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(
             contentColor = MaterialTheme.colorScheme.tertiary,
@@ -179,6 +178,63 @@ private fun SongItem(
                 textAlign = TextAlign.End,
                 modifier = Modifier
                     .weight(3f)
+            )
+        }
+    }
+}
+
+@SuppressLint("DefaultLocale")
+@Composable
+private fun InfoHeader(
+    songsList: List<Song>,
+    discIndex: Int,
+){
+    val songsCount = songsList.count()
+    var albumLength: Int = 0
+    for(song in songsList){
+        albumLength += song.length
+    }
+    val minutes = (albumLength/ 1000) / 60
+    val seconds = (albumLength / 1000) % 60
+
+    val albumLengthString = String.format("%d:%02d", minutes, seconds)
+
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        ),
+        shape = RoundedCornerShape(6.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp, 5.dp)
+    ){
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier =  Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 4.dp)
+        ) {
+            Text(
+                text = "Disk ${discIndex+1}",
+                color = MaterialTheme.colorScheme.surface,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp, 0.dp)
+            )
+            Text(
+                text = "Time: $albumLengthString",
+                color = MaterialTheme.colorScheme.surface,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .weight(1f)
+            )
+            Text(
+                text = "Songs: $songsCount",
+                color = MaterialTheme.colorScheme.surface,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp, 0.dp)
             )
         }
     }

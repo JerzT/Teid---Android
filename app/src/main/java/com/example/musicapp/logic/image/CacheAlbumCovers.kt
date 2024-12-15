@@ -3,7 +3,6 @@ package com.example.musicapp.logic.image
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.ui.graphics.ImageBitmap
