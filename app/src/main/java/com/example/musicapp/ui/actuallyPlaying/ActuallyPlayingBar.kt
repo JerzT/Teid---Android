@@ -55,43 +55,33 @@ fun ActuallyPlayingBar(
     modifier: Modifier,
 ) {
     val image = remember { mutableStateOf<ImageBitmap?>(null) }
-    val progress = remember { mutableFloatStateOf(
-        AppExoPlayer.player!!.currentPosition.toFloat() /
-                AppExoPlayer.player!!.duration.toFloat()) }
+    val progress = remember { mutableFloatStateOf(0f) }
     val durationText = remember { mutableStateOf("0:00") }
     val currentPositionText = remember { mutableStateOf("0:00") }
     val currentSong = remember { AppExoPlayer.currentSong }
     val isPlaying = remember { AppExoPlayer.isPlaying }
-    val actuallyPlayedAlbum = remember { currentSong.value?.let {
-        getActuallyPlayedAlbum(albumList, it)
-    }}
+
+    // Getting the currently played album and image.
+    var actuallyPlayedAlbum = remember(currentSong.value) {
+        currentSong.value?.let { getActuallyPlayedAlbum(albumList, it) }
+    }
 
     LaunchedEffect(currentSong.value) {
+        currentSong.value?.let { song ->
+            actuallyPlayedAlbum = getActuallyPlayedAlbum(albumList, song)
+            image.value = getImageFromAlbum(actuallyPlayedAlbum!!, song)
+            progress.floatValue = AppExoPlayer.player!!.currentPosition.toFloat() / AppExoPlayer.player!!.duration.toFloat()
 
-        image.value = currentSong.value?.let {
-            getImageFromAlbum(
-                album = actuallyPlayedAlbum!!,
-                currentPlaying = it
-            )
+            // Duration formatting
+            val durationMinutes = song.length / 1000 / 60
+            val durationSeconds = song.length / 1000 % 60
+            durationText.value = String.format("%d:%02d", durationMinutes, durationSeconds)
         }
-
-
-        progress.floatValue = AppExoPlayer.player!!.currentPosition.toFloat() /
-                AppExoPlayer.player!!.duration.toFloat()
-
-        val durationMinutes = currentSong.value?.length!! / 1000 / 60
-        val durationSeconds = currentSong.value?.length!! / 1000 % 60
-
-        durationText.value = String.format("%d:%02d", durationMinutes, durationSeconds)
     }
 
     LaunchedEffect(isPlaying.value) {
-        while (isPlaying.value){
-            //slider update
-            progress.floatValue =
-                AppExoPlayer.player!!.currentPosition.toFloat() /
-                        AppExoPlayer.player!!.duration.toFloat()
-            //update of text
+        while (isPlaying.value) {
+            progress.floatValue = AppExoPlayer.player!!.currentPosition.toFloat() / AppExoPlayer.player!!.duration.toFloat()
             delay(100)
         }
     }
@@ -99,8 +89,7 @@ fun ActuallyPlayingBar(
     LaunchedEffect(progress.floatValue) {
         val currentMinutes = AppExoPlayer.player?.currentPosition!! / 1000 / 60
         val currentSeconds = AppExoPlayer.player?.currentPosition!! / 1000 % 60
-
-        currentPositionText.value  = String.format("%d:%02d", currentMinutes, currentSeconds)
+        currentPositionText.value = String.format("%d:%02d", currentMinutes, currentSeconds)
     }
 
     Column(
@@ -118,35 +107,38 @@ fun ActuallyPlayingBar(
         ) {
             Button(
                 onClick = {
-                    when(actuallyPlayedAlbum){
-                        is Album ->{
-                            navController.navigate(
-                            Screen.SongList(
-                                listUri = listOf(actuallyPlayedAlbum.uri.toString()),
-                                name = actuallyPlayedAlbum.name.toString()
-                            ))
-                        }
-                        is List<*>->{
+                    val album = actuallyPlayedAlbum
+                    when (album) {
+                        is Album -> {
                             navController.navigate(
                                 Screen.SongList(
-                                    listUri = (actuallyPlayedAlbum as List<Album>).sortedBy { it.cdNumber }
-                                        .map { it.uri.toString() }.toMutableList(),
-                                    name = actuallyPlayedAlbum[0].name.toString()
-                                ))
+                                    listUri = listOf(album.uri.toString()),
+                                    name = album.name.toString()
+                                )
+                            )
+                        }
+                        is List<*> -> {
+                            val sortedUris = (album as List<Album>).sortedBy { it.cdNumber }
+                                .map { it.uri.toString() }.toMutableList()
+                            navController.navigate(
+                                Screen.SongList(
+                                    listUri = sortedUris,
+                                    name = album[0].name.toString()
+                                )
+                            )
                         }
                     }
-
                 },
                 elevation = null,
                 shape = RoundedCornerShape(0.dp),
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Image(
-                    painter = if(image.value != null) BitmapPainter(image.value!!)
-                    else painterResource(id = R.drawable.baseline_question_mark_24),
+                    painter = image.value?.let { BitmapPainter(it) }
+                        ?: painterResource(id = R.drawable.baseline_question_mark_24),
                     contentScale = ContentScale.Crop,
                     contentDescription = "Album Cover",
-                    colorFilter = if(image.value == null) {
+                    colorFilter = if (image.value == null) {
                         if (isSystemInDarkTheme()) ColorFilter.lighting(Color.Black, Color.White)
                         else null
                     } else null,
@@ -161,6 +153,7 @@ fun ActuallyPlayingBar(
                         )
                 )
             }
+
             Column(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
@@ -170,15 +163,15 @@ fun ActuallyPlayingBar(
                 currentSong.value?.let {
                     Text(
                         color = MaterialTheme.colorScheme.surface,
-                        text = it.title.toString(),
+                        text = it.title ?: "",
                         fontSize = 26.sp,
                         fontWeight = FontWeight(900),
-                        maxLines = 1,
+                        maxLines = 1
                     )
                     Text(
                         color = MaterialTheme.colorScheme.surface,
-                        text = it.author.toString(),
-                        maxLines = 1,
+                        text = it.author ?: "",
+                        maxLines = 1
                     )
                 }
             }
@@ -188,7 +181,7 @@ fun ActuallyPlayingBar(
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .weight(2f)
-        ){
+        ) {
             Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier
@@ -204,68 +197,52 @@ fun ActuallyPlayingBar(
                     color = MaterialTheme.colorScheme.surface
                 )
             }
+
             Slider(
                 value = progress.floatValue,
-                onValueChange = {
-                    progress.floatValue = it
-                    val validTime = (it * AppExoPlayer.player?.duration!!).toInt()
+                onValueChange = { value ->
+                    progress.floatValue = value
+                    val validTime = (value * AppExoPlayer.player?.duration!!).toInt()
                     AppExoPlayer.player?.seekTo(validTime.toLong())
                 },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                colors = SliderDefaults
-                    .colors(
-                        thumbColor = MaterialTheme.colorScheme.tertiary,
-                        activeTrackColor = MaterialTheme.colorScheme.tertiary,
-                        inactiveTrackColor = MaterialTheme.colorScheme.background,
-                    )
+                modifier = Modifier.fillMaxWidth(),
+                colors = SliderDefaults.colors(
+                    thumbColor = MaterialTheme.colorScheme.tertiary,
+                    activeTrackColor = MaterialTheme.colorScheme.tertiary,
+                    inactiveTrackColor = MaterialTheme.colorScheme.background
+                )
             )
         }
     }
 }
 
-
 private fun getImageFromAlbum(
     album: Any,
     currentPlaying: Song,
 ): ImageBitmap? {
-    val uri: String
-    when(album){
+    return when (album) {
         is Album -> {
-            if(album.uri == currentPlaying.parentUri){
-                return albumCoverCache["${album.uri}"]
-            }
+            if (album.uri == currentPlaying.parentUri) {
+                albumCoverCache["${album.uri}"]
+            } else null
         }
-        is List<*> ->{
-            for(disc in(album as List<Album>)){
-                if (disc.uri == currentPlaying.parentUri) {
-                    return albumCoverCache["${disc.uri}"]
-                }
-            }
+        is List<*> -> {
+            (album as List<Album>).firstOrNull { it.uri == currentPlaying.parentUri }
+                ?.let { albumCoverCache["${it.uri}"] }
         }
+        else -> null
     }
-    return null
 }
 
 private fun getActuallyPlayedAlbum(
     albumList: List<Any>,
     currentPlaying: Song,
 ): Any? {
-    for(album in albumList){
-        when(album){
-            is Album -> {
-                if(album.uri == currentPlaying.parentUri){
-                    return album
-                }
-            }
-            is List<*> ->{
-                for(disc in(album as List<Album>)){
-                    if (disc.uri == currentPlaying.parentUri) {
-                        return album
-                    }
-                }
-            }
+    return albumList.firstOrNull { album ->
+        when (album) {
+            is Album -> album.uri == currentPlaying.parentUri
+            is List<*> -> (album as List<Album>).any { it.uri == currentPlaying.parentUri }
+            else -> false
         }
     }
-    return null
 }
