@@ -169,6 +169,7 @@ fun App() {
                             BottomBarCustom(
                                 albumList = albumsList,
                                 navController = navController,
+                                songListUri = args.listUri
                             )},
                     ) { innerPadding ->
                         Column(

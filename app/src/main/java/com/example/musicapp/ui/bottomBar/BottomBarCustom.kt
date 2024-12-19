@@ -1,5 +1,6 @@
 package com.example.musicapp.ui.bottomBar
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,9 +29,8 @@ import com.example.musicapp.ui.actuallyPlaying.ActuallyPlayingBar
 fun BottomBarCustom(
     albumList: List<Any>,
     navController: NavController,
+    songListUri: List<String>? = null,
 ){
-    val context = LocalContext.current
-
     BottomAppBar(
         contentPadding = PaddingValues(0.dp),
         modifier = Modifier
@@ -45,6 +45,7 @@ fun BottomBarCustom(
             ActuallyPlayingBar(
                 albumList = albumList,
                 navController = navController,
+                songListUri = songListUri,
                 modifier = Modifier
                     .weight(1f)
             )

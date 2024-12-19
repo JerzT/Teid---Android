@@ -1,6 +1,7 @@
 package com.example.musicapp.ui.actuallyPlaying
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,7 +34,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -47,11 +47,12 @@ import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.song.Song
 import kotlinx.coroutines.delay
 
-@SuppressLint("DefaultLocale")
+@SuppressLint("DefaultLocale", "RestrictedApi")
 @Composable
 fun ActuallyPlayingBar(
     albumList: List<Any>,
     navController: NavController,
+    songListUri: List<String>?,
     modifier: Modifier,
 ) {
     val image = remember { mutableStateOf<ImageBitmap?>(null) }
@@ -107,9 +108,11 @@ fun ActuallyPlayingBar(
         ) {
             Button(
                 onClick = {
-                    val album = actuallyPlayedAlbum
-                    when (album) {
+                    when (val album = actuallyPlayedAlbum) {
                         is Album -> {
+                            if(songListUri?.get(0) == album.uri.toString()){
+                                return@Button
+                            }
                             navController.navigate(
                                 Screen.SongList(
                                     listUri = listOf(album.uri.toString()),
@@ -118,6 +121,11 @@ fun ActuallyPlayingBar(
                             )
                         }
                         is List<*> -> {
+                            for(i in 0..(album as List<Album>).count()){
+                                if (songListUri?.get(i) == album[i].uri.toString()){
+                                    return@Button
+                                }
+                            }
                             val sortedUris = (album as List<Album>).sortedBy { it.cdNumber }
                                 .map { it.uri.toString() }.toMutableList()
                             navController.navigate(
