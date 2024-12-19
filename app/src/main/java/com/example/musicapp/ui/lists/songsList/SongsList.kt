@@ -1,8 +1,11 @@
 package com.example.musicapp.ui.lists.songsList
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
@@ -33,6 +37,7 @@ fun SongsList(
     val context = LocalContext.current
 
     val discList = remember { mutableStateListOf<MutableList<Song>>()}
+    val firstSongFromList = remember { mutableStateOf<Song?>(null) }
 
     LaunchedEffect(listUri) {
         if (listUri.isNotEmpty()){
@@ -41,6 +46,7 @@ fun SongsList(
                 discList[i].addAll(getSongsFromDatabaseWithUri(context, listUri[i].toUri()))
                 discList[i].sortBy { song -> song.number }
             }
+            firstSongFromList.value = discList[0][0]
             for (i in 0..< listUri.count()){
                 val songsFromDirectory: SnapshotStateList<Song> = mutableStateListOf()
                 getSongs(
@@ -52,6 +58,7 @@ fun SongsList(
                 discList[i].addAll(songsFromDirectory)
                 discList[i].sortBy { song -> song.number }
             }
+            firstSongFromList.value = discList[0][0]
         }
     }
 
@@ -66,6 +73,13 @@ fun SongsList(
             .verticalScroll(rememberScrollState())
             .padding(10.dp)
     ) {
+        SpinningDisc(
+            albumsList = albumsList,
+            song = firstSongFromList.value,
+            modifier = Modifier
+                .offset( x= 0.dp, y= (-100).dp)
+                .height(180.dp)
+        )
         for (disc in filteredDisc){
             DiscInfoHeader(
                 songsList = disc,

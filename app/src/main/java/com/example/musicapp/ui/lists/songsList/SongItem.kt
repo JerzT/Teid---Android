@@ -35,8 +35,6 @@ fun SongItem(
         isPlaying.value = song == AppExoPlayer.currentSong.value
     }
 
-    val context = LocalContext.current
-
     val minutes = (song.length / 1000) / 60
     val seconds = (song.length / 1000) % 60
 
