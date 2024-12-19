@@ -14,13 +14,13 @@ espressoCore = "3.6.1"
 kotlinxSerializationJson = "1.7.3"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
-composeBom = "2024.10.01"
+composeBom = "2024.12.01"
 appcompat = "1.7.0"
 documentfile = "1.0.1"
-material = "1.8.0-alpha06"
-navigationCompose = "2.8.3"
-media3Session = "1.4.1"
-media3Exoplayer = "1.5.0"
+material = "1.8.0-alpha07"
+navigationCompose = "2.8.5"
+media3Session = "1.5.1"
+media3Exoplayer = "1.5.1"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
