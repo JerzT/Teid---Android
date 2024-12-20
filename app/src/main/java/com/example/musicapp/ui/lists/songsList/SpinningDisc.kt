@@ -1,5 +1,20 @@
 package com.example.musicapp.ui.lists.songsList
 
+import android.annotation.SuppressLint
+import android.util.Log
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.InfiniteTransition
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.StartOffset
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -14,10 +29,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -26,8 +43,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.image.albumCoverCache
+import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.song.Song
 
+@SuppressLint("UnrememberedAnimatable")
 @Composable
 fun SpinningDisc(
     albumsList: List<Any>,
@@ -36,6 +55,37 @@ fun SpinningDisc(
 ){
     val image = remember { mutableStateOf<ImageBitmap?>(null) }
     val album = remember { mutableStateOf<Any?>(null) }
+    val isPlaying = remember { AppExoPlayer.isPlaying }
+    val rotationAngleStopState = remember { mutableFloatStateOf(0f) }
+    val rotationAngle = remember { mutableFloatStateOf(0f) }
+
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val rotation = if (!isPlaying.value) {
+        rotationAngleStopState.floatValue
+    } else {
+        infiniteTransition.animateFloat(
+            initialValue = rotationAngle.floatValue,
+            targetValue = 360f + rotationAngle.floatValue,
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = 8000,
+                    easing = LinearEasing,
+                ),
+            ),
+            label = ""
+        ).value
+    }
+
+    LaunchedEffect(isPlaying.value) {
+        rotationAngle.floatValue = rotationAngleStopState.floatValue
+    }
+
+    LaunchedEffect(rotation) {
+        rotationAngleStopState.floatValue = rotation
+        if(rotation == 360f){
+            rotationAngle.floatValue = 0f
+        }
+    }
 
     LaunchedEffect(song) {
         song?.let{
@@ -53,6 +103,7 @@ fun SpinningDisc(
             .fillMaxWidth()
             .aspectRatio(1f)
             .padding(16.dp)
+            .rotate(rotation)
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
