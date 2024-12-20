@@ -29,7 +29,7 @@ fun getSongs(
         "amr", "mid", "xmf",
         "mxmf", "rtttl", "rtx",
         "ota", "imy", "3gp",
-        "ts", "mkv", "wv")
+        "ts", "mkv", "wv", "mpeg")
 
     if(documentFile != null && documentFile.isDirectory){
         val files = documentFile.listFiles()

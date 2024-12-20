@@ -46,7 +46,9 @@ fun SongsList(
                 discList[i].addAll(getSongsFromDatabaseWithUri(context, listUri[i].toUri()))
                 discList[i].sortBy { song -> song.number }
             }
-            firstSongFromList.value = discList[0][0]
+            if (discList[0].isNotEmpty()){
+                firstSongFromList.value = discList[0][0]
+            }
             for (i in 0..< listUri.count()){
                 val songsFromDirectory: SnapshotStateList<Song> = mutableStateListOf()
                 getSongs(
