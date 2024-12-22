@@ -34,9 +34,9 @@ fun getSongs(
     if(documentFile != null && documentFile.isDirectory){
         val files = documentFile.listFiles()
         for (file in files){
-            if(file.type?.let {
-                type -> supportedAudioFormats.any{
-                    type.contains(it, ignoreCase = true) }} == true
+            if(file.type?.let { type ->
+                supportedAudioFormats.any{
+                    type.substringAfter("/", "") == it}} == true
                 )
             {
                 val metadata = getMetadata(

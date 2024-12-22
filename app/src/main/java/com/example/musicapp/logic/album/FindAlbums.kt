@@ -49,12 +49,12 @@ fun findAlbums(
                     }
                 }
                 else{
-                    Log.v("test1", "${file.name}, ${file.type}")
 
                     //check if folder contains audio files and if true makes album
-                    if(file.type?.let {
-                        type -> supportedAudioFormats.any {
-                            type.contains(it, ignoreCase = true) } } == true)
+                    if(file.type?.let { type ->
+                            supportedAudioFormats.any{
+                                type.substringAfter("/", "") == it}} == true
+                        )
                     {
                         val metadata = getMetadata(file, context)
                         val album = Album(

@@ -25,6 +25,7 @@ import androidx.core.net.toUri
 import com.example.musicapp.logic.song.Song
 import com.example.musicapp.logic.song.getSongs
 import com.example.musicapp.logic.song.getSongsFromDatabaseWithUri
+import com.example.musicapp.logic.song.synchronizeSongs
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
@@ -41,9 +42,13 @@ fun SongsList(
 
     LaunchedEffect(listUri) {
         if (listUri.isNotEmpty()){
+            val songsFromDatabaseList: MutableList<MutableList<Song>> = mutableListOf()
+            val songsFromDirectoryList: MutableList<MutableList<Song>> = mutableListOf()
             for (i in 0..< listUri.count()){
+                val songsFromDatabase = getSongsFromDatabaseWithUri(context, listUri[i].toUri())
+                songsFromDatabaseList.add(songsFromDatabase)
                 discList.add(mutableStateListOf())
-                discList[i].addAll(getSongsFromDatabaseWithUri(context, listUri[i].toUri()))
+                discList[i].addAll(songsFromDatabase)
                 discList[i].sortBy { song -> song.number }
             }
             if (discList[0].isNotEmpty()){
@@ -56,11 +61,19 @@ fun SongsList(
                     context = context,
                     songsList = songsFromDirectory
                 ).await()
+                songsFromDirectoryList.add(songsFromDirectory)
                 discList[i].clear()
                 discList[i].addAll(songsFromDirectory)
                 discList[i].sortBy { song -> song.number }
             }
-            firstSongFromList.value = discList[0][0]
+            if (discList[0].isNotEmpty()){
+                firstSongFromList.value = discList[0][0]
+            }
+            synchronizeSongs(
+                songsFromDatabase = songsFromDatabaseList.flatten().toMutableList(),
+                songsInDirectory = songsFromDirectoryList.flatten().toMutableList(),
+                context = context
+            )
         }
     }
 

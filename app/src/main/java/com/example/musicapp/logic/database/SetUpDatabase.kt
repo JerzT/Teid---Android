@@ -169,14 +169,14 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                     "AND $ARTIST_COL = ?" +
                     "AND $FORMAT_COL = ? " +
                     "AND $NUMBER_COL = ? " +
-                    "AND $LENGTH_COL = ?" +
+                    "AND $LENGTH_COL = ? " +
                     "AND $TIME_PLAYED_COL = ?"
             val cursor = db.rawQuery(query,
                 arrayOf(title, uri.toString(), parentUri.toString(), artist, format, "$number", "$length", "$timePlayed"))
 
             if (cursor.moveToFirst()) {
                 // Album already exists
-                Log.v("DBHelper", "Album already exists: $title")
+                Log.v("DBHelper", "Song already exists: $title")
             } else {
                 // Insert album if it does not exist
                 val values = ContentValues().apply {
@@ -191,11 +191,46 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 }
 
                 db.insert(SONGS, null, values)
-                Log.v("DBHelper", "Album added successfully: $title")
+                Log.v("DBHelper", "Song added successfully: $title")
             }
         }
         catch (e: Exception){
             Log.e("DBHelper", "Error while adding song: ${e.message}", e)
+        }
+        finally {
+            db.close()
+        }
+    }
+
+    fun deleteSong(song: Song){
+        val db = this.writableDatabase
+
+        try {
+            val whereClause =
+                    "$TITLE_COL = ? " +
+                    "AND $URI_COL = ? " +
+                    "AND $PARENT_URI_COL = ? " +
+                    "AND $ARTIST_COL = ? " +
+                    "AND $FORMAT_COL = ? " +
+                    "AND $NUMBER_COL = ? " +
+                    "AND $LENGTH_COL = ? " +
+                    "AND $TIME_PLAYED_COL = ?"
+
+            val whereArgs = arrayOf(
+                song.title ?: "",
+                song.uri.toString(),
+                song.parentUri.toString(),
+                song.author ?: "",
+                song.format ?: "",
+                song.number.toString(),
+                song.length.toString(),
+                song.timePlayed.toString()
+            )
+
+            db.delete( SONGS, whereClause, whereArgs)
+        }
+        catch (e: Exception){
+            Log.e("DBHelper", "Error while deleting song: ${e.message}", e)
         }
         finally {
             db.close()
