@@ -58,9 +58,11 @@ fun SpinningDisc(
     val isPlaying = remember { AppExoPlayer.isPlaying }
     val rotationAngleStopState = remember { mutableFloatStateOf(0f) }
     val rotationAngle = remember { mutableFloatStateOf(0f) }
+    val songPlayed = remember { AppExoPlayer.currentSong }
+    val isInSameAlbum = remember { mutableStateOf(false) }
 
     val infiniteTransition = rememberInfiniteTransition(label = "")
-    val rotation = if (!isPlaying.value) {
+    val rotation = if (!isPlaying.value || !isInSameAlbum.value) {
         rotationAngleStopState.floatValue
     } else {
         infiniteTransition.animateFloat(
@@ -87,6 +89,10 @@ fun SpinningDisc(
         }
     }
 
+    LaunchedEffect(songPlayed.value) {
+        isInSameAlbum.value = songPlayed.value?.parentUri == song?.parentUri
+    }
+
     LaunchedEffect(song) {
         song?.let{
             album.value = getActuallyPlayedAlbum(albumsList, song)
@@ -94,6 +100,7 @@ fun SpinningDisc(
                 image.value = getImageFromAlbum(it, song)
             }
         }
+        isInSameAlbum.value = songPlayed.value?.parentUri == song?.parentUri
     }
 
     Card(
