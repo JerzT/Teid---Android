@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.image.albumCoverCache
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
@@ -50,6 +51,7 @@ import com.example.musicapp.logic.song.Song
 @Composable
 fun SpinningDisc(
     albumsList: List<Any>,
+    listOfUri: List<String>,
     song: Song?,
     modifier: Modifier,
 ){
@@ -90,7 +92,25 @@ fun SpinningDisc(
     }
 
     LaunchedEffect(songPlayed.value) {
-        isInSameAlbum.value = songPlayed.value?.parentUri == song?.parentUri
+        for (uri in listOfUri){
+            when(val a = album.value){
+                is Album -> {
+                    isInSameAlbum.value = uri.toUri() == a.uri
+                }
+                is List<*> -> {
+                    val discList = a as List<Album>
+                    // don't ask about stupid
+                    var stupid = true
+                    for(disc in discList){
+                        if (uri.toUri() == disc.uri){
+                            isInSameAlbum.value = true
+                            stupid = false
+                        }
+                    }
+                    if (stupid) isInSameAlbum.value = false
+                }
+            }
+        }
     }
 
     LaunchedEffect(song) {
@@ -100,7 +120,25 @@ fun SpinningDisc(
                 image.value = getImageFromAlbum(it, song)
             }
         }
-        isInSameAlbum.value = songPlayed.value?.parentUri == song?.parentUri
+        for (uri in listOfUri){
+            when(val a = album.value){
+                is Album -> {
+                    isInSameAlbum.value = uri.toUri() == a.uri
+                }
+                is List<*> -> {
+                    val discList = a as List<Album>
+                    // don't ask about stupid
+                    var stupid = true
+                    for(disc in discList){
+                        if (uri.toUri() == disc.uri){
+                            isInSameAlbum.value = true
+                            stupid = false
+                        }
+                    }
+                    if (stupid) isInSameAlbum.value = false
+                }
+            }
+        }
     }
 
     Card(

@@ -90,6 +90,7 @@ fun SongsList(
     ) {
         SpinningDisc(
             albumsList = albumsList,
+            listOfUri = listUri,
             song = firstSongFromList.value,
             modifier = Modifier
                 .offset( x= 0.dp, y= (-100).dp)

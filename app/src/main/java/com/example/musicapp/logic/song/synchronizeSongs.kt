@@ -1,7 +1,6 @@
 package com.example.musicapp.logic.song
 
 import android.content.Context
-import android.util.Log
 import com.example.musicapp.logic.database.setUpDatabase
 
 fun synchronizeSongs(
