@@ -1,6 +1,7 @@
 package com.example.musicapp.ui.lists.songsList
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,10 +28,15 @@ fun DiscInfoHeader(
     for(song in songsList){
         albumLength += song.length
     }
-    val minutes = (albumLength/ 1000) / 60
+    val hour = (albumLength / 1000) / 60 / 60
+    val minutes = ((albumLength / 1000) / 60) % 60
     val seconds = (albumLength / 1000) % 60
 
-    val albumLengthString = String.format("%d:%02d", minutes, seconds)
+    val albumLengthString = if (hour > 0) {
+        String.format("%d:%02d:%02d", hour, minutes, seconds)
+    } else {
+        String.format("%02d:%02d", minutes, seconds)
+    }
 
     Card(
         colors = CardDefaults.cardColors(
