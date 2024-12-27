@@ -109,7 +109,7 @@ fun SongsList(
             for (song in disc){
                 SongItem(
                     song = song,
-                    songsList = disc,
+                    songsList = discList.flatten(),
                     albumsList = albumsList,
                 )
             }
