@@ -41,7 +41,9 @@ fun getSongs(
             {
                 val metadata = getMetadata(
                     file = file,
-                    context = context)
+                    context = context
+                )
+                Log.v("test2", metadata.toString())
 
                 val formatedTitle = file.name?.removeFileExtension()
 
@@ -65,9 +67,10 @@ fun getSongs(
 }
 
 @RequiresApi(Build.VERSION_CODES.P)
-private fun getMetadata(file: DocumentFile, context: Context): Map<String, String?> {
+private suspend fun getMetadata(file: DocumentFile, context: Context): Map<String, String?> {
     val retriever = MediaMetadataRetriever()
     return try {
+        Log.v("test2", file.uri.toString())
         retriever.setDataSource(context, file.uri)
 
         val songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)?.trim()
@@ -80,11 +83,13 @@ private fun getMetadata(file: DocumentFile, context: Context): Map<String, Strin
             ?: "1"
         var songNumber = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)?.trim()
             ?: "1"
-        val songLength = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.trim()
+        val songLength = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
 
         if(songNumber.contains("/")){
             songNumber = songNumber.split("/")[0]
         }
+
+        //Log.v("test2", "$songName, $artistName, $songYear, $cdNumber, $songNumber, $songLength, ${file.uri}")
 
         mapOf(
             "songName" to songName,
@@ -95,6 +100,7 @@ private fun getMetadata(file: DocumentFile, context: Context): Map<String, Strin
             "songLength" to songLength,
         )
     } catch (e: Exception) {
+        Log.e("songsMetadata", e.toString())
         mapOf()
     } finally {
         retriever.release()
