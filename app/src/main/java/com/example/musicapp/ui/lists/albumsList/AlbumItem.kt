@@ -59,7 +59,7 @@ fun AlbumItem(
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.tertiary,
         ),
         contentPadding = PaddingValues(10.dp),
         onClick = {
@@ -113,6 +113,7 @@ fun AlbumItem(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_arrow_right_24),
+                    tint = MaterialTheme.colorScheme.surface,
                     contentDescription = "",
                 )
             }
