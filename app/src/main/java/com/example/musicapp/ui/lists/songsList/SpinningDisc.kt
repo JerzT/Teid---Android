@@ -64,9 +64,9 @@ fun SpinningDisc(
     val isInSameAlbum = remember { mutableStateOf(false) }
 
     val infiniteTransition = rememberInfiniteTransition(label = "")
-    val rotation = if (!isPlaying.value || !isInSameAlbum.value) {
+    val rotation = if (!isPlaying.value) {
         rotationAngleStopState.floatValue
-    } else {
+    } else if(isInSameAlbum.value) {
         infiniteTransition.animateFloat(
             initialValue = rotationAngle.floatValue,
             targetValue = 360f + rotationAngle.floatValue,
@@ -78,6 +78,8 @@ fun SpinningDisc(
             ),
             label = ""
         ).value
+    } else {
+        rotationAngleStopState.floatValue
     }
 
     LaunchedEffect(isPlaying.value) {
@@ -99,43 +101,27 @@ fun SpinningDisc(
                 }
                 is List<*> -> {
                     val discList = a as List<Album>
-                    // don't ask about stupid
-                    var stupid = true
-                    for(disc in discList){
-                        if (uri.toUri() == disc.uri){
-                            isInSameAlbum.value = true
-                            stupid = false
-                        }
-                    }
-                    if (stupid) isInSameAlbum.value = false
+                    isInSameAlbum.value = discList.any { uri.toUri() == it.uri }
                 }
             }
         }
     }
 
     LaunchedEffect(song) {
-        song?.let{
+        song?.let {
             album.value = getActuallyPlayedAlbum(albumsList, song)
-            album.value?.let{
+            album.value?.let {
                 image.value = getImageFromAlbum(it, song)
-            }
-        }
-        for (uri in listOfUri){
-            when(val a = album.value){
-                is Album -> {
-                    isInSameAlbum.value = uri.toUri() == a.uri
-                }
-                is List<*> -> {
-                    val discList = a as List<Album>
-                    // don't ask about stupid
-                    var stupid = true
-                    for(disc in discList){
-                        if (uri.toUri() == disc.uri){
-                            isInSameAlbum.value = true
-                            stupid = false
+                for (uri in listOfUri) {
+                    when(val a = album.value) {
+                        is Album -> {
+                            isInSameAlbum.value = uri.toUri() == songPlayed.value?.parentUri
+                        }
+                        is List<*> -> {
+                            val discList = a as List<Album>
+                            isInSameAlbum.value = discList.any { uri.toUri() == songPlayed.value?.parentUri }
                         }
                     }
-                    if (stupid) isInSameAlbum.value = false
                 }
             }
         }

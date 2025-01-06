@@ -55,9 +55,15 @@ fun AlbumsList(
                     }else{
                         firstChar?.uppercaseChar() ?: "Other"
                     }
-
                 }
-                is List<*> -> (album as List<Album>)[0].name?.firstOrNull()?.uppercaseChar() ?: "Other"
+                is List<*> ->{
+                    val firstChar = (album as List<Album>)[0].name?.firstOrNull()
+                    if (firstChar?.isDigit() == true && firstChar in '1'..'9'){
+                        "1 - 9"
+                    }else {
+                        firstChar?.uppercaseChar() ?: "Other"
+                    }
+                }
                 else -> "Other"
             }
         }

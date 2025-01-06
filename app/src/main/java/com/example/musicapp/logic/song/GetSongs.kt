@@ -12,6 +12,8 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import java.io.FileInputStream
+
 
 @OptIn(DelicateCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.P)
@@ -43,7 +45,7 @@ fun getSongs(
                     file = file,
                     context = context
                 )
-                Log.v("test2", metadata.toString())
+                //Log.v("songsMetadata", metadata.toString())
 
                 val formatedTitle = file.name?.removeFileExtension()
 
@@ -70,7 +72,8 @@ fun getSongs(
 private suspend fun getMetadata(file: DocumentFile, context: Context): Map<String, String?> {
     val retriever = MediaMetadataRetriever()
     return try {
-        Log.v("test2", file.uri.toString())
+        //Log.v("songsMetadata", file.uri.toString())
+
         retriever.setDataSource(context, file.uri)
 
         val songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)?.trim()
@@ -89,7 +92,7 @@ private suspend fun getMetadata(file: DocumentFile, context: Context): Map<Strin
             songNumber = songNumber.split("/")[0]
         }
 
-        //Log.v("test2", "$songName, $artistName, $songYear, $cdNumber, $songNumber, $songLength, ${file.uri}")
+        Log.v("songsMetadata", "$songName, $artistName, $songYear, $cdNumber, $songNumber, $songLength, ${file.uri}")
 
         mapOf(
             "songName" to songName,
@@ -100,7 +103,7 @@ private suspend fun getMetadata(file: DocumentFile, context: Context): Map<Strin
             "songLength" to songLength,
         )
     } catch (e: Exception) {
-        Log.e("songsMetadata", e.toString())
+        Log.e("songsMetadata", "$e, ${file.uri}")
         mapOf()
     } finally {
         retriever.release()
