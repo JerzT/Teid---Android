@@ -1,6 +1,5 @@
 package com.example.musicapp.ui.bottomBar
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,15 +12,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.Player
 import androidx.navigation.NavController
 import com.example.musicapp.R
-import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.ui.actuallyPlaying.ActuallyPlayingBar
 
@@ -31,6 +32,12 @@ fun BottomBarCustom(
     navController: NavController,
     songListUri: List<String>? = null,
 ){
+    val loopStatus = remember { AppExoPlayer.player?.repeatMode?.let { mutableIntStateOf(it) } }
+
+    LaunchedEffect(AppExoPlayer.player?.repeatMode) {
+        loopStatus?.intValue = AppExoPlayer.player?.repeatMode!!
+    }
+
     BottomAppBar(
         contentPadding = PaddingValues(0.dp),
         modifier = Modifier
@@ -85,8 +92,12 @@ fun BottomBarCustom(
                 )
                 //loop
                 BottomBarButton(
-                    onClick = { /*TODO*/ },
-                    painter = painterResource(id = R.drawable.baseline_replay_24),
+                    onClick = { handleLooping() },
+                    painter = when(loopStatus?.intValue){
+                        Player.REPEAT_MODE_OFF -> painterResource(R.drawable.baseline_replay_24)
+                        Player.REPEAT_MODE_ONE -> painterResource(R.drawable.baseline_clock_24)
+                        Player.REPEAT_MODE_ALL -> painterResource(R.drawable.baseline_shuffle_24)
+                        else -> painterResource(R.drawable.baseline_filter_alt_24) },
                     contentDescription = "Play"
                 )
             }

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.annotation.OptIn
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
@@ -79,7 +80,7 @@ object AppExoPlayer{
 
         player?.let {
             it.clearMediaItems()
-            it.repeatMode = Player.REPEAT_MODE_ALL
+            it.repeatMode = Player.REPEAT_MODE_OFF
         }
         for (song in songPlaylist){
             player?.let {
@@ -123,6 +124,22 @@ object AppExoPlayer{
         val index = songList.indexOf(selectedSong)
         currentSong.value = selectedSong
         player?.seekTo(index, 0)
+    }
+
+    fun loopSong(){
+        player?.let{
+            it.repeatMode = Player.REPEAT_MODE_ONE
+        }
+    }
+    fun loopAlbum(){
+        player?.let {
+            it.repeatMode = Player.REPEAT_MODE_ALL
+        }
+    }
+    fun stopLoop(){
+        player?.let {
+            it.repeatMode = Player.REPEAT_MODE_OFF
+        }
     }
 
     fun playMusic(){
