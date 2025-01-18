@@ -21,6 +21,7 @@ object AppExoPlayer{
     val currentSong = mutableStateOf<Song?>(null)
     val isPlaying = mutableStateOf(false)
     private var songList = mutableListOf<Song?>(null)
+    val stateOfLoop = mutableIntStateOf(Player.REPEAT_MODE_OFF)
 
     fun createPlayer(context: Context){
         player = ExoPlayer.Builder(context).build()
@@ -129,16 +130,19 @@ object AppExoPlayer{
     fun loopSong(){
         player?.let{
             it.repeatMode = Player.REPEAT_MODE_ONE
+            stateOfLoop.intValue = Player.REPEAT_MODE_ONE
         }
     }
     fun loopAlbum(){
         player?.let {
             it.repeatMode = Player.REPEAT_MODE_ALL
+            stateOfLoop.intValue = Player.REPEAT_MODE_ALL
         }
     }
     fun stopLoop(){
         player?.let {
             it.repeatMode = Player.REPEAT_MODE_OFF
+            stateOfLoop.intValue = Player.REPEAT_MODE_OFF
         }
     }
 

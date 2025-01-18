@@ -32,10 +32,10 @@ fun BottomBarCustom(
     navController: NavController,
     songListUri: List<String>? = null,
 ){
-    val loopStatus = remember { AppExoPlayer.player?.repeatMode?.let { mutableIntStateOf(it) } }
+    val loopStatus = remember { mutableIntStateOf(AppExoPlayer.stateOfLoop.intValue) }
 
-    LaunchedEffect(AppExoPlayer.player?.repeatMode) {
-        loopStatus?.intValue = AppExoPlayer.player?.repeatMode!!
+    LaunchedEffect(AppExoPlayer.stateOfLoop.intValue) {
+        loopStatus.intValue = AppExoPlayer.stateOfLoop.intValue
     }
 
     BottomAppBar(
@@ -69,7 +69,7 @@ fun BottomBarCustom(
                 BottomBarButton(
                     onClick = {},
                     painter = painterResource(id = R.drawable.baseline_shuffle_24),
-                    contentDescription = "Play"
+                    contentDescription = "Shuffle"
                 )
                 //previous
                 BottomBarButton(
@@ -77,7 +77,7 @@ fun BottomBarCustom(
                         AppExoPlayer.previousSong()
                     },
                     painter = painterResource(id = R.drawable.baseline_skip_previous_24),
-                    contentDescription = "Play"
+                    contentDescription = "Previous song"
                 )
 
                 BottomBarPlayPauseButton()
@@ -88,16 +88,16 @@ fun BottomBarCustom(
                         AppExoPlayer.nextSong()
                     },
                     painter = painterResource(id = R.drawable.baseline_skip_next_24),
-                    contentDescription = "Play"
+                    contentDescription = "Next song"
                 )
                 //loop
                 BottomBarButton(
                     onClick = { handleLooping() },
-                    painter = when(loopStatus?.intValue){
-                        Player.REPEAT_MODE_OFF -> painterResource(R.drawable.baseline_replay_24)
-                        Player.REPEAT_MODE_ONE -> painterResource(R.drawable.baseline_clock_24)
-                        Player.REPEAT_MODE_ALL -> painterResource(R.drawable.baseline_shuffle_24)
-                        else -> painterResource(R.drawable.baseline_filter_alt_24) },
+                    painter = when(loopStatus.intValue){
+                        Player.REPEAT_MODE_OFF -> painterResource(R.drawable.baseline_no_replay_24)
+                        Player.REPEAT_MODE_ONE -> painterResource(R.drawable.baseline_replay_24)
+                        Player.REPEAT_MODE_ALL -> painterResource(R.drawable.baseline_loop_24)
+                        else -> painterResource(R.drawable.baseline_no_replay_24) },
                     contentDescription = "Play"
                 )
             }
