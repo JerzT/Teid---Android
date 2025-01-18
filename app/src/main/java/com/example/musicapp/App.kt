@@ -40,15 +40,17 @@ import com.example.musicapp.ui.lists.songsList.SongsList
 import com.example.musicapp.ui.searchBar.SearchBar
 import com.example.musicapp.ui.theme.MusicAppTheme
 import com.example.musicapp.ui.topAppBar.TopAppBarCustom
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "Range")
 @Composable
-fun App() {
+fun App(uri: Uri?) {
     val context = LocalContext.current
 
-    val uri = remember { mutableStateOf<Uri?>(null) }
+    val uri = remember { mutableStateOf<Uri?>(uri) }
 
     val settings = SettingsDataStore(context)
 
