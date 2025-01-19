@@ -1,6 +1,7 @@
 package com.example.musicapp.logic.image
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -13,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 
 val albumCoverCache = mutableStateMapOf<String, ImageBitmap?>()
 
@@ -56,7 +58,16 @@ private suspend fun loadAlbumCover(album: Album, context: Context): ImageBitmap?
         if(album.cover != null){
             album.cover.let { coverUri ->
                 context.contentResolver.openInputStream(coverUri)?.use { inputStream ->
-                    BitmapFactory.decodeStream(inputStream)?.asImageBitmap()
+                    val bitmap = BitmapFactory.decodeStream(inputStream)
+
+                    val byteArrayOutputStream = ByteArrayOutputStream()
+
+                    val compressedBitmap = bitmap?.let {
+                        it.compress(Bitmap.CompressFormat.JPEG, 0, byteArrayOutputStream)
+                        BitmapFactory.decodeByteArray(byteArrayOutputStream.toByteArray(), 0, byteArrayOutputStream.size())
+                    }
+
+                    compressedBitmap?.asImageBitmap()
                 }
             }
         }

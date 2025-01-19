@@ -3,6 +3,8 @@ accompanistPermissions = "0.31.1-alpha"
 agp = "8.8.0"
 coilCompose = "2.7.0"
 compose = "1.0.0-beta01"
+compressor = "2.1.0"
+compressorVersion = "3.0.1"
 coreKtxVersion = "2.2.0"
 datastorePreferences = "1.1.1"
 glide = "4.13.2"
@@ -25,7 +27,6 @@ media3Exoplayer = "1.5.1"
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-core-ktx-v220 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }

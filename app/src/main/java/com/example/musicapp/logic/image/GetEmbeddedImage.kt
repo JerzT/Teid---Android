@@ -1,12 +1,14 @@
 package com.example.musicapp.logic.image
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.documentfile.provider.DocumentFile
 import com.example.musicapp.logic.album.Album
+import java.io.ByteArrayOutputStream
 
 fun getEmbeddedImage(
     album: Album,
@@ -36,9 +38,15 @@ fun getEmbeddedImage(
 
                     val pictureData = retriever.embeddedPicture
                     if (pictureData != null) {
-                        return BitmapFactory.decodeByteArray(
-                            pictureData, 0, pictureData.size
-                        ).asImageBitmap()
+                        val bitmap = BitmapFactory.decodeByteArray(pictureData, 0, pictureData.size)
+
+                        val byteArrayOutputStream = ByteArrayOutputStream()
+
+                        bitmap?.compress(Bitmap.CompressFormat.JPEG, 0, byteArrayOutputStream)
+
+                        val compressedBitmap = BitmapFactory.decodeByteArray(byteArrayOutputStream.toByteArray(), 0, byteArrayOutputStream.size())
+
+                        return compressedBitmap?.asImageBitmap()
                     }
                 } catch (e: Exception) {
                     //
