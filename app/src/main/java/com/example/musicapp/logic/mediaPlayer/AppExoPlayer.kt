@@ -4,7 +4,10 @@ package com.example.musicapp.logic.mediaPlayer
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import android.util.Log
 import androidx.annotation.OptIn
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.media3.common.MediaItem
@@ -12,8 +15,10 @@ import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.song.Song
+import kotlin.random.Random
 
 object AppExoPlayer{
     var player: ExoPlayer? = null
@@ -82,14 +87,12 @@ object AppExoPlayer{
         player?.let {
             it.clearMediaItems()
             it.repeatMode = Player.REPEAT_MODE_OFF
-        }
-        for (song in songPlaylist){
-            player?.let {
+
+            for (song in songPlaylist){
                 val mediaItem = createMediaItem(song, albumsList)
                 it.addMediaItem(mediaItem)
             }
-        }
-        player?.let {
+
             it.prepare()
             playMusic()
             haveSongs.value = true
@@ -133,7 +136,7 @@ object AppExoPlayer{
             stateOfLoop.intValue = Player.REPEAT_MODE_ONE
         }
     }
-    fun loopAlbum(){
+    fun loopPlaylist(){
         player?.let {
             it.repeatMode = Player.REPEAT_MODE_ALL
             stateOfLoop.intValue = Player.REPEAT_MODE_ALL
@@ -143,6 +146,30 @@ object AppExoPlayer{
         player?.let {
             it.repeatMode = Player.REPEAT_MODE_OFF
             stateOfLoop.intValue = Player.REPEAT_MODE_OFF
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    @OptIn(UnstableApi::class)
+    fun shufflePlaylist(){
+        player?.let {
+            val listOfIndex: MutableList<Int> = mutableListOf()
+
+            for(x in 0..<it.mediaItemCount){
+                listOfIndex.add(x)
+            }
+
+            val randomSeed = Random.nextLong(0,100000)
+
+            listOfIndex.shuffle()
+
+            val indexOfCurrentItem = it.currentMediaItemIndex
+
+            listOfIndex.remove(indexOfCurrentItem)
+            listOfIndex.add(0, indexOfCurrentItem)
+
+            it.setShuffleOrder(DefaultShuffleOrder(listOfIndex.toIntArray(), randomSeed))
+            it.shuffleModeEnabled = !it.shuffleModeEnabled
         }
     }
 

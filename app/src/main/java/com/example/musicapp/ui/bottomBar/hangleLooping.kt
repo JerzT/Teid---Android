@@ -7,7 +7,7 @@ import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 fun handleLooping(){
     when(AppExoPlayer.player?.repeatMode){
         //0
-        Player.REPEAT_MODE_OFF -> AppExoPlayer.loopAlbum()
+        Player.REPEAT_MODE_OFF -> AppExoPlayer.loopPlaylist()
         //2
         Player.REPEAT_MODE_ALL -> AppExoPlayer.loopSong()
         //1

@@ -67,7 +67,9 @@ fun BottomBarCustom(
             ) {
                 //shuffle
                 BottomBarButton(
-                    onClick = {},
+                    onClick = {
+                        AppExoPlayer.shufflePlaylist()
+                    },
                     painter = painterResource(id = R.drawable.baseline_shuffle_24),
                     contentDescription = "Shuffle"
                 )
