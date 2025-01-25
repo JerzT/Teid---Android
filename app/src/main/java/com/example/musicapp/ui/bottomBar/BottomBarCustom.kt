@@ -1,5 +1,7 @@
 package com.example.musicapp.ui.bottomBar
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +29,7 @@ import com.example.musicapp.R
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.ui.actuallyPlaying.ActuallyPlayingBar
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @Composable
 fun BottomBarCustom(
     albumList: List<Any>,
@@ -33,9 +37,14 @@ fun BottomBarCustom(
     songListUri: List<String>? = null,
 ){
     val loopStatus = remember { mutableIntStateOf(AppExoPlayer.stateOfLoop.intValue) }
+    val shuffleStatus = remember { mutableStateOf(AppExoPlayer.stateOfShuffle.value) }
 
     LaunchedEffect(AppExoPlayer.stateOfLoop.intValue) {
         loopStatus.intValue = AppExoPlayer.stateOfLoop.intValue
+    }
+
+    LaunchedEffect(AppExoPlayer.stateOfShuffle.value) {
+        shuffleStatus.value = AppExoPlayer.stateOfShuffle.value
     }
 
     BottomAppBar(
@@ -70,7 +79,8 @@ fun BottomBarCustom(
                     onClick = {
                         AppExoPlayer.shufflePlaylist()
                     },
-                    painter = painterResource(id = R.drawable.baseline_shuffle_24),
+                    painter = if(shuffleStatus.value) painterResource(id = R.drawable.baseline_shuffle_24)
+                    else painterResource(id = R.drawable.baseline_no_shuffle_24),
                     contentDescription = "Shuffle"
                 )
                 //previous

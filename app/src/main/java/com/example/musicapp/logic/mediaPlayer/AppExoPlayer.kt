@@ -27,6 +27,7 @@ object AppExoPlayer{
     val isPlaying = mutableStateOf(false)
     private var songList = mutableListOf<Song?>(null)
     val stateOfLoop = mutableIntStateOf(Player.REPEAT_MODE_OFF)
+    val stateOfShuffle = mutableStateOf(false)
 
     fun createPlayer(context: Context){
         player = ExoPlayer.Builder(context).build()
@@ -153,6 +154,13 @@ object AppExoPlayer{
     @OptIn(UnstableApi::class)
     fun shufflePlaylist(){
         player?.let {
+
+            if(it.shuffleModeEnabled){
+                it.shuffleModeEnabled = false
+                stateOfShuffle.value = false
+                return
+            }
+
             val listOfIndex: MutableList<Int> = mutableListOf()
 
             for(x in 0..<it.mediaItemCount){
@@ -169,7 +177,8 @@ object AppExoPlayer{
             listOfIndex.add(0, indexOfCurrentItem)
 
             it.setShuffleOrder(DefaultShuffleOrder(listOfIndex.toIntArray(), randomSeed))
-            it.shuffleModeEnabled = !it.shuffleModeEnabled
+            it.shuffleModeEnabled = true
+            stateOfShuffle.value = true
         }
     }
 
