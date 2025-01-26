@@ -32,15 +32,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val name = "test"
-        val descriptionText = "test"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val mChannel = NotificationChannel("1", name, importance)
-        mChannel.description = descriptionText
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(mChannel)
 
         val settings = SettingsDataStore(this)
         var uri: Uri?
+
         GlobalScope.launch {
             settings.directoryPathFlow.collect { directoryPath ->
                 uri = changeNotValidDirectoryPathToUri(directoryPath)

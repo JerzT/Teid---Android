@@ -1,8 +1,6 @@
-package com.example.musicapp.ui.bottomBar
+package com.example.musicapp.logic.mediaPlayer
 
-import android.util.Log
 import androidx.media3.common.Player
-import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 
 fun handleLooping(){
     when(AppExoPlayer.player?.repeatMode){

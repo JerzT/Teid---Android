@@ -19,6 +19,7 @@ fun BottomBarButton(
     onClick: () -> (Unit),
     painter: Painter,
     contentDescription: String,
+    tint: Color = MaterialTheme.colorScheme.surface
 ) = Button(
     onClick = onClick,
     contentPadding = PaddingValues(0.dp),
@@ -34,7 +35,7 @@ fun BottomBarButton(
     Icon(
         painter = painter,
         contentDescription = contentDescription,
-        tint = MaterialTheme.colorScheme.surface,
+        tint = tint,
         modifier = Modifier
             .fillMaxSize(0.75F)
     )

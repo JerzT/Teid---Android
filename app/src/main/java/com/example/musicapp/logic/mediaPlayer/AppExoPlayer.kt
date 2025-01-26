@@ -5,19 +5,21 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.painterResource
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
+import com.example.musicapp.R
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.song.Song
+import com.google.common.collect.ImmutableList
 import kotlin.random.Random
 
 object AppExoPlayer{
@@ -31,6 +33,7 @@ object AppExoPlayer{
 
     fun createPlayer(context: Context){
         player = ExoPlayer.Builder(context).build()
+
         player?.addListener(object: Player.Listener{
             override fun onIsPlayingChanged(isPlayingExo: Boolean) {
                 isPlaying.value = isPlayingExo
@@ -64,19 +67,6 @@ object AppExoPlayer{
                 )
                 .build()
         return mediaItem
-    }
-
-    fun addSong(
-        song: Song,
-        albumsList: List<Any>
-    ){
-        val mediaItem = createMediaItem(song, albumsList)
-        player?.let {
-            it.setMediaItem(mediaItem)
-            it.prepare()
-            playMusic()
-            haveSongs.value = true
-        }
     }
 
     fun setPlaylist(
@@ -135,18 +125,21 @@ object AppExoPlayer{
         player?.let{
             it.repeatMode = Player.REPEAT_MODE_ONE
             stateOfLoop.intValue = Player.REPEAT_MODE_ONE
+            handleChangingOfNotification()
         }
     }
     fun loopPlaylist(){
         player?.let {
             it.repeatMode = Player.REPEAT_MODE_ALL
             stateOfLoop.intValue = Player.REPEAT_MODE_ALL
+            handleChangingOfNotification()
         }
     }
     fun stopLoop(){
         player?.let {
             it.repeatMode = Player.REPEAT_MODE_OFF
             stateOfLoop.intValue = Player.REPEAT_MODE_OFF
+            handleChangingOfNotification()
         }
     }
 
@@ -158,6 +151,7 @@ object AppExoPlayer{
             if(it.shuffleModeEnabled){
                 it.shuffleModeEnabled = false
                 stateOfShuffle.value = false
+                handleChangingOfNotification()
                 return
             }
 
@@ -179,6 +173,23 @@ object AppExoPlayer{
             it.setShuffleOrder(DefaultShuffleOrder(listOfIndex.toIntArray(), randomSeed))
             it.shuffleModeEnabled = true
             stateOfShuffle.value = true
+            handleChangingOfNotification()
+        }
+    }
+
+    fun handleChangingOfNotification(){
+        val session = AppMediaSession.mediaSession
+        session?.let {
+            val shuffleStateButton = if(stateOfShuffle.value) shuffleButton else noShuffleButton
+
+            val loopStateButton = when(stateOfLoop.intValue){
+                Player.REPEAT_MODE_OFF -> noLoopButton
+                Player.REPEAT_MODE_ONE -> loopAlbumButton
+                Player.REPEAT_MODE_ALL -> loopSongButton
+                else -> noLoopButton
+            }
+
+            it.setCustomLayout(ImmutableList.of(shuffleStateButton, loopStateButton))
         }
     }
 

@@ -27,6 +27,7 @@ import androidx.media3.common.Player
 import androidx.navigation.NavController
 import com.example.musicapp.R
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
+import com.example.musicapp.logic.mediaPlayer.handleLooping
 import com.example.musicapp.ui.actuallyPlaying.ActuallyPlayingBar
 
 @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
@@ -79,8 +80,12 @@ fun BottomBarCustom(
                     onClick = {
                         AppExoPlayer.shufflePlaylist()
                     },
-                    painter = if(shuffleStatus.value) painterResource(id = R.drawable.baseline_shuffle_24)
-                    else painterResource(id = R.drawable.baseline_no_shuffle_24),
+                    painter = if(shuffleStatus.value)
+                        painterResource(id = R.drawable.baseline_shuffle_24)
+                    else
+                        painterResource(id = R.drawable.baseline_no_shuffle_24),
+                    tint = if (shuffleStatus.value) MaterialTheme.colorScheme.tertiary
+                    else MaterialTheme.colorScheme.surface,
                     contentDescription = "Shuffle"
                 )
                 //previous
@@ -110,6 +115,10 @@ fun BottomBarCustom(
                         Player.REPEAT_MODE_ONE -> painterResource(R.drawable.baseline_replay_24)
                         Player.REPEAT_MODE_ALL -> painterResource(R.drawable.baseline_loop_24)
                         else -> painterResource(R.drawable.baseline_no_replay_24) },
+                    tint = when(loopStatus.intValue){
+                        Player.REPEAT_MODE_ONE, Player.REPEAT_MODE_ALL-> MaterialTheme.colorScheme.tertiary
+                        else -> MaterialTheme.colorScheme.surface
+                    },
                     contentDescription = "Play"
                 )
             }
