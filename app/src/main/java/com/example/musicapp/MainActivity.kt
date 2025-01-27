@@ -12,12 +12,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.compose.material.MaterialTheme
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.musicapp.logic.directory.changeNotValidDirectoryPathToUri
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.mediaPlayer.PlaybackService
 import com.example.musicapp.logic.settings.SettingsDataStore
+import com.example.musicapp.ui.theme.MusicAppTheme
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -38,14 +40,17 @@ class MainActivity : ComponentActivity() {
         notificationManager.createNotificationChannel(mChannel)
 
         val settings = SettingsDataStore(this)
-        var uri: Uri?
+        var uri: Uri? = null
 
         GlobalScope.launch {
             settings.directoryPathFlow.collect { directoryPath ->
                 uri = changeNotValidDirectoryPathToUri(directoryPath)
-                setContent {
-                    App(uri = uri)
-                }
+            }
+        }
+
+        setContent {
+            MusicAppTheme {
+                App(uri = uri)
             }
         }
 

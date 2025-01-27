@@ -23,22 +23,20 @@ fun SearchBar(
             .padding(10.dp, 10.dp, 10.dp, 10.dp)
             .fillMaxWidth()
     ){
-        MusicAppTheme {
-            SearchTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(0.dp, 0.dp, 10.dp, 0.dp),
-                searchText = searchText
-            )
-            SearchButton(
-                onClick = { /*TODO*/ },
-                painter = painterResource(id = R.drawable.baseline_filter_alt_24),
-                contentDescription = "filter")
-            SearchButton(
-                onClick = { /*TODO*/ },
-                painter = painterResource(id = R.drawable.baseline_swap_vert_24),
-                contentDescription = "filter")
-        }
+        SearchTextField(
+            modifier = Modifier
+                .weight(1f)
+                .padding(0.dp, 0.dp, 10.dp, 0.dp),
+            searchText = searchText
+        )
+        SearchButton(
+            onClick = { /*TODO*/ },
+            painter = painterResource(id = R.drawable.baseline_filter_alt_24),
+            contentDescription = "filter")
+        SearchButton(
+            onClick = { /*TODO*/ },
+            painter = painterResource(id = R.drawable.baseline_swap_vert_24),
+            contentDescription = "filter")
     }
     SearchShadow()
 }

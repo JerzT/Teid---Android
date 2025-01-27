@@ -92,103 +92,101 @@ fun App(uri: Uri?) {
     val albumSearchText = remember { mutableStateOf("")}
 
 
-    MusicAppTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        NavHost(
+            navController = navController,
+            startDestination = if (uri.value == null) Screen.GetUri else Screen.AlbumList
         ) {
-            NavHost(
-                navController = navController,
-                startDestination = if (uri.value == null) Screen.GetUri else Screen.AlbumList
-            ) {
-                //Get Directory
-                composable<Screen.GetUri>{
-                    Scaffold(
-                        topBar = {
-                            TopAppBarCustom(
-                                title = "Get Directory"
-                            )
-                        },
-                    ) { innerPadding ->
-                        Column(
-                            modifier = Modifier
-                                .padding(innerPadding)
-                        ) {
-                            DirectorySelectionUi(
-                                uri = uri,
-                                albumsList = albumsList,
-                                navController = navController
-                            )
-                        }
+            //Get Directory
+            composable<Screen.GetUri>{
+                Scaffold(
+                    topBar = {
+                        TopAppBarCustom(
+                            title = "Get Directory"
+                        )
+                    },
+                ) { innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                    ) {
+                        DirectorySelectionUi(
+                            uri = uri,
+                            albumsList = albumsList,
+                            navController = navController
+                        )
                     }
                 }
-                //Album List
-                composable<Screen.AlbumList>{
-                    Scaffold(
-                        topBar = {
-                            TopAppBarCustom(
-                                title = "Library"
-                            )
-                        },
-                        bottomBar = { if (AppExoPlayer.haveSongs.value)
-                            BottomBarCustom(
-                                albumList = albumsList,
-                                navController = navController,
-                            )},
-                    ) { innerPadding ->
-                        Column(
+            }
+            //Album List
+            composable<Screen.AlbumList>{
+                Scaffold(
+                    topBar = {
+                        TopAppBarCustom(
+                            title = "Library"
+                        )
+                    },
+                    bottomBar = { if (AppExoPlayer.haveSongs.value)
+                        BottomBarCustom(
+                            albumList = albumsList,
+                            navController = navController,
+                        )},
+                ) { innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                    ) {
+                        SearchBar(
                             modifier = Modifier
-                                .padding(innerPadding)
-                        ) {
-                            SearchBar(
-                                modifier = Modifier
-                                    .zIndex(3f),
-                                searchText = albumSearchText,
-                            )
-                            AlbumsList(
-                                albumsList = albumsList,
-                                navController = navController,
-                                searchText = albumSearchText,
-                                state = albumListState,
-                            )
-                        }
+                                .zIndex(3f),
+                            searchText = albumSearchText,
+                        )
+                        AlbumsList(
+                            albumsList = albumsList,
+                            navController = navController,
+                            searchText = albumSearchText,
+                            state = albumListState,
+                        )
                     }
                 }
-                //Song List
-                composable<Screen.SongList>{
-                    val searchText = remember { mutableStateOf("")}
-                    val args = it.toRoute<Screen.SongList>()
+            }
+            //Song List
+            composable<Screen.SongList>{
+                val searchText = remember { mutableStateOf("")}
+                val args = it.toRoute<Screen.SongList>()
 
-                    Scaffold(
-                        topBar = {
-                            TopAppBarCustom(
-                                title = args.name.toString(),
-                                navController = navController
-                            )
-                        },
-                        bottomBar = { if(AppExoPlayer.haveSongs.value)
-                            BottomBarCustom(
-                                albumList = albumsList,
-                                navController = navController,
-                                songListUri = args.listUri
-                            )},
-                    ) { innerPadding ->
-                        Column(
+                Scaffold(
+                    topBar = {
+                        TopAppBarCustom(
+                            title = args.name.toString(),
+                            navController = navController
+                        )
+                    },
+                    bottomBar = { if(AppExoPlayer.haveSongs.value)
+                        BottomBarCustom(
+                            albumList = albumsList,
+                            navController = navController,
+                            songListUri = args.listUri
+                        )},
+                ) { innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                    ) {
+                        SearchBar(
                             modifier = Modifier
-                                .padding(innerPadding)
-                        ) {
-                            SearchBar(
-                                modifier = Modifier
-                                    .zIndex(3f),
-                                searchText = searchText,
-                            )
-                            SongsList(
-                                listUri = args.listUri,
-                                searchText = searchText,
-                                albumsList = albumsList,
-                            )
-                        }
+                                .zIndex(3f),
+                            searchText = searchText,
+                        )
+                        SongsList(
+                            listUri = args.listUri,
+                            searchText = searchText,
+                            albumsList = albumsList,
+                        )
                     }
                 }
             }
