@@ -126,7 +126,7 @@ fun ActuallyPlayingBar(
                                     return@Button
                                 }
                             }
-                            val sortedUris = (album as List<Album>).sortedBy { it.cdNumber }
+                            val sortedUris = album.sortedBy { it.cdNumber }
                                 .map { it.uri.toString() }.toMutableList()
                             navController.navigate(
                                 Screen.SongList(
@@ -138,7 +138,7 @@ fun ActuallyPlayingBar(
                     }
                 },
                 elevation = null,
-                shape = RoundedCornerShape(0.dp),
+                shape = RoundedCornerShape(4.dp),
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Image(

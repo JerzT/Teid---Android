@@ -129,7 +129,7 @@ fun SpinningDisc(
 
     Card(
         shape = CircleShape,
-        border = BorderStroke(2.dp, Color.White),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.surface),
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(1f)
@@ -155,7 +155,7 @@ fun SpinningDisc(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.background,
                 ),
-                border = BorderStroke(4.dp, Color.White),
+                border = BorderStroke(4.dp, MaterialTheme.colorScheme.surface),
                 modifier = Modifier
                     .size(68.dp)
                     .align(Alignment.Center)
