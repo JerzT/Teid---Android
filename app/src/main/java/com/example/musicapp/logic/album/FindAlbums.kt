@@ -9,11 +9,15 @@ import androidx.annotation.RequiresApi
 import androidx.documentfile.provider.DocumentFile
 import com.example.musicapp.logic.database.setUpDatabase
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import java.io.File
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
+
 
 @RequiresApi(Build.VERSION_CODES.P)
 fun findAlbums(
@@ -64,6 +68,7 @@ fun findAlbums(
                             year = metadata["albumYear"],
                             cdNumber = metadata["cdNumber"]?.toInt(),
                         )
+
                         albumsList.add(album)
                         database.addAlbum(album)
                         return@coroutineScope

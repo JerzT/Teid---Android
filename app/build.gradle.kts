@@ -88,4 +88,5 @@ dependencies {
     implementation(libs.androidx.navigation.ui)
     implementation(libs.androidx.material)
     implementation(libs.accompanist.permissions)
+    implementation(kotlin("reflect"))
 }

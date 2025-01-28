@@ -38,10 +38,7 @@ import com.example.musicapp.ui.directorySelection.DirectorySelectionUi
 import com.example.musicapp.ui.lists.albumsList.AlbumsList
 import com.example.musicapp.ui.lists.songsList.SongsList
 import com.example.musicapp.ui.searchBar.SearchBar
-import com.example.musicapp.ui.theme.MusicAppTheme
 import com.example.musicapp.ui.topAppBar.TopAppBarCustom
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @RequiresApi(Build.VERSION_CODES.P)

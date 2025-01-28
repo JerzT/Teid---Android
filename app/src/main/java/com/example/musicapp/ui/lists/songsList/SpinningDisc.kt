@@ -1,17 +1,8 @@
 package com.example.musicapp.ui.lists.songsList
 
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.InfiniteTransition
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.StartOffset
-import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -35,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.BitmapPainter
