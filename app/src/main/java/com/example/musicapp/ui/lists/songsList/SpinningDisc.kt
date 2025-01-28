@@ -1,6 +1,7 @@
 package com.example.musicapp.ui.lists.songsList
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -110,6 +111,9 @@ fun SpinningDisc(
                         is List<*> -> {
                             val discList = a as List<Album>
                             isInSameAlbum.value = discList.any { uri.toUri() == songPlayed.value?.parentUri }
+                            if (isInSameAlbum.value){
+                                return@LaunchedEffect
+                            }
                         }
                     }
                 }

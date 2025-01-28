@@ -52,6 +52,7 @@ fun SongsList(
         if (listUri.isNotEmpty()){
             val songsFromDatabaseList: MutableList<MutableList<Song>> = mutableListOf()
             val songsFromDirectoryList: MutableList<MutableList<Song>> = mutableListOf()
+
             for (i in 0..< listUri.count()){
                 val songsFromDatabase = getSongsFromDatabaseWithUri(context, listUri[i].toUri())
                 songsFromDatabaseList.add(songsFromDatabase)
@@ -62,6 +63,7 @@ fun SongsList(
             if (discList[0].isNotEmpty()){
                 firstSongFromList.value = discList[0][0]
             }
+
             for (i in 0..< listUri.count()){
                 val songsFromDirectory: SnapshotStateList<Song> = mutableStateListOf()
                 getSongs(
