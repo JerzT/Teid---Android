@@ -88,7 +88,6 @@ fun App(uri: Uri?) {
     val albumListState = remember { LazyListState() }
     val albumSearchText = remember { mutableStateOf("")}
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -103,7 +102,8 @@ fun App(uri: Uri?) {
                 Scaffold(
                     topBar = {
                         TopAppBarCustom(
-                            title = "Get Directory"
+                            title = "Get Directory",
+                            currentScreen = GET_URI
                         )
                     },
                 ) { innerPadding ->
@@ -124,7 +124,9 @@ fun App(uri: Uri?) {
                 Scaffold(
                     topBar = {
                         TopAppBarCustom(
-                            title = "Library"
+                            title = "Library",
+                            navController = navController,
+                            currentScreen = ALBUM_LIST
                         )
                     },
                     bottomBar = { if (AppExoPlayer.haveSongs.value)
@@ -160,7 +162,8 @@ fun App(uri: Uri?) {
                     topBar = {
                         TopAppBarCustom(
                             title = args.name.toString(),
-                            navController = navController
+                            navController = navController,
+                            currentScreen = SONG_LIST
                         )
                     },
                     bottomBar = { if(AppExoPlayer.haveSongs.value)
@@ -187,6 +190,23 @@ fun App(uri: Uri?) {
                     }
                 }
             }
+            //Settings
+            composable<Screen.Settings> {
+                Scaffold(
+                    topBar = {
+                        TopAppBarCustom(
+                            title = "Settings",
+                            navController = navController,
+                            currentScreen = SETTINGS
+                        )
+                    },
+                    bottomBar = { if (AppExoPlayer.haveSongs.value)
+                        BottomBarCustom(
+                            albumList = albumsList,
+                            navController = navController,
+                        )},
+                ){}
+            }
         }
     }
 }
@@ -202,4 +222,11 @@ open class Screen
     )
     @Serializable
     object GetUri
+    @Serializable
+    object Settings
 }
+
+const val ALBUM_LIST = "AlbumList"
+const val SONG_LIST = "SongList"
+const val GET_URI = "GetUri"
+const val SETTINGS = "Settings"

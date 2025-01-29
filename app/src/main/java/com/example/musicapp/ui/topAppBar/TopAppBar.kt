@@ -1,5 +1,7 @@
 package com.example.musicapp.ui.topAppBar
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,13 +27,17 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.musicapp.R
+import com.example.musicapp.SETTINGS
+import com.example.musicapp.SONG_LIST
 import com.example.musicapp.Screen
 
+@SuppressLint("RestrictedApi")
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun TopAppBarCustom(
     title: String,
-    navController: NavController? = null
+    navController: NavController? = null,
+    currentScreen: String,
 ){
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -43,9 +49,11 @@ fun TopAppBarCustom(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if(navController != null){
+                if (currentScreen == SONG_LIST || currentScreen == SETTINGS){
                     IconButton(
-                        onClick = { navController.navigate(Screen.AlbumList) }
+                        onClick = {
+                            navController?.popBackStack()
+                        }
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_arrow_back_24),
@@ -63,24 +71,26 @@ fun TopAppBarCustom(
         actions = {
             Row {
                 //settings
-                Button(
-                    onClick = { /*TODO*/ },
-                    contentPadding = PaddingValues(0.dp),
-                    elevation = null,
-                    shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0x00FFFFFF),
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    modifier = Modifier
-                        .size(48.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_settings_24),
-                        contentDescription = "settings",
+                if (currentScreen != SETTINGS){
+                    Button(
+                        onClick = { navController?.navigate(Screen.Settings) },
+                        contentPadding = PaddingValues(0.dp),
+                        elevation = null,
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0x00FFFFFF),
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        ),
                         modifier = Modifier
-                            .fillMaxSize(0.75f),
-                    )
+                            .size(48.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_settings_24),
+                            contentDescription = "settings",
+                            modifier = Modifier
+                                .fillMaxSize(0.75f),
+                        )
+                    }
                 }
             }
         }
