@@ -102,7 +102,6 @@ fun AlbumItem(
                 text = data?.name.toString(),
                 color = MaterialTheme.colorScheme.surface,
                 fontSize = 20.sp,
-                maxLines = 1,
                 modifier = Modifier
                     .weight(15f)
                     .padding(10.dp, 0.dp)

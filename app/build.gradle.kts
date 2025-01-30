@@ -89,4 +89,5 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.accompanist.permissions)
     implementation(kotlin("reflect"))
+    implementation("com.arjunjadeja:texty-android:1.0.0-alpha")
 }

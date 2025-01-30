@@ -1,7 +1,7 @@
 package com.example.musicapp.ui.actuallyPlaying
 
 import android.annotation.SuppressLint
-import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,11 +34,16 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.arjunjadeja.texty.DisplayStyle
+import com.arjunjadeja.texty.Texty
 import com.example.musicapp.R
 import com.example.musicapp.Screen
 import com.example.musicapp.logic.album.Album
@@ -66,6 +71,9 @@ fun ActuallyPlayingBar(
     var actuallyPlayedAlbum = remember(currentSong.value) {
         currentSong.value?.let { getActuallyPlayedAlbum(albumList, it) }
     }
+
+    val screenWidth = LocalDensity.current.run { LocalConfiguration.current.screenWidthDp.dp.toPx() }
+    val titleWidth = with(LocalDensity.current) { (currentSong.value?.title?.length?.times(40))?.toDp()?.toPx() }
 
     LaunchedEffect(currentSong.value) {
         currentSong.value?.let { song ->
@@ -169,13 +177,30 @@ fun ActuallyPlayingBar(
                     .fillMaxHeight()
             ) {
                 currentSong.value?.let {
-                    Text(
-                        color = MaterialTheme.colorScheme.surface,
-                        text = it.title ?: "",
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight(900),
-                        maxLines = 1
-                    )
+                    Log.v("test2", "$titleWidth, $screenWidth")
+                    if(titleWidth!! > screenWidth){
+                        Texty(
+                            text = it.title ?: "",
+                            textStyle = TextStyle(
+                                color = MaterialTheme.colorScheme.surface
+                            ),
+                            displayStyle = DisplayStyle.Sliding(
+                                duration = titleWidth.toLong() * 7,
+
+                            ),
+                            maxLines = 1
+                        )
+                    }
+                    else{
+                        Text(
+                            color = MaterialTheme.colorScheme.surface,
+                            text = it.title ?: "",
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight(900),
+                            maxLines = 1
+                        )
+                    }
+
                     Text(
                         color = MaterialTheme.colorScheme.surface,
                         text = it.author ?: "",
