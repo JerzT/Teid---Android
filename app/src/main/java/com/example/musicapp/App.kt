@@ -1,25 +1,6 @@
 package com.example.musicapp
 
-import android.annotation.SuppressLint
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.zIndex
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -41,15 +22,11 @@ import com.example.musicapp.ui.searchBar.SearchBar
 import com.example.musicapp.ui.topAppBar.TopAppBarCustom
 import kotlinx.serialization.Serializable
 
-@RequiresApi(Build.VERSION_CODES.P)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition", "Range")
-@Composable
 fun App(uri: Uri?) {
     val context = LocalContext.current
 
     val uri = remember { mutableStateOf<Uri?>(uri) }
 
-    val settings = SettingsDataStore(context)
 
     val albumsList = remember { mutableStateListOf<Any>() }
     //albumList loading and synchronizing

@@ -7,18 +7,23 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import com.example.musicapp.logic.album.Album
+import com.example.musicapp.logic.album.connectDiscFromAlbums
+import com.example.musicapp.logic.album.getAlbumsFromDatabase
+import com.example.musicapp.logic.album.getAlbumsFromDirectory
+import com.example.musicapp.logic.album.synchronizeAlbums
 import com.example.musicapp.logic.directory.changeNotValidDirectoryPathToUri
+import com.example.musicapp.logic.image.cacheAlbumCovers
 import com.example.musicapp.logic.mediaPlayer.PlaybackService
 import com.example.musicapp.logic.settings.SettingsDataStore
-import com.example.musicapp.ui.theme.MusicAppTheme
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -28,12 +33,12 @@ var sessionToken: SessionToken? = null
 var controllerFuture: ListenableFuture<MediaController>? = null
 
 class MainActivity : ComponentActivity() {
-    @OptIn(DelicateCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        val name = "Teid"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val mChannel = NotificationChannel("1", name, importance)
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -42,9 +47,44 @@ class MainActivity : ComponentActivity() {
         val settings = SettingsDataStore(this)
         var uri: Uri? = null
 
+        val albumsList: MutableList<Any?> = mutableListOf()
+
         GlobalScope.launch {
             settings.directoryPathFlow.collect { directoryPath ->
                 uri = changeNotValidDirectoryPathToUri(directoryPath)
+            }
+
+            val context = this@MainActivity
+
+            settings.directoryPathFlow.collect { directoryPath ->
+                uri = changeNotValidDirectoryPathToUri(directoryPath)
+                if (uri != null) {
+
+                    val albumsFromDatabase = getAlbumsFromDatabase(context)
+                        .apply { sortBy { if (it is Album) it.name else ""  } }
+                    val connectedAlbumsFromDatabase = connectDiscFromAlbums(albumsFromDatabase)
+
+                    albumsList.addAll(connectedAlbumsFromDatabase)
+                    cacheAlbumCovers(connectedAlbumsFromDatabase, context)
+
+                    Log.v("test", albumsList.toString())
+
+                    val albumsInDirectory = getAlbumsFromDirectory(
+                        context = context,
+                        uri = uri
+                    ).apply { sortBy { if (it is Album) it.name else ""  } }
+                    val connectedAlbumsFromDirectory = connectDiscFromAlbums(albumsInDirectory)
+
+                    albumsList.clear()
+                    albumsList.addAll(connectedAlbumsFromDirectory)
+                    cacheAlbumCovers(connectedAlbumsFromDirectory, context)
+
+                    synchronizeAlbums(
+                        albumsFromDatabase = albumsFromDatabase,
+                        albumsInDirectory = albumsInDirectory,
+                        context = context,
+                    )
+                }
             }
         }
 
