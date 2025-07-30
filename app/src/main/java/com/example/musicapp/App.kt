@@ -1,3 +1,4 @@
+/*
 package com.example.musicapp
 
 import android.net.Uri
@@ -207,3 +208,4 @@ const val ALBUM_LIST = "AlbumList"
 const val SONG_LIST = "SongList"
 const val GET_URI = "GetUri"
 const val SETTINGS = "Settings"
+*/

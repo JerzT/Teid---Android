@@ -1,5 +1,6 @@
 package com.example.musicapp
 
+import android.app.Fragment
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ComponentName
@@ -7,7 +8,9 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
@@ -33,22 +36,30 @@ var sessionToken: SessionToken? = null
 var controllerFuture: ListenableFuture<MediaController>? = null
 
 class MainActivity : ComponentActivity() {
+    var uri: Uri? = null
+
+    val albumsList: MutableList<Any?> = mutableListOf()
+
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        //set activity main as main view
+        setContentView(R.layout.activity_main)
+
+        //set up notification service
         val name = "Teid"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val mChannel = NotificationChannel("1", name, importance)
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(mChannel)
 
+        //check if directory was selected
         val settings = SettingsDataStore(this)
-        var uri: Uri? = null
 
-        val albumsList: MutableList<Any?> = mutableListOf()
 
+        //get directory if possible and get albums
         GlobalScope.launch {
             settings.directoryPathFlow.collect { directoryPath ->
                 uri = changeNotValidDirectoryPathToUri(directoryPath)
@@ -67,7 +78,7 @@ class MainActivity : ComponentActivity() {
                     albumsList.addAll(connectedAlbumsFromDatabase)
                     cacheAlbumCovers(connectedAlbumsFromDatabase, context)
 
-                    Log.v("test", albumsList.toString())
+                    Log.v("test1", albumsList.toString())
 
                     val albumsInDirectory = getAlbumsFromDirectory(
                         context = context,
@@ -88,22 +99,21 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)){ v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-//        setContent {
-//            MusicAppTheme {
-//                App(uri = uri)
-//            }
-//        }
-
-
+        //set up session of playback
         sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
         controllerFuture = MediaController.Builder(this, sessionToken!!).buildAsync()
+    }
+
+    override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
+        return super.onCreateView(name, context, attrs)
+
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

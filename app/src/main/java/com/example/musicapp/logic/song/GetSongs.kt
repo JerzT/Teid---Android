@@ -13,6 +13,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import java.io.FileInputStream
+import androidx.core.net.toUri
 
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -72,7 +73,7 @@ fun getSongs(
 private suspend fun getMetadata(file: DocumentFile, context: Context): Map<String, String?> {
     val retriever = MediaMetadataRetriever()
     return try {
-        retriever.setDataSource(context, Uri.parse(file.uri.toString()))
+        retriever.setDataSource(context, file.uri.toString().toUri())
 
         var songName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)?.trim()
         val artistName = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)?.trim()
