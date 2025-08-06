@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.map
 
 val Context.settings: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-
 class SettingsDataStore(private val context: Context) {
     companion object {
         private val DIRECTORY_KEY = stringPreferencesKey("directory_storage")

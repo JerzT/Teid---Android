@@ -1,6 +1,5 @@
 package com.example.musicapp
 
-import android.app.Fragment
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ComponentName
@@ -8,23 +7,19 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.AttributeSet
 import android.util.Log
-import android.view.View
+import android.widget.Button
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
-import com.example.musicapp.logic.album.Album
-import com.example.musicapp.logic.album.connectDiscFromAlbums
-import com.example.musicapp.logic.album.getAlbumsFromDatabase
-import com.example.musicapp.logic.album.getAlbumsFromDirectory
-import com.example.musicapp.logic.album.synchronizeAlbums
-import com.example.musicapp.logic.directory.changeNotValidDirectoryPathToUri
-import com.example.musicapp.logic.image.cacheAlbumCovers
+import com.example.musicapp.logic.album.findAlbums
 import com.example.musicapp.logic.mediaPlayer.PlaybackService
 import com.example.musicapp.logic.settings.SettingsDataStore
 import com.google.common.util.concurrent.ListenableFuture
@@ -32,13 +27,16 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+private lateinit var openDirectoryLauncher: ActivityResultLauncher<Uri?>
 var sessionToken: SessionToken? = null
 var controllerFuture: ListenableFuture<MediaController>? = null
 
 class MainActivity : ComponentActivity() {
     var uri: Uri? = null
 
-    val albumsList: MutableList<Any?> = mutableListOf()
+    val albumsList: MutableList<Any> = mutableListOf()
+
+    var settings: SettingsDataStore? = null
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +46,9 @@ class MainActivity : ComponentActivity() {
         //set activity main as main view
         setContentView(R.layout.activity_main)
 
+        settings = SettingsDataStore(this)
+
+
         //set up notification service
         val name = "Teid"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -55,12 +56,8 @@ class MainActivity : ComponentActivity() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(mChannel)
 
-        //check if directory was selected
-        val settings = SettingsDataStore(this)
-
-
         //get directory if possible and get albums
-        GlobalScope.launch {
+        /*GlobalScope.launch {
             settings.directoryPathFlow.collect { directoryPath ->
                 uri = changeNotValidDirectoryPathToUri(directoryPath)
             }
@@ -77,8 +74,6 @@ class MainActivity : ComponentActivity() {
 
                     albumsList.addAll(connectedAlbumsFromDatabase)
                     cacheAlbumCovers(connectedAlbumsFromDatabase, context)
-
-                    Log.v("test1", albumsList.toString())
 
                     val albumsInDirectory = getAlbumsFromDirectory(
                         context = context,
@@ -97,7 +92,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
-        }
+        }*/
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)){ v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -108,12 +103,30 @@ class MainActivity : ComponentActivity() {
         //set up session of playback
         sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
         controllerFuture = MediaController.Builder(this, sessionToken!!).buildAsync()
+
+        val chooseDirectory = this.findViewById<Button>(R.id.choose_directory)
+
+
+        chooseDirectory.setOnClickListener {
+            getContent.launch("".toUri())
+        }
     }
 
-    override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
-        return super.onCreateView(name, context, attrs)
+    @OptIn(DelicateCoroutinesApi::class)
+    @RequiresApi(Build.VERSION_CODES.P)
+    val getContent = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
+        this.uri = uri
+        GlobalScope.launch {
+            //settings!!.saveDirectoryPath(uri.toString())
 
+            findAlbums(
+                uri = uri,
+                context = this@MainActivity,
+                albumsList = albumsList
+            ).await()
 
+            Log.v("test1", albumsList.toString())
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

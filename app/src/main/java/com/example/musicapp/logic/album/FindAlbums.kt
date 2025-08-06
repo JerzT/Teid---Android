@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.documentfile.provider.DocumentFile
 import com.example.musicapp.logic.database.setUpDatabase
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -19,13 +20,14 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 
 
+@OptIn(DelicateCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.P)
 fun findAlbums(
     uri: Uri?,
     context: Context,
     albumsList: MutableList<Any>,
 ): Deferred<Unit> = GlobalScope.async{
-    val database = setUpDatabase(context)
+    //val database = setUpDatabase(context)
 
     if(uri == null){
         return@async
@@ -70,7 +72,7 @@ fun findAlbums(
                         )
 
                         albumsList.add(album)
-                        database.addAlbum(album)
+                        //database.addAlbum(album)
                         return@coroutineScope
                     }
                 }
