@@ -6,8 +6,8 @@ import androidx.media3.session.MediaSessionService
 class PlaybackService : MediaSessionService() {
     override fun onCreate() {
         super.onCreate()
-        AppExoPlayer.createPlayer(context = this)
-        AppMediaSession.setUpMediaSession(context = this, player = AppExoPlayer.player!!)
+        //AppExoPlayer.createPlayer(context = this)
+       //AppMediaSession.setUpMediaSession(context = this, player = AppExoPlayer.player!!)
     }
 
     override fun onDestroy() {

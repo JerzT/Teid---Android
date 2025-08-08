@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.mutableStateOf
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.CommandButton
@@ -91,12 +90,12 @@ private class CustomMediaSessionCallback: MediaSession.Callback {
         args: Bundle
     ): ListenableFuture<SessionResult> {
         if (customCommand.customAction == SHUFFLE || customCommand.customAction == NO_SHUFFLE) {
-            AppExoPlayer.shufflePlaylist()
+            //AppExoPlayer.shufflePlaylist()
         }
         if (customCommand.customAction == NO_LOOP ||
             customCommand.customAction == LOOP_SONG ||
             customCommand.customAction == LOOP_ALBUM) {
-            handleLooping()
+            //handleLooping()
         }
         return Futures.immediateFuture(
             SessionResult(SessionResult.RESULT_SUCCESS)

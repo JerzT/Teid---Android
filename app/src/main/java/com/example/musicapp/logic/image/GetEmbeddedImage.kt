@@ -1,10 +1,9 @@
+/*
 package com.example.musicapp.logic.image
 
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.documentfile.provider.DocumentFile
 import com.example.musicapp.logic.album.Album
 
@@ -50,4 +49,4 @@ fun getEmbeddedImage(
     }
 
     return null
-}
+}*/

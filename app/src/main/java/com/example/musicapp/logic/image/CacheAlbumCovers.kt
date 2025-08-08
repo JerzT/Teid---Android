@@ -1,12 +1,10 @@
+/*
 package com.example.musicapp.logic.image
 
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import com.example.musicapp.logic.album.Album
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -64,4 +62,4 @@ private suspend fun loadAlbumCover(album: Album, context: Context): ImageBitmap?
             getEmbeddedImage(album, context)
         }
     }
-}
+}*/

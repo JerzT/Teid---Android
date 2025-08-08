@@ -2,51 +2,50 @@ package com.example.musicapp
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.ComponentName
 import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.core.net.toUri
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.musicapp.logic.album.findAlbums
-import com.example.musicapp.logic.mediaPlayer.PlaybackService
 import com.example.musicapp.logic.settings.SettingsDataStore
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-private lateinit var openDirectoryLauncher: ActivityResultLauncher<Uri?>
 var sessionToken: SessionToken? = null
 var controllerFuture: ListenableFuture<MediaController>? = null
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
     var uri: Uri? = null
 
     val albumsList: MutableList<Any> = mutableListOf()
 
     var settings: SettingsDataStore? = null
-
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         //set activity main as main view
         setContentView(R.layout.activity_main)
 
-        settings = SettingsDataStore(this)
+/*        if (savedInstanceState == null){
+            FragmentStack.mainStack.push(HomeFragment())
+
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_frame, HomeFragment())
+                .commit()
+        }*/
+
+        //settings = SettingsDataStore(this)
 
 
         //set up notification service
@@ -101,15 +100,14 @@ class MainActivity : ComponentActivity() {
         }
 
         //set up session of playback
-        sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
-        controllerFuture = MediaController.Builder(this, sessionToken!!).buildAsync()
+//        sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
+//        controllerFuture = MediaController.Builder(this, sessionToken!!).buildAsync()
 
-        val chooseDirectory = this.findViewById<Button>(R.id.choose_directory)
+        //val chooseDirectory = this.findViewById<Button>(R.id.choose_directory)
 
-
-        chooseDirectory.setOnClickListener {
+/*        chooseDirectory.setOnClickListener {
             getContent.launch("".toUri())
-        }
+        }*/
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -125,7 +123,7 @@ class MainActivity : ComponentActivity() {
                 albumsList = albumsList
             ).await()
 
-            Log.v("test1", albumsList.toString())
+            //Log.v("test1", albumsList.toString())
         }
     }
 
