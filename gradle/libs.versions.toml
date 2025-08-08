@@ -1,6 +1,9 @@
 [versions]
 accompanistPermissions = "0.31.1-alpha"
+activityKtx = "1.7.0"
 agp = "8.12.0"
+androidxAppcompat = "1.6.1"
+androidxCoreKtx = "1.10.0"
 coilCompose = "2.7.0"
 compose = "1.0.0-beta01"
 compressor = "2.1.0"
@@ -20,24 +23,30 @@ composeBom = "2024.12.01"
 appcompat = "1.7.0"
 documentfile = "1.0.1"
 material = "1.8.0-alpha07"
+media3SessionVersion = "1.0.0"
 navigationCompose = "2.8.5"
 media3Session = "1.5.1"
 media3Exoplayer = "1.5.1"
 activity = "1.10.1"
 appcompatVersion = "1.7.1"
+materialVersion = "1.13.0-rc01"
 
 [libraries]
-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version = "0.37.3" }
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
+androidx-appcompat-v161 = { module = "androidx.appcompat:appcompat", version.ref = "androidxAppcompat" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.16.0" }
+androidx-core-ktx-v1100 = { module = "androidx.core:core-ktx", version.ref = "androidxCoreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version = "1.1.7" }
 androidx-material = { module = "androidx.compose.material:material", version.ref = "material" }
-androidx-navigation-fragment = { module = "androidx.navigation:navigation-fragment", version.ref = "navigationCompose" }
-androidx-navigation-ui = { module = "androidx.navigation:navigation-ui", version.ref = "navigationCompose" }
-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+androidx-media3-session-v100 = { module = "androidx.media3:media3-session", version.ref = "media3SessionVersion" }
+androidx-navigation-fragment = { module = "androidx.navigation:navigation-fragment", version = "2.9.3" }
+androidx-navigation-ui = { module = "androidx.navigation:navigation-ui", version = "2.9.3" }
+glide = { module = "com.github.bumptech.glide:glide", version = "4.16.0" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version = "1.3.0" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version = "3.7.0" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version = "2.9.2" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -45,12 +54,13 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
-androidx-media3-session = { group = "androidx.media3", name = "media3-session", version.ref = "media3Session" }
-androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3Exoplayer" }
+androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version = "1.1.0" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.9.0" }
+androidx-media3-session = { group = "androidx.media3", name = "media3-session", version = "1.8.0" }
+androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version = "1.8.0" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompatVersion" }
+material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

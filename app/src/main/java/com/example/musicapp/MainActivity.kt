@@ -2,6 +2,7 @@ package com.example.musicapp
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.ComponentName
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -15,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.musicapp.logic.album.findAlbums
+import com.example.musicapp.logic.mediaPlayer.PlaybackService
 import com.example.musicapp.logic.settings.SettingsDataStore
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -37,15 +39,15 @@ class MainActivity : AppCompatActivity() {
         //set activity main as main view
         setContentView(R.layout.activity_main)
 
-/*        if (savedInstanceState == null){
+        if (savedInstanceState == null){
             FragmentStack.mainStack.push(HomeFragment())
 
             supportFragmentManager.beginTransaction()
                 .replace(R.id.main_frame, HomeFragment())
                 .commit()
-        }*/
+        }
 
-        //settings = SettingsDataStore(this)
+        settings = SettingsDataStore(this)
 
 
         //set up notification service
@@ -100,8 +102,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         //set up session of playback
-//        sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
-//        controllerFuture = MediaController.Builder(this, sessionToken!!).buildAsync()
+        sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
+        controllerFuture = MediaController.Builder(this, sessionToken!!).buildAsync()
 
         //val chooseDirectory = this.findViewById<Button>(R.id.choose_directory)
 
