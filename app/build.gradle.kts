@@ -45,7 +45,10 @@ android {
     sourceSets {
         getByName("main") {
             res {
-                srcDirs("src\\main\\res", "src\\main\\res\\drawable\\icons")
+                srcDirs(
+                    "src\\main\\res",
+                    "src\\main\\res\\drawable\\icons",
+                )
             }
         }
     }

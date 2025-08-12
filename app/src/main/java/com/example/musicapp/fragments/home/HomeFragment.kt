@@ -38,7 +38,7 @@ class HomeFragment: Fragment() {
         )
 
         homeListView = view.findViewById(R.id.home_list_view)
-        arrayAdapter = ArrayAdapter(requireActivity(), R.layout.fragment_home_list_item, buttons)
+        arrayAdapter = HomeFragmentListAdapter(requireActivity(), buttons)
         homeListView.adapter = arrayAdapter
     }
 }
