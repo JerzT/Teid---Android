@@ -9,7 +9,9 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
+import com.example.musicapp.FragmentStack
 import com.example.musicapp.R
+import com.example.musicapp.fragments.library.LibraryFragment
 
 class HomeFragmentListAdapter(
     private val context: FragmentActivity,
@@ -29,6 +31,16 @@ class HomeFragmentListAdapter(
         imageView.setImageResource(button.icon)
         val textView = rowView.findViewById<TextView>(R.id.home_list_view_item_text)
         textView.text = button.text
+
+        rowView.setOnClickListener {
+            FragmentStack.mainStack.push(button.fragment)
+            val fragmentTransaction = context.supportFragmentManager.beginTransaction()
+            fragmentTransaction
+                .replace(R.id.main_frame, LibraryFragment())
+                .setReorderingAllowed(true)
+                .addToBackStack("")
+                .commit()
+        }
 
         return rowView
     }

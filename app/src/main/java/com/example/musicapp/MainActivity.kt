@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             FragmentStack.mainStack.push(HomeFragment())
 
             supportFragmentManager.beginTransaction()
-                .replace(R.id.main_frame, HomeFragment())
+                .add(R.id.main_frame, HomeFragment())
                 .commit()
         }
 

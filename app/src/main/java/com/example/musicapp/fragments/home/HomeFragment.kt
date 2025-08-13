@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.fragment.app.Fragment
 import com.example.musicapp.R
+import com.example.musicapp.fragments.library.LibraryFragment
 
 class HomeFragment: Fragment() {
     private lateinit var homeListView: ListView
@@ -21,7 +22,10 @@ class HomeFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(
+            R.layout.fragment_home,
+            container,
+            false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -29,12 +33,18 @@ class HomeFragment: Fragment() {
 
         val arrayAdapter: ArrayAdapter<*>
         val buttons = arrayOf(
-            HomeButton(R.drawable.baseline_library_music_24, "Library"),
-            HomeButton(R.drawable.baseline_playlist, "Playlists"),
-            HomeButton(R.drawable.baseline_radio, "Internet Radio"),
-            HomeButton(R.drawable.baseline_chart, "Stats"),
-            HomeButton(R.drawable.baseline_settings_24, "Settings"),
-            HomeButton(R.drawable.baseline_info, "About")
+            HomeButton(R.drawable.baseline_library_music_24,
+                "Library", LibraryFragment()),
+            HomeButton(R.drawable.baseline_playlist,
+                "Playlists", LibraryFragment()),
+            HomeButton(R.drawable.baseline_radio,
+                "Internet Radio", LibraryFragment()),
+            HomeButton(R.drawable.baseline_chart,
+                "Stats", LibraryFragment()),
+            HomeButton(R.drawable.baseline_settings_24,
+                "Settings", LibraryFragment()),
+            HomeButton(R.drawable.baseline_info,
+                "About",LibraryFragment())
         )
 
         homeListView = view.findViewById(R.id.home_list_view)
