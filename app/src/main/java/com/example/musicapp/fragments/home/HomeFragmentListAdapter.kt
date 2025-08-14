@@ -36,7 +36,7 @@ class HomeFragmentListAdapter(
             FragmentStack.mainStack.push(button.fragment)
             val fragmentTransaction = context.supportFragmentManager.beginTransaction()
             fragmentTransaction
-                .replace(R.id.main_frame, LibraryFragment())
+                .replace(R.id.main_frame, FragmentStack.mainStack.peek())
                 .setReorderingAllowed(true)
                 .addToBackStack("")
                 .commit()
