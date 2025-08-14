@@ -4,4 +4,5 @@
     <string name="last_played">Last played</string>
     <string name="library">Library</string>
     <string name="right_arrow">Right Arrow</string>
+    <string name="choose_directory">Choose Directory</string>
 </resources>

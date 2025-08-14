@@ -10,10 +10,6 @@ import com.example.musicapp.FragmentStack
 import com.example.musicapp.R
 
 class LibraryFragment: Fragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

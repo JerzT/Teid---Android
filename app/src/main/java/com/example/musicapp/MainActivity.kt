@@ -4,11 +4,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,11 +14,18 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.musicapp.fragments.home.HomeFragment
-import com.example.musicapp.logic.album.findAlbums
+import com.example.musicapp.logic.album.Album
+import com.example.musicapp.logic.album.connectDiscFromAlbums
+import com.example.musicapp.logic.album.getAlbumsFromDatabase
+import com.example.musicapp.logic.album.getAlbumsFromDirectory
+import com.example.musicapp.logic.album.synchronizeAlbums
+import com.example.musicapp.logic.directory.changeNotValidDirectoryPathToUri
 import com.example.musicapp.logic.mediaPlayer.PlaybackService
 import com.example.musicapp.logic.settings.SettingsDataStore
+import com.example.musicapp.newLogic.DirectoryUri
+import com.example.musicapp.newLogic.albumsList
+import com.example.musicapp.popUps.DirectorySelectPopUp
 import com.google.common.util.concurrent.ListenableFuture
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -28,9 +33,7 @@ var sessionToken: SessionToken? = null
 var controllerFuture: ListenableFuture<MediaController>? = null
 
 class MainActivity : AppCompatActivity() {
-    var uri: Uri? = null
 
-    val albumsList: MutableList<Any> = mutableListOf()
 
     var settings: SettingsDataStore? = null
     @RequiresApi(Build.VERSION_CODES.P)
@@ -59,23 +62,19 @@ class MainActivity : AppCompatActivity() {
         notificationManager.createNotificationChannel(mChannel)
 
         //get directory if possible and get albums
-        /*GlobalScope.launch {
-            settings.directoryPathFlow.collect { directoryPath ->
-                uri = changeNotValidDirectoryPathToUri(directoryPath)
-            }
-
+        GlobalScope.launch {
             val context = this@MainActivity
 
-            settings.directoryPathFlow.collect { directoryPath ->
-                uri = changeNotValidDirectoryPathToUri(directoryPath)
+            settings?.directoryPathFlow?.collect { directoryPath ->
+                DirectoryUri.uri = null //changeNotValidDirectoryPathToUri(directoryPath)
+                val uri = DirectoryUri.uri
                 if (uri != null) {
-
                     val albumsFromDatabase = getAlbumsFromDatabase(context)
                         .apply { sortBy { if (it is Album) it.name else ""  } }
                     val connectedAlbumsFromDatabase = connectDiscFromAlbums(albumsFromDatabase)
 
                     albumsList.addAll(connectedAlbumsFromDatabase)
-                    cacheAlbumCovers(connectedAlbumsFromDatabase, context)
+                    //cacheAlbumCovers(connectedAlbumsFromDatabase, context)
 
                     val albumsInDirectory = getAlbumsFromDirectory(
                         context = context,
@@ -85,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
                     albumsList.clear()
                     albumsList.addAll(connectedAlbumsFromDirectory)
-                    cacheAlbumCovers(connectedAlbumsFromDirectory, context)
+                    //cacheAlbumCovers(connectedAlbumsFromDirectory, context)
 
                     synchronizeAlbums(
                         albumsFromDatabase = albumsFromDatabase,
@@ -93,8 +92,12 @@ class MainActivity : AppCompatActivity() {
                         context = context,
                     )
                 }
+                else{
+                    val directorySelectPopUp = DirectorySelectPopUp()
+                    directorySelectPopUp.show(supportFragmentManager, "")
+                }
             }
-        }*/
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)){ v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -111,23 +114,6 @@ class MainActivity : AppCompatActivity() {
 /*        chooseDirectory.setOnClickListener {
             getContent.launch("".toUri())
         }*/
-    }
-
-    @OptIn(DelicateCoroutinesApi::class)
-    @RequiresApi(Build.VERSION_CODES.P)
-    val getContent = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
-        this.uri = uri
-        GlobalScope.launch {
-            //settings!!.saveDirectoryPath(uri.toString())
-
-            findAlbums(
-                uri = uri,
-                context = this@MainActivity,
-                albumsList = albumsList
-            ).await()
-
-            //Log.v("test1", albumsList.toString())
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
