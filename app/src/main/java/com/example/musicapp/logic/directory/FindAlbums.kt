@@ -1,11 +1,9 @@
-package com.example.musicapp.logic.album
+package com.example.musicapp.logic.directory
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.documentfile.provider.DocumentFile
 import com.example.musicapp.logic.database.setUpDatabase
 import kotlinx.coroutines.Deferred
@@ -14,20 +12,15 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import java.io.File
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.isAccessible
 
 
 @OptIn(DelicateCoroutinesApi::class)
-@RequiresApi(Build.VERSION_CODES.P)
 fun findAlbums(
     uri: Uri?,
     context: Context,
     albumsList: MutableList<Any>,
 ): Deferred<Unit> = GlobalScope.async{
-    //val database = setUpDatabase(context)
+    val database = setUpDatabase(context)
 
     if(uri == null){
         return@async
@@ -43,8 +36,8 @@ fun findAlbums(
 
     //Checking every files in given directory
     val documentFile = DocumentFile.fromTreeUri(context, uri)
-
     if (documentFile != null && documentFile.isDirectory) {
+        Log.v("test1","ok1")
         val files = documentFile.listFiles()
         coroutineScope {
             for (file in files) {
@@ -54,7 +47,6 @@ fun findAlbums(
                     }
                 }
                 else{
-
                     //check if folder contains audio files and if true makes album
                     if(file.type?.let { type ->
                             supportedAudioFormats.any{
@@ -62,7 +54,7 @@ fun findAlbums(
                         )
                     {
                         val metadata = getMetadata(file, context)
-                        val album = Album(
+                        val album = _root_ide_package_.com.example.musicapp.logic.album.Album(
                             name = metadata["albumName"] ?: documentFile.name,
                             uri = documentFile.uri,
                             cover = getCover(documentFile),
@@ -72,7 +64,7 @@ fun findAlbums(
                         )
 
                         albumsList.add(album)
-                        //database.addAlbum(album)
+                        database.addAlbum(album)
                         return@coroutineScope
                     }
                 }
@@ -81,7 +73,6 @@ fun findAlbums(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.P)
 private fun getMetadata(file: DocumentFile, context: Context): Map<String?, String?> {
     val retriever = MediaMetadataRetriever()
     return try {

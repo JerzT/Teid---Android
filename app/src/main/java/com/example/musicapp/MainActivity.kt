@@ -6,6 +6,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -18,15 +19,15 @@ import com.example.musicapp.fragments.home.HomeFragment
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.album.connectDiscFromAlbums
 import com.example.musicapp.logic.album.getAlbumsFromDatabase
-import com.example.musicapp.logic.album.getAlbumsFromDirectory
 import com.example.musicapp.logic.album.synchronizeAlbums
-import com.example.musicapp.logic.directory.changeNotValidDirectoryPathToUri
+import com.example.musicapp.logic.directory.getAlbumsFromDirectory
 import com.example.musicapp.logic.mediaPlayer.PlaybackService
 import com.example.musicapp.logic.settings.SettingsDataStore
 import com.example.musicapp.newLogic.DirectoryUri
 import com.example.musicapp.newLogic.albumsList
 import com.example.musicapp.popUps.DirectorySelectPopUp
 import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
 
     var settings: SettingsDataStore? = null
-    @RequiresApi(Build.VERSION_CODES.P)
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -75,16 +76,18 @@ class MainActivity : AppCompatActivity() {
                     val connectedAlbumsFromDatabase = connectDiscFromAlbums(albumsFromDatabase)
 
                     albumsList.addAll(connectedAlbumsFromDatabase)
+                    //Log.v("test1", "ok")
                     //cacheAlbumCovers(connectedAlbumsFromDatabase, context)
 
                     val albumsInDirectory = getAlbumsFromDirectory(
+                        settingsDataStore = settings!!,
                         context = context,
-                        uri = uri
                     ).apply { sortBy { if (it is Album) it.name else ""  } }
                     val connectedAlbumsFromDirectory = connectDiscFromAlbums(albumsInDirectory)
 
                     albumsList.clear()
                     albumsList.addAll(connectedAlbumsFromDirectory)
+                    //Log.v("test1", "ok2")
                     //cacheAlbumCovers(connectedAlbumsFromDirectory, context)
 
                     synchronizeAlbums(
@@ -92,6 +95,7 @@ class MainActivity : AppCompatActivity() {
                         albumsInDirectory = albumsInDirectory,
                         context = context,
                     )
+                    //Log.v("test1", "ok3")
                 }
                 else{
                     val directorySelectPopUp = DirectorySelectPopUp()
@@ -117,7 +121,6 @@ class MainActivity : AppCompatActivity() {
         }*/
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onDestroy() {
         val notificationManager = baseContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.deleteNotificationChannel("1")

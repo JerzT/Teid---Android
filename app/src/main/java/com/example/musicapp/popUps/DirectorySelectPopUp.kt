@@ -1,44 +1,29 @@
 package com.example.musicapp.popUps
 
-import android.content.DialogInterface
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import com.example.musicapp.R
-import com.example.musicapp.logic.album.findAlbums
+import com.example.musicapp.logic.directory.getAlbumsFromDirectory
 import com.example.musicapp.logic.settings.SettingsDataStore
-import com.example.musicapp.logic.settings.settings
 import com.example.musicapp.newLogic.DirectoryUri
-import com.example.musicapp.newLogic.albumsList
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
 class DirectorySelectPopUp: DialogFragment() {
     private lateinit var settingsDataStore: SettingsDataStore
 
-    //delegate
+    //delegate to listen changes of myUri just for the ui purpose
     private var myUri: Uri? by Delegates.observable(DirectoryUri.uri) { property, oldValue, newValue ->
         if (DirectoryUri.uri != null){
             this.isCancelable = true
-            GlobalScope.launch {
-                settingsDataStore.saveDirectoryPath(DirectoryUri.uri.toString())
-                findAlbums(
-                    uri = DirectoryUri.uri,
-                    context = requireActivity(),
-                    albumsList = albumsList
-                ).await()
-                //Log.v("test1", albumsList.toString())
-            }
+            getAlbumsFromDirectory(settingsDataStore, requireActivity())
             this.dismiss()
         }
     }
@@ -66,14 +51,12 @@ class DirectorySelectPopUp: DialogFragment() {
 
         val buttonChooseDirectory = view.findViewById<Button>(R.id.popup_directory_select_button)
         buttonChooseDirectory.setOnClickListener {
-            getContent.launch("".toUri())
+            getUriTree.launch("".toUri())
         }
     }
 
-
     @OptIn(DelicateCoroutinesApi::class)
-    @RequiresApi(Build.VERSION_CODES.P)
-    val getContent = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
+    val getUriTree = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
         DirectoryUri.uri = uri
         myUri = uri
     }
