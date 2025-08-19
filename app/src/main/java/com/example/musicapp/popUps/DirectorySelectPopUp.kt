@@ -21,9 +21,27 @@ import com.example.musicapp.newLogic.albumsList
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlin.properties.Delegates
 
 class DirectorySelectPopUp: DialogFragment() {
     private lateinit var settingsDataStore: SettingsDataStore
+
+    //delegate
+    private var myUri: Uri? by Delegates.observable(DirectoryUri.uri) { property, oldValue, newValue ->
+        if (DirectoryUri.uri != null){
+            this.isCancelable = true
+            GlobalScope.launch {
+                settingsDataStore.saveDirectoryPath(DirectoryUri.uri.toString())
+                findAlbums(
+                    uri = DirectoryUri.uri,
+                    context = requireActivity(),
+                    albumsList = albumsList
+                ).await()
+                //Log.v("test1", albumsList.toString())
+            }
+            this.dismiss()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,33 +66,15 @@ class DirectorySelectPopUp: DialogFragment() {
 
         val buttonChooseDirectory = view.findViewById<Button>(R.id.popup_directory_select_button)
         buttonChooseDirectory.setOnClickListener {
-            getDirectory()
+            getContent.launch("".toUri())
         }
     }
 
-    private fun getDirectory(){
-        getContent.launch("".toUri())
-        if (DirectoryUri.uri == null){
-            //getDirectory()
-        }
-        else{
-            this.isCancelable = true
-            this.dismiss()
-        }
-    }
 
     @OptIn(DelicateCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.P)
     val getContent = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
         DirectoryUri.uri = uri
-        GlobalScope.launch {
-            settingsDataStore.saveDirectoryPath(uri.toString())
-            findAlbums(
-                uri = uri,
-                context = requireActivity(),
-                albumsList = albumsList
-            ).await()
-            //Log.v("test1", albumsList.toString())
-        }
+        myUri = uri
     }
 }

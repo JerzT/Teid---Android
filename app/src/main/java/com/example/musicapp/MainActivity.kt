@@ -9,6 +9,7 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.media3.session.MediaController
@@ -66,7 +67,7 @@ class MainActivity : AppCompatActivity() {
             val context = this@MainActivity
 
             settings?.directoryPathFlow?.collect { directoryPath ->
-                DirectoryUri.uri = null //changeNotValidDirectoryPathToUri(directoryPath)
+                DirectoryUri.uri = directoryPath?.toUri() //changeNotValidDirectoryPathToUri(directoryPath)
                 val uri = DirectoryUri.uri
                 if (uri != null) {
                     val albumsFromDatabase = getAlbumsFromDatabase(context)
