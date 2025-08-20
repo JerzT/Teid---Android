@@ -21,5 +21,4 @@ fun getAlbumsFromDirectory(settingsDataStore: SettingsDataStore, context: Contex
     }
     albumsInDirectory = albumsList
     return albumsInDirectory
-
 }

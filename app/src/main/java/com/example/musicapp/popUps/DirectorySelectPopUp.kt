@@ -15,6 +15,7 @@ import com.example.musicapp.logic.settings.SettingsDataStore
 import com.example.musicapp.newLogic.DirectoryUri
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlin.properties.Delegates
+import android.content.Intent
 
 class DirectorySelectPopUp: DialogFragment() {
     private lateinit var settingsDataStore: SettingsDataStore
@@ -56,7 +57,15 @@ class DirectorySelectPopUp: DialogFragment() {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    val getUriTree = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
+    private val getUriTree = registerForActivityResult(
+        ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
+        uri?.let {
+            requireContext().contentResolver.takePersistableUriPermission(
+                it,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+        }
+
         DirectoryUri.uri = uri
         myUri = uri
     }

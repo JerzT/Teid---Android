@@ -12,6 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
 
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -36,8 +37,8 @@ fun findAlbums(
 
     //Checking every files in given directory
     val documentFile = DocumentFile.fromTreeUri(context, uri)
+
     if (documentFile != null && documentFile.isDirectory) {
-        Log.v("test1","ok1")
         val files = documentFile.listFiles()
         coroutineScope {
             for (file in files) {

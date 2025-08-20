@@ -1,9 +1,11 @@
 package com.example.musicapp
 
+import android.app.ComponentCaller
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -54,7 +56,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         settings = SettingsDataStore(this)
-
 
         //set up notification service
         val name = "Teid"
@@ -115,10 +116,6 @@ class MainActivity : AppCompatActivity() {
         controllerFuture = MediaController.Builder(this, sessionToken!!).buildAsync()
 
         //val chooseDirectory = this.findViewById<Button>(R.id.choose_directory)
-
-/*        chooseDirectory.setOnClickListener {
-            getContent.launch("".toUri())
-        }*/
     }
 
     override fun onDestroy() {
