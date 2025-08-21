@@ -5,7 +5,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import androidx.documentfile.provider.DocumentFile
-import com.example.musicapp.logic.album.Album
+import com.example.musicapp.newLogic.album.Album
 
 fun getEmbeddedImage(
     album: Album,

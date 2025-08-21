@@ -10,8 +10,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import com.example.musicapp.R
-import com.example.musicapp.logic.directory.getAlbumsFromDirectory
-import com.example.musicapp.logic.settings.SettingsDataStore
+import com.example.musicapp.newLogic.directory.getAlbumsFromDirectory
+import com.example.musicapp.newLogic.settings.SettingsDataStore
 import com.example.musicapp.newLogic.DirectoryUri
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlin.properties.Delegates

@@ -1,4 +1,4 @@
-package com.example.musicapp.logic.album
+package com.example.musicapp.newLogic.album
 
 import android.content.Context
 import com.example.musicapp.logic.database.setUpDatabase

@@ -1,4 +1,4 @@
-package com.example.musicapp.logic.album
+package com.example.musicapp.newLogic.album
 
 import android.net.Uri
 

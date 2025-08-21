@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.net.Uri
 import android.util.Log
-import com.example.musicapp.logic.album.Album
+import com.example.musicapp.newLogic.album.Album
 import com.example.musicapp.logic.song.Song
 
 fun setUpDatabase(context: Context): DBHelper {

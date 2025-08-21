@@ -6,12 +6,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.musicapp.logic.album.Album
-import com.example.musicapp.logic.album.connectDiscFromAlbums
-import com.example.musicapp.logic.album.getAlbumsFromDatabase
+import com.example.musicapp.newLogic.album.Album
+import com.example.musicapp.newLogic.album.connectDiscFromAlbums
+import com.example.musicapp.logic.database.getAlbumsFromDatabase
 import com.example.musicapp.logic.album.getAlbumsFromDirectory
-import com.example.musicapp.logic.album.synchronizeAlbums
-import com.example.musicapp.logic.directory.changeNotValidDirectoryPathToUri
+import com.example.musicapp.newLogic.album.synchronizeAlbums
+import com.example.musicapp.newLogic.directory.changeNotValidDirectoryPathToUri
 import com.example.musicapp.logic.image.cacheAlbumCovers
 import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 import com.example.musicapp.logic.settings.SettingsDataStore

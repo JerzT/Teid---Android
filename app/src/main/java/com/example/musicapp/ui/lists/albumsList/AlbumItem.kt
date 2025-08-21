@@ -31,7 +31,7 @@
 //import androidx.navigation.NavController
 //import com.example.musicapp.R
 //import com.example.musicapp.Screen
-//import com.example.musicapp.logic.album.Album
+//import com.example.musicapp.newLogic.album.Album
 //import com.example.musicapp.logic.image.albumCoverCache
 //
 //@RequiresApi(Build.VERSION_CODES.P)

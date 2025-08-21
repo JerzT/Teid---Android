@@ -33,7 +33,7 @@
 //import androidx.compose.ui.layout.ContentScale
 //import androidx.compose.ui.unit.dp
 //import androidx.core.net.toUri
-//import com.example.musicapp.logic.album.Album
+//import com.example.musicapp.newLogic.album.Album
 //import com.example.musicapp.logic.image.albumCoverCache
 //import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 //import com.example.musicapp.logic.song.Song

@@ -1,10 +1,10 @@
-package com.example.musicapp.logic.album
+package com.example.musicapp.logic.database
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
-import com.example.musicapp.logic.database.setUpDatabase
+import com.example.musicapp.newLogic.album.Album
 
 @SuppressLint("Range")
 fun getAlbumsFromDatabase(

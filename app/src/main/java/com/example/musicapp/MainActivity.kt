@@ -1,16 +1,11 @@
 package com.example.musicapp
 
-import android.app.ComponentCaller
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -18,15 +13,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.musicapp.fragments.home.HomeFragment
-import com.example.musicapp.logic.album.Album
-import com.example.musicapp.logic.album.connectDiscFromAlbums
-import com.example.musicapp.logic.album.getAlbumsFromDatabase
-import com.example.musicapp.logic.album.synchronizeAlbums
-import com.example.musicapp.logic.directory.getAlbumsFromDirectory
+import com.example.musicapp.newLogic.album.Album
+import com.example.musicapp.newLogic.album.connectDiscFromAlbums
+import com.example.musicapp.logic.database.getAlbumsFromDatabase
+import com.example.musicapp.newLogic.album.synchronizeAlbums
+import com.example.musicapp.newLogic.directory.getAlbumsFromDirectory
 import com.example.musicapp.logic.mediaPlayer.PlaybackService
-import com.example.musicapp.logic.settings.SettingsDataStore
+import com.example.musicapp.newLogic.settings.SettingsDataStore
 import com.example.musicapp.newLogic.DirectoryUri
-import com.example.musicapp.newLogic.albumsList
+import com.example.musicapp.newLogic.album.albumsList
 import com.example.musicapp.popUps.DirectorySelectPopUp
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -37,8 +32,6 @@ var sessionToken: SessionToken? = null
 var controllerFuture: ListenableFuture<MediaController>? = null
 
 class MainActivity : AppCompatActivity() {
-
-
     var settings: SettingsDataStore? = null
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {

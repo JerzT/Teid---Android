@@ -14,7 +14,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import com.example.musicapp.R
-import com.example.musicapp.logic.album.Album
+import com.example.musicapp.newLogic.album.Album
 import com.example.musicapp.logic.song.Song
 import com.google.common.collect.ImmutableList
 import kotlin.random.Random

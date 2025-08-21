@@ -5,7 +5,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.musicapp.logic.album.Album
+import com.example.musicapp.newLogic.album.Album
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

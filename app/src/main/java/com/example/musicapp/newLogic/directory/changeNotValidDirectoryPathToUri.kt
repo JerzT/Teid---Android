@@ -1,4 +1,4 @@
-package com.example.musicapp.logic.directory
+package com.example.musicapp.newLogic.directory
 
 import android.net.Uri
 import androidx.core.net.toUri

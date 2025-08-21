@@ -1,9 +1,10 @@
-package com.example.musicapp.logic.directory
+package com.example.musicapp.newLogic.directory
 
 import android.content.Context
-import com.example.musicapp.logic.settings.SettingsDataStore
+import com.example.musicapp.newLogic.settings.SettingsDataStore
 import com.example.musicapp.newLogic.DirectoryUri
-import com.example.musicapp.newLogic.albumsList
+import com.example.musicapp.newLogic.album.albumsList
+import com.example.musicapp.newLogic.album.findAlbums
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

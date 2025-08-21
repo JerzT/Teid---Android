@@ -22,7 +22,7 @@
 //import androidx.compose.ui.unit.sp
 //import androidx.compose.ui.zIndex
 //import androidx.navigation.NavController
-//import com.example.musicapp.logic.album.Album
+//import com.example.musicapp.newLogic.album.Album
 //
 //@RequiresApi(Build.VERSION_CODES.P)
 //@Composable

@@ -12,7 +12,7 @@
 //import androidx.compose.ui.Alignment
 //import androidx.compose.ui.Modifier
 //import androidx.navigation.NavController
-//import com.example.musicapp.logic.album.Album
+//import com.example.musicapp.newLogic.album.Album
 //import com.example.musicapp.logic.directory.GetDirectory
 //
 //@RequiresApi(Build.VERSION_CODES.P)

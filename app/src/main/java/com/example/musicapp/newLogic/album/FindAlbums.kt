@@ -1,9 +1,8 @@
-package com.example.musicapp.logic.directory
+package com.example.musicapp.newLogic.album
 
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.example.musicapp.logic.database.setUpDatabase
 import kotlinx.coroutines.Deferred
@@ -12,7 +11,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import androidx.core.net.toUri
 
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -55,7 +53,7 @@ fun findAlbums(
                         )
                     {
                         val metadata = getMetadata(file, context)
-                        val album = _root_ide_package_.com.example.musicapp.logic.album.Album(
+                        val album = Album(
                             name = metadata["albumName"] ?: documentFile.name,
                             uri = documentFile.uri,
                             cover = getCover(documentFile),

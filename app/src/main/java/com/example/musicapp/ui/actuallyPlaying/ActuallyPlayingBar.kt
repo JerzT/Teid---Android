@@ -46,7 +46,7 @@
 //import com.arjunjadeja.texty.Texty
 //import com.example.musicapp.R
 //import com.example.musicapp.Screen
-//import com.example.musicapp.logic.album.Album
+//import com.example.musicapp.newLogic.album.Album
 //import com.example.musicapp.logic.image.albumCoverCache
 //import com.example.musicapp.logic.mediaPlayer.AppExoPlayer
 //import com.example.musicapp.logic.song.Song

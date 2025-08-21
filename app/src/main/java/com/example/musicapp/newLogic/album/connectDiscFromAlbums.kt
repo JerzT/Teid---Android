@@ -1,6 +1,6 @@
-package com.example.musicapp.logic.album
+package com.example.musicapp.newLogic.album
 
-import android.util.Log
+import kotlin.collections.iterator
 
 fun connectDiscFromAlbums(
     albumList: List<Any>,
