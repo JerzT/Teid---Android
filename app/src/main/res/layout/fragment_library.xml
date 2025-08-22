@@ -67,7 +67,7 @@
                 android:background="@drawable/none_drawable"/>
         </LinearLayout>
     </LinearLayout>
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_library_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

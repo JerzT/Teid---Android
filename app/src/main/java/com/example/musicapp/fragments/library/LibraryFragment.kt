@@ -7,13 +7,15 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ListView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.musicapp.FragmentStack
 import com.example.musicapp.R
 import com.example.musicapp.fragments.home.HomeFragmentListAdapter
 import com.example.musicapp.newLogic.album.albumsList
 
 class LibraryFragment: Fragment() {
-    private lateinit var libraryListView: ListView
+    private lateinit var libraryListView: RecyclerView
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,7 +43,8 @@ class LibraryFragment: Fragment() {
         }
 
         libraryListView = view.findViewById(R.id.fragment_library_list_view)
-        val arrayAdapter = LibraryFragmentListAdapter(requireActivity(), albumsList)
+        libraryListView.layoutManager = LinearLayoutManager(requireActivity())
+        val arrayAdapter = LibraryFragmentListAdapter(albumsList)
         libraryListView.adapter = arrayAdapter
     }
 
