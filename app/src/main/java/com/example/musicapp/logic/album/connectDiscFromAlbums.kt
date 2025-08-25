@@ -1,4 +1,4 @@
-package com.example.musicapp.newLogic.album
+package com.example.musicapp.logic.album
 
 import kotlin.collections.iterator
 

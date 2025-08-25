@@ -1,16 +1,15 @@
 package com.example.musicapp.fragments.library
 
-import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicapp.R
-import com.example.musicapp.newLogic.album.Album
+import com.example.musicapp.logic.album.Album
+import com.example.musicapp.logic.images.albumsCovers
 
 class LibraryFragmentListAdapter(
     private val albumsList: MutableList<Any>
@@ -34,9 +33,16 @@ class LibraryFragmentListAdapter(
         when(album){
             is Album -> {
                 holder.albumTitle.text = album.name
-                //holder.albumCover.setImageURI(album.cover)
+                val cover = albumsCovers[album.uri]
+                holder.albumCover.setImageBitmap(cover)
             }
-            false -> TODO()
+            is List<*> -> {
+                Log.v("test1", album.toString())
+                val usedAlbum = (album as List<Album>)[0]
+                holder.albumTitle.text = usedAlbum.name
+                val cover = albumsCovers[usedAlbum.uri]
+                holder.albumCover.setImageBitmap(cover)
+            }
         }
 
     }
@@ -49,34 +55,4 @@ class LibraryFragmentListAdapter(
         val albumTitle: TextView = itemView.findViewById(R.id.library_list_view_item_text)
         val albumCover: ImageView = itemView.findViewById(R.id.library_list_view_item_image)
     }
-
-/*    @SuppressLint("ViewHolder", "InflateParams")
-    fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val inflater: LayoutInflater = context.layoutInflater
-        val rowView = inflater.inflate(
-            R.layout.fragment_library_list_item,
-            null, true
-        )
-
-        val albumView = albumsList[position]
-
-        //if(albumView)
-
-        //val imageView = rowView.findViewById<ImageView>(R.id.library_list_view_item_image)
-        //imageView.setImageResource(button.icon)
-        //val textView = rowView.findViewById<TextView>(R.id.library_list_view_item_image)
-        //textView.text = albumView
-
-//        rowView.setOnClickListener {
-//            //FragmentStack.mainStack.push(button.fragment)
-//            val fragmentTransaction = context.supportFragmentManager.beginTransaction()
-//            fragmentTransaction
-//                .replace(R.id.main_frame, FragmentStack.mainStack.peek())
-//                .setReorderingAllowed(true)
-//                .addToBackStack("")
-//                .commit()
-//        }
-
-        return rowView
-    }*/
 }

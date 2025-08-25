@@ -20,10 +20,9 @@
             android:gravity="center">
             <ImageView
                 android:id="@+id/library_list_view_item_image"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginEnd="6dp"
-                app:tint="@color/textColor"
                 tools:src="@drawable/baseline_chart" />
             <TextView
                 android:id="@+id/library_list_view_item_text"

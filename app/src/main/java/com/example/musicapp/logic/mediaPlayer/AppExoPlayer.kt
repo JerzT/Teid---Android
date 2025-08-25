@@ -1,24 +1,6 @@
 package com.example.musicapp.logic.mediaPlayer
 
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.net.Uri
-import android.os.Build
-import androidx.annotation.OptIn
-import androidx.annotation.RequiresApi
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
-import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
-import com.example.musicapp.R
-import com.example.musicapp.newLogic.album.Album
-import com.example.musicapp.logic.song.Song
-import com.google.common.collect.ImmutableList
-import kotlin.random.Random
-
 //object AppExoPlayer{
 //    var player: ExoPlayer? = null
 //    val haveSongs = mutableStateOf(false)

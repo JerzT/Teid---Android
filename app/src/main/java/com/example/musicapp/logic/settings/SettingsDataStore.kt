@@ -1,4 +1,4 @@
-package com.example.musicapp.newLogic.settings
+package com.example.musicapp.logic.settings
 
 import android.content.Context
 import androidx.datastore.core.DataStore

@@ -1,12 +1,5 @@
 package com.example.musicapp.logic.song
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.net.Uri
-import android.util.Log
-import androidx.core.net.toUri
-import com.example.musicapp.logic.database.setUpDatabase
-
 //@SuppressLint("Range")
 //fun getSongsFromDatabaseWithUri(
 //    context: Context,

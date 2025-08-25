@@ -1,4 +1,4 @@
-package com.example.musicapp.newLogic.album
+package com.example.musicapp.logic.album
 
 import android.content.Context
 import android.media.MediaMetadataRetriever

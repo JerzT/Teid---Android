@@ -1,3 +1,3 @@
-package com.example.musicapp.newLogic.album
+package com.example.musicapp.logic.album
 
 val albumsList: MutableList<Any> = mutableListOf()

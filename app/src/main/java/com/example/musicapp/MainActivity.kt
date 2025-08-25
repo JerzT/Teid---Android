@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
@@ -13,19 +14,21 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.musicapp.fragments.home.HomeFragment
-import com.example.musicapp.newLogic.album.Album
-import com.example.musicapp.newLogic.album.connectDiscFromAlbums
+import com.example.musicapp.logic.album.Album
+import com.example.musicapp.logic.album.connectDiscFromAlbums
 import com.example.musicapp.logic.database.getAlbumsFromDatabase
-import com.example.musicapp.newLogic.album.synchronizeAlbums
-import com.example.musicapp.newLogic.directory.getAlbumsFromDirectory
+import com.example.musicapp.logic.album.synchronizeAlbums
+import com.example.musicapp.logic.directory.getAlbumsFromDirectory
 import com.example.musicapp.logic.mediaPlayer.PlaybackService
-import com.example.musicapp.newLogic.settings.SettingsDataStore
-import com.example.musicapp.newLogic.DirectoryUri
-import com.example.musicapp.newLogic.album.albumsList
+import com.example.musicapp.logic.settings.SettingsDataStore
+import com.example.musicapp.logic.DirectoryUri
+import com.example.musicapp.logic.album.albumsList
 import com.example.musicapp.popUps.DirectorySelectPopUp
+import com.example.musicapp.logic.images.cacheAlbumsCovers
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 var sessionToken: SessionToken? = null
@@ -70,8 +73,12 @@ class MainActivity : AppCompatActivity() {
                     val connectedAlbumsFromDatabase = connectDiscFromAlbums(albumsFromDatabase)
 
                     albumsList.addAll(connectedAlbumsFromDatabase)
+                    coroutineScope {
+                        launch {
+                            cacheAlbumsCovers(connectedAlbumsFromDatabase, context)
+                        }
+                    }
                     //Log.v("test1", "ok")
-                    //cacheAlbumCovers(connectedAlbumsFromDatabase, context)
 
                     val albumsInDirectory = getAlbumsFromDirectory(
                         settingsDataStore = settings!!,
@@ -81,15 +88,18 @@ class MainActivity : AppCompatActivity() {
 
                     albumsList.clear()
                     albumsList.addAll(connectedAlbumsFromDirectory)
+                    coroutineScope {
+                        launch {
+                            cacheAlbumsCovers(connectedAlbumsFromDirectory, context)
+                        }
+                    }
                     //Log.v("test1", "ok2")
-                    //cacheAlbumCovers(connectedAlbumsFromDirectory, context)
 
                     synchronizeAlbums(
                         albumsFromDatabase = albumsFromDatabase,
                         albumsInDirectory = albumsInDirectory,
                         context = context,
                     )
-                    //Log.v("test1", "ok3")
                 }
                 else{
                     val directorySelectPopUp = DirectorySelectPopUp()
