@@ -14,7 +14,7 @@ import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.images.albumsCovers
 
 class LibraryFragmentListAdapter(
-    private val albumsList: MutableList<Any>
+    private val albumsList: MutableList<Album>
 ) : ListAdapter<Album, LibraryFragmentListAdapter.ViewHolder>(AlbumDiffCallback()) {
 
     override fun onCreateViewHolder(
@@ -32,20 +32,9 @@ class LibraryFragmentListAdapter(
     ) {
         val album = albumsList[position]
 
-        when(album){
-            is Album -> {
-                holder.albumTitle.text = album.name
-                val cover = albumsCovers[album.uri]
-                holder.albumCover.setImageBitmap(cover)
-            }
-            is List<*> -> {
-                val usedAlbum = (album as List<Album>)[0]
-                holder.albumTitle.text = usedAlbum.name
-                val cover = albumsCovers[usedAlbum.uri]
-                holder.albumCover.setImageBitmap(cover)
-            }
-            else -> TODO()
-        }
+        holder.albumTitle.text = album.name
+        val cover = albumsCovers[album.uri]
+        holder.albumCover.setImageBitmap(cover)
     }
 
     override fun getItemCount(): Int {

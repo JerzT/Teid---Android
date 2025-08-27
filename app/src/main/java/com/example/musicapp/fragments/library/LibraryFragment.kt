@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicapp.FragmentStack
 import com.example.musicapp.R
+import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.album.albumsList
 
 class LibraryFragment: Fragment() {
@@ -42,7 +43,16 @@ class LibraryFragment: Fragment() {
 
         libraryRecyclerView = view.findViewById(R.id.fragment_library_list_view)
         libraryRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        val arrayAdapter = LibraryFragmentListAdapter(albumsList)
+        val flattenAlbumList = mutableListOf<Album>()
+        for( album in albumsList){
+            when(album){
+                is Album -> flattenAlbumList.add(album)
+                is List<*> -> flattenAlbumList.add((album as List<Album>)[0])
+                else -> null
+            }
+        }
+        flattenAlbumList.sortBy { album -> album.name }
+        val arrayAdapter = LibraryFragmentListAdapter(flattenAlbumList)
 
         libraryRecyclerView.adapter = arrayAdapter
     }
