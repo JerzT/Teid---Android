@@ -25,8 +25,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         val queryArtist = """
             CREATE TABLE $ARTISTS (
                 $ID_COL INTEGER PRIMARY KEY,
-                $NAME_COL TEXT,
-                $URI_COL TEXT UNIQUE
+                $NAME_COL TEXT
             )
         """.trimIndent()
         db.execSQL(queryArtist)
@@ -71,21 +70,18 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     fun addArtist(artist: Artist){
         val db = this.writableDatabase
 
-        val name = artist.name ?: ""
-        val uri = artist.uri.toString()
+        val name = (artist.name ?: "").lowercase()
 
         try {
             val query = " SELECT * FROM $ARTISTS " +
-                    "WHERE $NAME_COL = ? " +
-                    "AND $URI_COL = ?"
+                    "WHERE $NAME_COL = ? "
             val cursor = db.rawQuery(query,
-                arrayOf(name, uri))
+                arrayOf(name))
             if (cursor.moveToFirst()) {
                 Log.v("DBHelper", "Artist already exists: $name")
             } else {
                 val values = ContentValues().apply {
                     put(NAME_COL, name)
-                    put(URI_COL, uri)
                 }
                 db.insert(ARTISTS, null, values)
                 Log.v("DBHelper", "Artist added successfully: $name")

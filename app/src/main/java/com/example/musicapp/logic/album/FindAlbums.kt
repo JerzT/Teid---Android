@@ -4,6 +4,8 @@ import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
+import com.example.musicapp.logic.artist.Artist
+import com.example.musicapp.logic.artist.artistList
 import com.example.musicapp.logic.database.setUpDatabase
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -61,9 +63,12 @@ fun findAlbums(
                             year = metadata["albumYear"],
                             cdNumber = metadata["cdNumber"]?.toInt(),
                         )
+                        val artist = Artist(album.artist)
 
+                        artistList.add(artist)
                         albumsList.add(album)
                         database.addAlbum(album)
+                        database.addArtist(artist)
                         return@coroutineScope
                     }
                 }
