@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicapp.R
 import com.example.musicapp.logic.album.Album
@@ -13,7 +15,7 @@ import com.example.musicapp.logic.images.albumsCovers
 
 class LibraryFragmentListAdapter(
     private val albumsList: MutableList<Any>
-) : RecyclerView.Adapter<LibraryFragmentListAdapter.ViewHolder>() {
+) : ListAdapter<Album, LibraryFragmentListAdapter.ViewHolder>(AlbumDiffCallback()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -37,14 +39,13 @@ class LibraryFragmentListAdapter(
                 holder.albumCover.setImageBitmap(cover)
             }
             is List<*> -> {
-                Log.v("test1", album.toString())
                 val usedAlbum = (album as List<Album>)[0]
                 holder.albumTitle.text = usedAlbum.name
                 val cover = albumsCovers[usedAlbum.uri]
                 holder.albumCover.setImageBitmap(cover)
             }
+            else -> TODO()
         }
-
     }
 
     override fun getItemCount(): Int {

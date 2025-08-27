@@ -13,7 +13,7 @@ import com.example.musicapp.R
 import com.example.musicapp.logic.album.albumsList
 
 class LibraryFragment: Fragment() {
-    private lateinit var libraryListView: RecyclerView
+    private lateinit var libraryRecyclerView: RecyclerView
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,9 +40,10 @@ class LibraryFragment: Fragment() {
                 .commit()
         }
 
-        libraryListView = view.findViewById(R.id.fragment_library_list_view)
-        libraryListView.layoutManager = LinearLayoutManager(requireActivity())
+        libraryRecyclerView = view.findViewById(R.id.fragment_library_list_view)
+        libraryRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
         val arrayAdapter = LibraryFragmentListAdapter(albumsList)
-        libraryListView.adapter = arrayAdapter
+
+        libraryRecyclerView.adapter = arrayAdapter
     }
 }
