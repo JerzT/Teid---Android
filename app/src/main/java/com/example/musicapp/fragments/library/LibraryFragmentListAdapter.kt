@@ -1,21 +1,19 @@
 package com.example.musicapp.fragments.library
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicapp.R
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.images.albumsCovers
 
-class LibraryFragmentListAdapter(
+class LibraryAllAlbumsFragmentListAdapter(
     private val albumsList: MutableList<Album>
-) : ListAdapter<Album, LibraryFragmentListAdapter.ViewHolder>(AlbumDiffCallback()) {
+) : ListAdapter<Album, LibraryAllAlbumsFragmentListAdapter.ViewHolder>(AlbumDiffCallback()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

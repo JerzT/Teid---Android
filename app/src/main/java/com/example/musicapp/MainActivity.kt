@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                     ).apply { sortBy { if (it is Album) it.name else ""  } }
                     val connectedAlbumsFromDirectory = connectDiscFromAlbums(albumsInDirectory)
 
-/*                    albumsList.clear()
+                    albumsList.clear()
                     albumsList.addAll(connectedAlbumsFromDirectory)
                     coroutineScope {
                         launch {
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                         albumsFromDatabase = albumsFromDatabase,
                         albumsInDirectory = albumsInDirectory,
                         context = context,
-                    )*/
+                    )
                 }
                 else{
                     val directorySelectPopUp = DirectorySelectPopUp()

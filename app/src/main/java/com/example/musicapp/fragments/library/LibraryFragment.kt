@@ -15,15 +15,25 @@ import com.example.musicapp.logic.album.albumsList
 
 class LibraryFragment: Fragment() {
     private lateinit var libraryRecyclerView: RecyclerView
+    private lateinit var flattenAlbumList: MutableList<Album>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        flattenAlbumList = mutableListOf<Album>()
+        for( album in albumsList){
+            when(album){
+                is Album -> flattenAlbumList.add(album)
+                is List<*> -> flattenAlbumList.add((album as List<Album>)[0])
+                else -> null
+            }
+        }
         return inflater.inflate(
             R.layout.fragment_library,
             container,
             false)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,16 +53,9 @@ class LibraryFragment: Fragment() {
 
         libraryRecyclerView = view.findViewById(R.id.fragment_library_list_view)
         libraryRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        val flattenAlbumList = mutableListOf<Album>()
-        for( album in albumsList){
-            when(album){
-                is Album -> flattenAlbumList.add(album)
-                is List<*> -> flattenAlbumList.add((album as List<Album>)[0])
-                else -> null
-            }
-        }
+
         flattenAlbumList.sortBy { album -> album.name }
-        val arrayAdapter = LibraryFragmentListAdapter(flattenAlbumList)
+        val arrayAdapter = LibraryAllAlbumsFragmentListAdapter(flattenAlbumList)
 
         libraryRecyclerView.adapter = arrayAdapter
     }

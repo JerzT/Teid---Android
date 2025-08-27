@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.net.Uri
 import android.util.Log
 import com.example.musicapp.logic.album.Album
+import com.example.musicapp.logic.artist.Artist
 import com.example.musicapp.logic.song.Song
 
 fun setUpDatabase(context: Context): DBHelper {
@@ -21,8 +22,17 @@ fun setUpDatabase(context: Context): DBHelper {
 class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
     override fun onCreate(db: SQLiteDatabase) {
+        val queryArtist = """
+            CREATE TABLE $ARTISTS (
+                $ID_COL INTEGER PRIMARY KEY,
+                $NAME_COL TEXT,
+                $URI_COL TEXT UNIQUE
+            )
+        """.trimIndent()
+        db.execSQL(queryArtist)
+
         val queryAlbums ="""
-            CREATE TABLE $MUSIC_ALBUMS (
+            CREATE TABLE $ALBUMS (
                 $ID_COL INTEGER PRIMARY KEY,
                 $NAME_COL TEXT,
                 $URI_COL TEXT UNIQUE, 
@@ -51,16 +61,48 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
 
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
         // this method is to check if table already exists
-        db.execSQL("DROP TABLE IF EXISTS $MUSIC_ALBUMS")
+        db.execSQL("DROP TABLE IF EXISTS $ARTISTS")
+        db.execSQL("DROP TABLE IF EXISTS $ALBUMS")
         db.execSQL("DROP TABLE IF EXISTS $SONGS")
         onCreate(db)
+    }
+
+    @SuppressLint("Recycle")
+    fun addArtist(artist: Artist){
+        val db = this.writableDatabase
+
+        val name = artist.name ?: ""
+        val uri = artist.uri.toString()
+
+        try {
+            val query = " SELECT * FROM $ARTISTS " +
+                    "WHERE $NAME_COL = ? " +
+                    "AND $URI_COL = ?"
+            val cursor = db.rawQuery(query,
+                arrayOf(name, uri))
+            if (cursor.moveToFirst()) {
+                Log.v("DBHelper", "Artist already exists: $name")
+            } else {
+                val values = ContentValues().apply {
+                    put(NAME_COL, name)
+                    put(URI_COL, uri)
+                }
+                db.insert(ARTISTS, null, values)
+                Log.v("DBHelper", "Artist added successfully: $name")
+            }
+        }
+        catch (e: Exception){
+            Log.e("DBHelper", "Error while adding artist: ${e.message}", e)
+        }
+        finally {
+            db.close()
+        }
     }
 
     @SuppressLint("Recycle")
     fun addAlbum(album: Album) {
         val db = this.writableDatabase
 
-        // Safeguard against null values and check them
         val name = album.name ?: ""
         val uri = album.uri.toString()
         val cover = if(album.cover != null) album.cover.toString() else ""
@@ -69,8 +111,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         val cdNumber = album.cdNumber ?: 1
 
         try {
-            // Parameterized query to check if the album already exists in the database
-            val query = "SELECT * FROM $MUSIC_ALBUMS " +
+            val query = "SELECT * FROM $ALBUMS " +
                     "WHERE $NAME_COL = ? " +
                     "AND $URI_COL = ? " +
                     "AND $COVER_COL = ? " +
@@ -84,7 +125,6 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 // Album already exists
                 Log.v("DBHelper", "Album already exists: $name")
             } else {
-                // Insert album if it does not exist
                 val values = ContentValues().apply {
                     put(NAME_COL, name)
                     put(URI_COL, uri)
@@ -94,16 +134,26 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                     put(CD_NUMBER_COL, cdNumber)
                 }
 
-                db.insert(MUSIC_ALBUMS, null, values)
+                db.insert(ALBUMS, null, values)
                 Log.v("DBHelper", "Album added successfully: $name")
             }
         } catch (e: Exception) {
-            // Catch any exceptions and log them
             Log.e("DBHelper", "Error while adding album: ${e.message}", e)
         } finally {
-            // Close the database connection
             db.close()
         }
+    }
+
+    fun getArtist(): Cursor {
+        val db = this.readableDatabase
+
+        return db.rawQuery("SELECT * FROM $ARTISTS", null)
+    }
+
+    fun getArtistFromUri(parentUri: Uri): Cursor{
+        val db = this.readableDatabase
+
+        return db.rawQuery("SELECT * FROM $ARTISTS WHERE $URI_COL = ?", arrayOf(parentUri.toString()))
     }
 
     fun deleteAlbum(album: Album){
@@ -125,7 +175,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 album.cdNumber.toString()
             )
 
-            db.delete( MUSIC_ALBUMS, whereClause, whereArgs)
+            db.delete( ALBUMS, whereClause, whereArgs)
         }
         catch (e: Exception){
             Log.e("DBHelper", "Error while deleting album: ${e.message}", e)
@@ -138,13 +188,13 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     fun getAlbums(): Cursor {
         val db = this.readableDatabase
 
-        return db.rawQuery("SELECT * FROM $MUSIC_ALBUMS", null)
+        return db.rawQuery("SELECT * FROM $ALBUMS", null)
     }
 
     fun getAlbumFromUri(parentUri: Uri): Cursor{
         val db = this.readableDatabase
 
-        return db.rawQuery("SELECT * FROM $MUSIC_ALBUMS WHERE $URI_COL = ?", arrayOf(parentUri.toString()))
+        return db.rawQuery("SELECT * FROM $ALBUMS WHERE $URI_COL = ?", arrayOf(parentUri.toString()))
     }
 
     @SuppressLint("Recycle")
@@ -161,7 +211,6 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         val timePlayed = song.timePlayed
 
         try {
-            // Parameterized query to check if the album already exists in the database
             val query = "SELECT * FROM $SONGS " +
                     "WHERE $TITLE_COL = ? " +
                     "AND $URI_COL = ? " +
@@ -175,10 +224,8 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 arrayOf(title, uri.toString(), parentUri.toString(), artist, format, "$number", "$length", "$timePlayed"))
 
             if (cursor.moveToFirst()) {
-                // Album already exists
                 Log.v("DBHelper", "Song already exists: $title")
             } else {
-                // Insert album if it does not exist
                 val values = ContentValues().apply {
                     put(TITLE_COL, title)
                     put(URI_COL, uri.toString())
@@ -251,37 +298,22 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
 
     companion object{
         private const val DATABASE_NAME = "APP_DATABASE"
-
         private const val DATABASE_VERSION = 1
-
-        const val MUSIC_ALBUMS = "music_albums"
-
+        const val ARTISTS = "artist"
+        const val ALBUMS = "albums"
         const val ID_COL = "id"
-
         const val NAME_COL = "name"
-
         const val URI_COL = "uri"
-
         const val COVER_COL = "cover"
-
         const val ARTIST_COL = "artist"
-
         const val YEAR_COL = "year"
-
         const val CD_NUMBER_COL = "cd_number"
-
         const val SONGS = "songs"
-
         const val TITLE_COL = "title"
-
         const val PARENT_URI_COL = "parent_uri"
-
         const val FORMAT_COL = "format"
-
         const val NUMBER_COL = "number"
-
         const val LENGTH_COL = "length"
-
         const val TIME_PLAYED_COL = "time_played"
     }
 }
