@@ -1,6 +1,7 @@
 package com.example.musicapp.fragments.library
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,23 +13,16 @@ import com.example.musicapp.FragmentStack
 import com.example.musicapp.R
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.album.albumsList
+import com.example.musicapp.logic.artist.artistList
 
 class LibraryFragment: Fragment() {
     private lateinit var libraryRecyclerView: RecyclerView
-    private lateinit var flattenAlbumList: MutableList<Album>
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        flattenAlbumList = mutableListOf<Album>()
-        for( album in albumsList){
-            when(album){
-                is Album -> flattenAlbumList.add(album)
-                is List<*> -> flattenAlbumList.add((album as List<Album>)[0])
-                else -> null
-            }
-        }
+
         return inflater.inflate(
             R.layout.fragment_library,
             container,
@@ -53,10 +47,8 @@ class LibraryFragment: Fragment() {
 
         libraryRecyclerView = view.findViewById(R.id.fragment_library_list_view)
         libraryRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
-
-        flattenAlbumList.sortBy { album -> album.name }
-        val arrayAdapter = LibraryAllAlbumsFragmentListAdapter(flattenAlbumList)
-
+        val arrayAdapter = LibraryFragmentListAdapter(artistList.toList())
         libraryRecyclerView.adapter = arrayAdapter
+        //flattenAlbumList.sortBy { album -> album.name }
     }
 }

@@ -1,3 +1,3 @@
 package com.example.musicapp.logic.artist
 
-val artistList: MutableList<Artist> = mutableListOf()
+val artistList: MutableSet<Artist> = mutableSetOf()

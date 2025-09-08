@@ -1,4 +1,4 @@
-package com.example.musicapp.fragments.library
+package com.example.musicapp.fragments.artist
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.musicapp.logic.album.Album

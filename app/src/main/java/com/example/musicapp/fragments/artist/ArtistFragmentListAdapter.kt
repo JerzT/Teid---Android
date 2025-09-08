@@ -1,4 +1,4 @@
-package com.example.musicapp.fragments.library
+package com.example.musicapp.fragments.artist
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +11,9 @@ import com.example.musicapp.R
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.images.albumsCovers
 
-class LibraryAllAlbumsFragmentListAdapter(
+class ArtistFragmentListAdapter(
     private val albumsList: MutableList<Album>
-) : ListAdapter<Album, LibraryAllAlbumsFragmentListAdapter.ViewHolder>(AlbumDiffCallback()) {
+) : ListAdapter<Album, ArtistFragmentListAdapter.ViewHolder>(AlbumDiffCallback()) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
