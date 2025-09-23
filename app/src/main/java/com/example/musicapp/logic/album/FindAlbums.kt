@@ -3,9 +3,10 @@ package com.example.musicapp.logic.album
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.util.Log
 import androidx.documentfile.provider.DocumentFile
+import com.example.musicapp.fragments.library.LibraryLiveViewModel
 import com.example.musicapp.logic.artist.Artist
-import com.example.musicapp.logic.artist.artistList
 import com.example.musicapp.logic.database.setUpDatabase
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -65,10 +66,15 @@ fun findAlbums(
                         )
                         val artist = Artist(album.artist)
 
-                        artistList.add(artist)
+                        //add new artist and add artist to database
+                        LibraryLiveViewModel.addArtist(artist)
+                        //Log.d("test1", "${LibraryLiveViewModel.artistSet.value}, $artist")
+                        //database.addArtist(artist)
+
+                        //add new album and add it to database
                         albumsList.add(album)
                         database.addAlbum(album)
-                        database.addArtist(artist)
+
                         return@coroutineScope
                     }
                 }

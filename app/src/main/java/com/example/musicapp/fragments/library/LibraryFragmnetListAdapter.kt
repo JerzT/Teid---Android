@@ -1,16 +1,17 @@
 package com.example.musicapp.fragments.library
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.map
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicapp.R
 import com.example.musicapp.logic.artist.Artist
-import com.example.musicapp.logic.artist.artistList
 
 class ArtistDiffCallback(): DiffUtil.ItemCallback<Artist>(){
     override fun areItemsTheSame(
@@ -30,7 +31,7 @@ class ArtistDiffCallback(): DiffUtil.ItemCallback<Artist>(){
 }
 
 class LibraryFragmentListAdapter(
-    private val albumsList: List<Artist>
+    private val albumsSet: List<Artist>
 ) : ListAdapter<Artist, LibraryFragmentListAdapter.ViewHolder>(ArtistDiffCallback()) {
 
     override fun onCreateViewHolder(
@@ -46,13 +47,14 @@ class LibraryFragmentListAdapter(
         holder: ViewHolder,
         position: Int
     ) {
-        val artist = albumsList[position]
+        val artist = albumsSet[position]
 
         holder.artistName.text = artist.name
     }
 
+    @SuppressLint("CheckResult")
     override fun getItemCount(): Int {
-        return artistList.size
+        return albumsSet.size
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

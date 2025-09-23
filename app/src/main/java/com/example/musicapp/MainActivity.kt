@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.example.musicapp.fragments.home.HomeFragment
+import com.example.musicapp.fragments.library.LibraryLiveViewModel
 import com.example.musicapp.logic.album.Album
 import com.example.musicapp.logic.album.connectDiscFromAlbums
 import com.example.musicapp.logic.database.getAlbumsFromDatabase
@@ -35,6 +36,7 @@ var sessionToken: SessionToken? = null
 var controllerFuture: ListenableFuture<MediaController>? = null
 
 class MainActivity : AppCompatActivity() {
+
     var settings: SettingsDataStore? = null
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
