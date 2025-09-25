@@ -1,5 +1,6 @@
 package com.example.musicapp.fragments.library
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -38,6 +39,7 @@ class LibraryFragment: Fragment() {
             false)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -58,9 +60,8 @@ class LibraryFragment: Fragment() {
         val arrayAdapter = LibraryFragmentListAdapter(LibraryLiveViewModel.artistSet.value!!.toList())
         libraryRecyclerView.adapter = arrayAdapter
 
-        LibraryLiveViewModel.artistSet.observe(viewLifecycleOwner) { artistSet ->
-            val artistList = artistSet.toList()
-            arrayAdapter.submitList(artistList)
+        LibraryLiveViewModel.artistSet.observe(viewLifecycleOwner) { artists ->
+            arrayAdapter.updateData(artists.sortedBy { it.name }.toMutableList())
         }
         //flattenAlbumList.sortBy { album -> album.name }
     }

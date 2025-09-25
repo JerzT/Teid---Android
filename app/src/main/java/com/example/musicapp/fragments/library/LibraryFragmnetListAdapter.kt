@@ -31,9 +31,8 @@ class ArtistDiffCallback(): DiffUtil.ItemCallback<Artist>(){
 }
 
 class LibraryFragmentListAdapter(
-    private val albumsSet: List<Artist>
+    private var albumsSet: List<Artist>
 ) : ListAdapter<Artist, LibraryFragmentListAdapter.ViewHolder>(ArtistDiffCallback()) {
-
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -55,6 +54,11 @@ class LibraryFragmentListAdapter(
     @SuppressLint("CheckResult")
     override fun getItemCount(): Int {
         return albumsSet.size
+    }
+
+    fun updateData(newList: MutableList<Artist>){
+        albumsSet = newList
+        notifyDataSetChanged()
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
