@@ -64,12 +64,15 @@ fun findAlbums(
                             year = metadata["albumYear"],
                             cdNumber = metadata["cdNumber"]?.toInt(),
                         )
-                        val artist = Artist(album.artist)
+
+                        val artist = Artist(
+                            album.artist,
+                            album.cover,
+                            album.uri
+                        )
 
                         //add new artist and add artist to database
                         LibraryLiveViewModel.addArtist(artist)
-                        //Log.d("test1", "${LibraryLiveViewModel.artistSet.value}, $artist")
-                        //database.addArtist(artist)
 
                         //add new album and add it to database
                         albumsList.add(album)

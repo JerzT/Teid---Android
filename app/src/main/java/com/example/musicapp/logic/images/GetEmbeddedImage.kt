@@ -4,14 +4,14 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import com.example.musicapp.logic.album.Album
 
 fun getEmbeddedImage(
-    album: Album,
-    context: Context
+    albumUri: Uri,
+    context: Context?
 ): Bitmap? {
-    val documentFile = DocumentFile.fromTreeUri(context, album.uri)
+    val documentFile = DocumentFile.fromTreeUri(context!!, albumUri)
 
     if (documentFile == null || !documentFile.isDirectory) return null
 

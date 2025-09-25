@@ -87,7 +87,6 @@ class MainActivity : AppCompatActivity() {
                             cacheAlbumsCovers(connectedAlbumsFromDatabase, context)
                         }
                     }
-                    //Log.v("test1", "ok")
 
                     val albumsInDirectory = getAlbumsFromDirectory(
                         settingsDataStore = settings!!,
@@ -102,7 +101,6 @@ class MainActivity : AppCompatActivity() {
                             cacheAlbumsCovers(connectedAlbumsFromDirectory, context)
                         }
                     }
-                    //Log.v("test1", "ok2")
 
                     synchronizeAlbums(
                         albumsFromDatabase = albumsFromDatabase,

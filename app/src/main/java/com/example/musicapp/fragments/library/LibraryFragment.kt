@@ -8,17 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicapp.FragmentStack
 import com.example.musicapp.R
-import com.example.musicapp.logic.album.Album
-import com.example.musicapp.logic.album.albumsList
-import com.example.musicapp.logic.artist.Artist
-
-
 
 class LibraryFragment: Fragment() {
     private lateinit var libraryRecyclerView: RecyclerView
@@ -41,6 +34,9 @@ class LibraryFragment: Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        LibraryLiveViewModel.artistSet.value?.map { a ->
+            Log.d("test1", "$a")
+        }
         super.onViewCreated(view, savedInstanceState)
 
         val returnButton: ImageButton = view.findViewById(R.id.fragment_library_back)
@@ -57,7 +53,12 @@ class LibraryFragment: Fragment() {
 
         libraryRecyclerView = view.findViewById(R.id.fragment_library_list_view)
         libraryRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        val arrayAdapter = LibraryFragmentListAdapter(LibraryLiveViewModel.artistSet.value!!.toList())
+        val arrayAdapter = LibraryFragmentListAdapter( context,
+            LibraryLiveViewModel
+                .artistSet
+                .value!!
+                .toMutableList()
+        )
         libraryRecyclerView.adapter = arrayAdapter
 
         LibraryLiveViewModel.artistSet.observe(viewLifecycleOwner) { artists ->

@@ -31,7 +31,7 @@ class ArtistFragmentListAdapter(
         val album = albumsList[position]
 
         holder.albumTitle.text = album.name
-        val cover = albumsCovers[album.uri]
+        val cover = albumsCovers[album.cover]
         holder.albumCover.setImageBitmap(cover)
     }
 

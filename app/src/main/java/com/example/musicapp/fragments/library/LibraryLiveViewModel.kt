@@ -9,11 +9,17 @@ import com.example.musicapp.logic.artist.Artist
 object LibraryLiveViewModel: ViewModel() {
     private val _artistSet = MutableLiveData<MutableSet<Artist>>(mutableSetOf())
     val artistSet: MutableLiveData<MutableSet<Artist>> get() = _artistSet
+    private val _seenArtistSet: MutableSet<String?> = mutableSetOf()
 
     fun addArtist(artist: Artist){
         val updated = _artistSet.value
-        updated!!.add(artist)
-        Log.d("test1", "$updated")
-        _artistSet.postValue(updated)
+
+        if(artist.name !in _seenArtistSet){
+            updated!!.add(artist)
+            _seenArtistSet.add(artist.name)
+            _artistSet.postValue(updated)
+        }
     }
+
+
 }
