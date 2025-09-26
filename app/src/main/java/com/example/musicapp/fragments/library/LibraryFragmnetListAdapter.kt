@@ -54,6 +54,9 @@ class LibraryFragmentListAdapter(
 
         holder.artistName.text = artist.name
         val cover = albumsCovers[artist.coverAlbum]
+        // if cover is returned null try getting cover
+        // some of the artist get link to second disk of the album
+        // and it not cached when all covers are
         if(cover == null){
             cacheAlbumCover(
                 artist.coverAlbum,

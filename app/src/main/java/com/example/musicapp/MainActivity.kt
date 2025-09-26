@@ -24,6 +24,7 @@ import com.example.musicapp.logic.mediaPlayer.PlaybackService
 import com.example.musicapp.logic.settings.SettingsDataStore
 import com.example.musicapp.logic.DirectoryUri
 import com.example.musicapp.logic.album.albumsList
+import com.example.musicapp.logic.database.getArtistsFromDatabase
 import com.example.musicapp.popUps.DirectorySelectPopUp
 import com.example.musicapp.logic.images.cacheAlbumsCovers
 import com.google.common.util.concurrent.ListenableFuture
@@ -45,6 +46,14 @@ class MainActivity : AppCompatActivity() {
         //set activity main as main view
         setContentView(R.layout.activity_main)
 
+        //set up notification service
+        val name = "Teid"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val mChannel = NotificationChannel("1", name, importance)
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(mChannel)
+
+        //start managing stack of fragments
         if (savedInstanceState == null){
             FragmentStack.mainStack.push(HomeFragment())
 
@@ -53,25 +62,26 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
+        //set up stored settings
         settings = SettingsDataStore(this)
 
-        //set up notification service
-        val name = "Teid"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val mChannel = NotificationChannel("1", name, importance)
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.createNotificationChannel(mChannel)
-
         //get directory if possible and get albums
+        //and check if state from database is still actually
         GlobalScope.launch {
             val context = this@MainActivity
 
+            //check if directory is stored
             settings?.directoryPathFlow?.collect { directoryPath ->
                 DirectoryUri.uri = directoryPath?.toUri() //changeNotValidDirectoryPathToUri(directoryPath)
-                val uri = DirectoryUri.uri
-                if (uri != null) {
+                if (DirectoryUri.uri != null) {
+
+                    val artistsFromDatabase = getArtistsFromDatabase(context)
+                    LibraryLiveViewModel.setArtistSet(artistsFromDatabase)
+
                     val albumsFromDatabase = getAlbumsFromDatabase(context)
                         .apply { sortBy { if (it is Album) it.name else ""  } }
+                    //connectedAlbums must stay because we need to synchronize
+                    //albums from database and found one
                     val connectedAlbumsFromDatabase = connectDiscFromAlbums(albumsFromDatabase)
 
                     connectedAlbumsFromDatabase.sortedBy {
@@ -124,8 +134,6 @@ class MainActivity : AppCompatActivity() {
         //set up session of playback
         sessionToken = SessionToken(this, ComponentName(this, PlaybackService::class.java))
         controllerFuture = MediaController.Builder(this, sessionToken!!).buildAsync()
-
-        //val chooseDirectory = this.findViewById<Button>(R.id.choose_directory)
     }
 
     override fun onDestroy() {

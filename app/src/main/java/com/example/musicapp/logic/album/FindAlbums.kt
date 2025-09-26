@@ -43,6 +43,7 @@ fun findAlbums(
         val files = documentFile.listFiles()
         coroutineScope {
             for (file in files) {
+                //check if file isDirectory if it is make recursion on different scope
                 if (file.isDirectory){
                     launch {
                         findAlbums(file.uri, context, albumsList).await()
@@ -56,6 +57,7 @@ fun findAlbums(
                         )
                     {
                         val metadata = getMetadata(file, context)
+                        //makes album object
                         val album = Album(
                             name = metadata["albumName"] ?: documentFile.name,
                             uri = documentFile.uri,
@@ -65,6 +67,7 @@ fun findAlbums(
                             cdNumber = metadata["cdNumber"]?.toInt(),
                         )
 
+                        // makes artist object
                         val artist = Artist(
                             album.artist,
                             album.cover,
@@ -73,6 +76,7 @@ fun findAlbums(
 
                         //add new artist and add artist to database
                         LibraryLiveViewModel.addArtist(artist)
+                        database.addArtist(artist)
 
                         //add new album and add it to database
                         albumsList.add(album)

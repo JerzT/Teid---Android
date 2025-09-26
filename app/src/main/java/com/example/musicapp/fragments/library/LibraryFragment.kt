@@ -34,9 +34,6 @@ class LibraryFragment: Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        LibraryLiveViewModel.artistSet.value?.map { a ->
-            Log.d("test1", "$a")
-        }
         super.onViewCreated(view, savedInstanceState)
 
         val returnButton: ImageButton = view.findViewById(R.id.fragment_library_back)

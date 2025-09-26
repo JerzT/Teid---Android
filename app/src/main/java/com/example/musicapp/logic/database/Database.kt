@@ -25,7 +25,9 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         val queryArtist = """
             CREATE TABLE $ARTISTS (
                 $ID_COL INTEGER PRIMARY KEY,
-                $NAME_COL TEXT
+                $NAME_COL TEXT,
+                $COVER_COL TEXT,
+                $URI_COL TEXT
             )
         """.trimIndent()
         db.execSQL(queryArtist)
@@ -70,7 +72,9 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     fun addArtist(artist: Artist){
         val db = this.writableDatabase
 
-        val name = (artist.name ?: "").lowercase()
+        val name = (artist.name ?: "")
+        val cover = (artist.cover ?: "").toString()
+        val coverAlbum = artist.coverAlbum.toString()
 
         try {
             val query = " SELECT * FROM $ARTISTS " +
@@ -82,6 +86,8 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
             } else {
                 val values = ContentValues().apply {
                     put(NAME_COL, name)
+                    put(COVER_COL, cover)
+                    put(URI_COL, coverAlbum)
                 }
                 db.insert(ARTISTS, null, values)
                 Log.v("DBHelper", "Artist added successfully: $name")
@@ -93,6 +99,12 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         finally {
             db.close()
         }
+    }
+
+    fun getArtists(): Cursor {
+        val db = this.readableDatabase
+
+        return db.rawQuery("SELECT * FROM $ARTISTS", null)
     }
 
     @SuppressLint("Recycle")
@@ -138,18 +150,6 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         } finally {
             db.close()
         }
-    }
-
-    fun getArtist(): Cursor {
-        val db = this.readableDatabase
-
-        return db.rawQuery("SELECT * FROM $ARTISTS", null)
-    }
-
-    fun getArtistFromUri(parentUri: Uri): Cursor{
-        val db = this.readableDatabase
-
-        return db.rawQuery("SELECT * FROM $ARTISTS WHERE $URI_COL = ?", arrayOf(parentUri.toString()))
     }
 
     fun deleteAlbum(album: Album){

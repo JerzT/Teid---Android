@@ -1,7 +1,6 @@
 package com.example.musicapp.fragments.library
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.musicapp.logic.artist.Artist
@@ -21,5 +20,10 @@ object LibraryLiveViewModel: ViewModel() {
         }
     }
 
-
+    fun setArtistSet(newSet: MutableSet<Artist>){
+        _artistSet.postValue(newSet)
+        newSet.map { a ->
+            _seenArtistSet.add(a.name)
+        }
+    }
 }
