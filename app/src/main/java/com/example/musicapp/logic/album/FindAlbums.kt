@@ -122,8 +122,16 @@ private fun getMetadata(file: DocumentFile, context: Context): Map<String?, Stri
 }
 
 private fun getCover(directory: DocumentFile): Uri? {
-    val imageFile = directory.listFiles().firstOrNull { file ->
-        file.type?.contains("image", ignoreCase = true) == true
-    }
+    val files = directory.listFiles()
+
+    val coverImage = files
+        .firstOrNull { it.name?.contains("cover", ignoreCase = true) == true
+                && it.type?.contains("image", ignoreCase = true) == true}
+
+    if (coverImage?.uri != null) return coverImage.uri
+
+    val imageFile = files
+        .firstOrNull { it.type?.contains("image", ignoreCase = true) == true }
+
     return imageFile?.uri
 }
