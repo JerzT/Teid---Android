@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicapp.FragmentStack
 import com.example.musicapp.R
+import com.example.musicapp.logic.artist.Artist
+import com.example.musicapp.logic.artist.lettersFromArtistSet
 
 class LibraryFragment: Fragment() {
     private lateinit var libraryRecyclerView: RecyclerView
@@ -50,17 +52,39 @@ class LibraryFragment: Fragment() {
 
         libraryRecyclerView = view.findViewById(R.id.fragment_library_list_view)
         libraryRecyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        val arrayAdapter = LibraryFragmentListAdapter( context,
+        val listWithLetters = setUpList(
             LibraryLiveViewModel
                 .artistSet
                 .value!!
                 .toMutableList()
         )
+        val arrayAdapter = LibraryFragmentListAdapter( requireContext(), listWithLetters)
         libraryRecyclerView.adapter = arrayAdapter
 
         LibraryLiveViewModel.artistSet.observe(viewLifecycleOwner) { artists ->
-            arrayAdapter.updateData(artists.sortedBy { it.name }.toMutableList())
+            val listWithLetters = setUpList(artists.toMutableList())
+
+            arrayAdapter.updateData(listWithLetters)
         }
-        //flattenAlbumList.sortBy { album -> album.name }
     }
+}
+private fun setUpList(artists: MutableList<Artist>): MutableList<Any> {
+    val listWithLetters: MutableList<Any> = artists.toMutableList()
+
+    for(a in artists){
+        if(a.name != null)
+            lettersFromArtistSet.add(a.name[0].uppercase())
+    }
+
+    for(l in lettersFromArtistSet){
+        listWithLetters.add(l)
+    }
+
+    listWithLetters.sortBy { when(it){
+        is Artist -> { it.name }
+        is String -> { it }
+        else -> ""
+    } }
+
+    return listWithLetters
 }

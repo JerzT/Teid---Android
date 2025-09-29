@@ -37,6 +37,7 @@
                 tools:text="test" />
         </LinearLayout>
         <ImageView
+            android:id="@+id/library_list_view_item_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/right_arrow"
