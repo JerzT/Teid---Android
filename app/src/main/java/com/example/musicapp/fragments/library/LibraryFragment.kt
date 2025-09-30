@@ -58,7 +58,7 @@ class LibraryFragment: Fragment() {
                 .value!!
                 .toMutableList()
         )
-        val arrayAdapter = LibraryFragmentListAdapter( requireContext(), listWithLetters)
+        val arrayAdapter = LibraryFragmentListAdapter( requireActivity(), listWithLetters)
         libraryRecyclerView.adapter = arrayAdapter
 
         LibraryLiveViewModel.artistSet.observe(viewLifecycleOwner) { artists ->

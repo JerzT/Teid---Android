@@ -7,12 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.appcompat.app.ActionBar
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.musicapp.FragmentStack
 import com.example.musicapp.R
+import com.example.musicapp.fragments.artist.ArtistFragment
 import com.example.musicapp.logic.artist.Artist
 import com.example.musicapp.logic.images.albumsCovers
 import com.example.musicapp.logic.images.cacheAlbumCover
@@ -35,7 +38,7 @@ class ArtistDiffCallback(): DiffUtil.ItemCallback<Artist>(){
 }
 
 class LibraryFragmentListAdapter(
-    private val context: Context,
+    private val context: FragmentActivity,
     private var artistList: List<Any>
 ) : ListAdapter<Artist, LibraryFragmentListAdapter.ViewHolder>(ArtistDiffCallback()) {
 
@@ -75,6 +78,16 @@ class LibraryFragmentListAdapter(
                 layoutParams.width = dpToPx(32, context)
                 layoutParams.height = dpToPx(32, context)
                 holder.cover.layoutParams = layoutParams
+
+                holder.wholeButton.setOnClickListener {
+                    FragmentStack.mainStack.push(ArtistFragment())
+                    val fragmentTransaction = context.supportFragmentManager.beginTransaction()
+                    fragmentTransaction
+                        .replace(R.id.main_frame, FragmentStack.mainStack.peek())
+                        .setReorderingAllowed(true)
+                        .addToBackStack("")
+                        .commit()
+                }
             }
             is String -> {
                 holder.artistName.text = artist
@@ -103,6 +116,7 @@ class LibraryFragmentListAdapter(
         val artistName: TextView = itemView.findViewById(R.id.library_list_view_item_text)
         val cover: ImageView = itemView.findViewById(R.id.library_list_view_item_image)
         val arrow: ImageView = itemView.findViewById(R.id.library_list_view_item_arrow)
+        val wholeButton: RelativeLayout = itemView.findViewById(R.id.library_list_view_item)
     }
 }
 

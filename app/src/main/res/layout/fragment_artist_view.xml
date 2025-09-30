@@ -33,7 +33,7 @@
             android:layout_weight="5"
             android:fontFamily="sans-serif"
             android:gravity="center"
-            android:text="@string/library"
+            android:text="artist"
             android:textColor="@color/textColor"
             android:textFontWeight="700"
             android:textSize="30sp" />
